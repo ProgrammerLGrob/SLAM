@@ -12,12 +12,12 @@ def generate_launch_description():
     )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap','-l','--clock'],
+        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_translation_bag/rosbag2_2026_03_24-10_44_40_0.mcap','-l','--clock'],
         output='screen'
     )
     
     rosbag_play_remapped = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap','-l','--clock','--remap','/serf01/nav_rgbd_1/rgb/image_raw:=/serf01/nav_rgbd_1/rgb/image_raw2'],
+        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_translation_2_bag/rosbag2_2026_03_24-10_47_45_0.mcap','-l','--clock','--remap','/serf01/nav_rgbd_1/rgb/image_raw:=/serf01/nav_rgbd_1/rgb/image_raw2'],
         output='screen'
     )
 

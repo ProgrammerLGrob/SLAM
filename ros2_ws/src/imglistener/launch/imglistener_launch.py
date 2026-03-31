@@ -12,7 +12,7 @@ def generate_launch_description():
     )
     
     rosbag_play = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap'],
+        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_3_bag/pure_rotation_3_bag/rosbag2_2026_03_31-12_04_52_0.mcap','-l','--clock'],
         output='screen'
     )
 
