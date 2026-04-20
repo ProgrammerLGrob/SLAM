@@ -1,18 +1,30 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import ExecuteProcess
+from ament_index_python.packages import get_package_share_directory
+import os
+import yaml
 
 
 def generate_launch_description():
+    visual_odom_share = get_package_share_directory('visual_odom')
+    config_file = os.path.join(visual_odom_share, 'config', 'param.yaml')
+    
+    # Load rosbag path from config
+    with open(config_file, 'r') as f:
+        config = yaml.safe_load(f)
+    rosbag_path = config.get('visual_odom', {}).get('ros__parameters', {}).get('rosbag_path', '')
+    
     visual_odom_node = Node(
         package='visual_odom',
         executable='visual_odom_node',
         name='visual_odom_node',
-        output='screen'
+        output='screen',
+        parameters=[config_file]
     )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', '/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap','--clock'],
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '-l'],
         output='screen'
     )
 

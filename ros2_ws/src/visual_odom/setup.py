@@ -11,6 +11,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', ['launch/visual_odom_launch.py']),
+        ('share/' + package_name + '/config', ['config/param.yaml']),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
