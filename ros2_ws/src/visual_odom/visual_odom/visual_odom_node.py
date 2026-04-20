@@ -103,11 +103,14 @@ class VisualOdom(Node):
 
 
                 if matches[m].distance < DESCRIPTOR_TOLERANCE and z_first > MIN_DEPTH and z_first < MAX_DEPTH and z_end > MIN_DEPTH and z_end < MAX_DEPTH:
-                    P_i.append(self.calculate_coordinate(u_first, v_first, z_first))
-                    Q_i.append(self.calculate_coordinate(u_end, v_end, z_end))
+                    coor = self.calculate_coordinate(u_first, v_first, z_first)
+                    P_i.append([coor[0], coor[2]])
+                    coor = self.calculate_coordinate(u_end, v_end, z_end)
+                    Q_i.append([coor[0], coor[2]])
                     valid_count += 1
 
             if len(P_i) >= 2:
+
                 kabash_result = kabash(np.array(P_i), np.array(Q_i))
                 self.get_logger().info(f"Rotation: {kabash_result[0]}, Translation: {kabash_result[1]}, Theta: {kabash_result[2]*180/pi} degrees")
             else:
@@ -119,11 +122,10 @@ class VisualOdom(Node):
 
 
     def calculate_coordinate(self, u, v, z):
-        z = z
         y = z * (v-CV)/F
         x = z * (u-CU)/F
 
-        p3d_vector = np.array([x, y, z])/1000.0
+        p3d_vector = np.array([x, y, z])
         return p3d_vector
 
 

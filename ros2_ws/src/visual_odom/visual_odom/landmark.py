@@ -23,6 +23,7 @@ class landmark:
 """
 def kabash(P_i: np.ndarray, Q_i: np.ndarray):
 
+    
     print("P_i: ", P_i)
     print("Q_i: ", Q_i)
 
@@ -43,9 +44,8 @@ def kabash(P_i: np.ndarray, Q_i: np.ndarray):
     theta = atan2(first_sum, sec_sum)
     
     #Hier steckt noch ein Fehler drin da die rotation um z in world hier nicht passend ist 
-    R = np.array([[ np.cos(theta), -np.sin(theta), 0],
-                  [ np.sin(theta),  np.cos(theta), 0],
-                  [ 0, 0, 1]])
+    R = np.array([[ np.cos(theta), -np.sin(theta)],
+                  [ np.sin(theta),  np.cos(theta)]])
     
     t = m_P - R @ m_Q
 
