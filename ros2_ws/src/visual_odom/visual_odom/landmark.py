@@ -50,3 +50,4 @@ def kabash(P_i: np.ndarray, Q_i: np.ndarray):
     t = m_P - R @ m_Q
 
     return R, t, theta
+
