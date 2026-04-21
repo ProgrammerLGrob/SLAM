@@ -1,23 +1,17 @@
 visual_odom:
   ros__parameters:
-    # Frame and sensor configuration
-    kinect_frame_id: "kinect_depth"
-
     # Depth filtering parameters
     min_depth: 400        # Minimum depth in mm
     max_depth: 5000       # Maximum depth in mm
 
-    # Feature detection parameters
-    descriptor_tolerance: 50    # Tolerance for descriptor matching
-
     # RANSAC parameters
     ransac:
-      evaluation_tolerance: 45    # Tolerance for inlier evaluation in mm
-      iterations: 900             # Number of RANSAC iterations
-      sample_size: 2              # Minimum number of samples for robust estimation
+      evaluation_tolerance: 50    # Tolerance for inlier evaluation in mm
+      iterations: 1000             # Number of RANSAC iterations
+      sample_size: 3              # Minimum number of samples for robust estimation
     
     # Temporal parameters
-    waiting_frames: 2             # Number of frames to wait before processing
+    waiting_frames: 3             # Number of frames to wait before processing
 
     # Camera intrinsic parameters
     camera:
@@ -25,8 +19,7 @@ visual_odom:
       principal_point_u: 318.525  # Principal point u coordinate
       principal_point_v: 241.181  # Principal point v coordinate
 
-    # Synchronization parameters
-    rgb_depth_sync_tolerance_sec: 0.05  # RGB/Depth synchronization tolerance in seconds
-
     # Rosbag configuration
-    rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
+    rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_3_bag/pure_rotation_3_bag/rosbag2_2026_03_31-12_04_52_0.mcap"
+    #rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
+    #rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap"

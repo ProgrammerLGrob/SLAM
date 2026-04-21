@@ -24,11 +24,16 @@ def generate_launch_description():
     )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '-l'],
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock'],
+        output='screen'
+    )
+    rviz2 = ExecuteProcess(
+        cmd=['rviz2'],
         output='screen'
     )
 
     return LaunchDescription([
         visual_odom_node,
         rosbag_play_normal,
+        rviz2
     ])
