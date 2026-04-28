@@ -24,7 +24,7 @@ def generate_launch_description():
     )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock'],
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics','/serf01/nav_rgbd_1/rgb/image_raw','/serf01/nav_rgbd_1/depth/image_raw','/tf_static'],
         output='screen'
     )
     rviz2 = ExecuteProcess(

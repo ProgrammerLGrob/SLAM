@@ -1,20 +1,37 @@
-from dataclasses import dataclass, field
 from math import atan2
 import numpy as np
 
+F = 526.61
+CU = 318.525
+CV = 241.181
 
-@dataclass
-class landmark:
-    #pixel coordinates
-    u: int
-    v: int
 
-    #depth value in mm
-    z: int
-    des: np.ndarray 
 
-    #x,y,z in world coordinates
-    coordinates: np.ndarray = field(default_factory=lambda: np.zeros((3, 1), dtype=int))
+class Landmark:
+    """Landmark class for storing features detected in images."""
+    
+    def __init__(self, u: int, v: int, z: int, des: np.ndarray, age: int = 0, color: int = 0) -> None:
+        """
+        Initialize a Landmark.
+        """
+        self.u = u
+        self.v = v
+        self.z = z
+        self.des = des
+        self.age = age
+        self.color = color
+        self.world_coordinates = np.zeros((3, 1), dtype=int)
+        self.kinect_coordinates = self.calculate_coordinate(u, v, z)
+    
+    def calculate_coordinate(self, u: int, v: int, z: float) -> np.ndarray:
+        """
+        Calculate 3D coordinates from pixel and depth values.
+        """
+        y = z * (v - CV) / F
+        x = z * (u - CU) / F
+        return np.array([x, y, z])/1000.0
+
+    
 
 
 """
