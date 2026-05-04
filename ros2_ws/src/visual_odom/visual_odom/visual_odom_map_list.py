@@ -55,7 +55,7 @@ class VisualOdomMap(list):
                 b, g, r = frame_rgb[v, u]
                 rgb = (int(r) << 16) | (int(g) << 8) | int(b)
                 self.add_landmark(Landmark(u=u, v=v, z=depth_value, des=des, color=rgb))
-                
+            
 
     def add_landmark(self, landmark: Landmark) -> Landmark:
         with self._lock:
@@ -64,11 +64,12 @@ class VisualOdomMap(list):
     
     def append(self, landmark: Landmark) -> None:
         self.add_landmark(landmark)
+    
 
     def extend(self, landmarks: Iterable[Landmark]) -> None:
         for landmark in landmarks:
             self.add_landmark(landmark)
-
+    ##vielleicht nicht notwendig
     def insert_landmark(self, index: int, landmark: Landmark) -> None:
         with self._lock:
             super().insert(index, landmark)
