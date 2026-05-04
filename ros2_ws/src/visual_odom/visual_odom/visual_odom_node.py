@@ -8,6 +8,8 @@ VISUAL_ODOM_FRAME_ID = "odom_visual"
 POINTCLOUD_FRAME_ID = "points_3d"
 KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
 
+VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
+
 MIN_DEPTH = 400
 MAX_DEPTH = 5000
 
@@ -43,6 +45,7 @@ from cv_bridge import CvBridge
 import cv2
 import numpy as np
 from visual_odom.landmark import kabsch
+from nav_msgs.msg import Odometry
 
 class VisualOdom(Node):
     def __init__(self):
@@ -58,6 +61,8 @@ class VisualOdom(Node):
         self.rgb_depth_sync_tolerance_sec: float = float(self.declare_parameter('rgb_depth_sync_tolerance_sec', RGB_DEPTH_SYNC_TOLERANCE_SEC).value)  # type: ignore
         self.waiting_frames: int = int(self.declare_parameter('waiting_frames', WAITING_FRAMES).value)  # type: ignore
 
+        self.topic_visual_odometry_msg: str = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value  # type: ignore
+
         self.bridge = CvBridge()
         # Initiate ORB detector
         self.orb = cv2.ORB_create()
@@ -67,6 +72,7 @@ class VisualOdom(Node):
 
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
+        self.publisher_visual_odometry_msg = self.create_publisher(Odometry, self.topic_visual_odometry_msg, 10)
 
 
         self.tf_broadcaster = TransformBroadcaster(self)
@@ -158,6 +164,8 @@ class VisualOdom(Node):
         odom_to_base_footprint, self.P = calculate_tf(ransac_result[0], self.theta, rgb_stamp, self.P, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
         self.tf_broadcaster.sendTransform(odom_to_base_footprint)
+
+        self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.P, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
         self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180/pi}")
         self.get_logger().info(f"RANSAC Result: Translation  in mm {ransac_result[0]}")
@@ -288,10 +296,10 @@ class VisualOdom(Node):
 
         for pix_u in range(frame_depth.shape[1]//2):
             for pix_v in range(frame_depth.shape[0]//2):
-                depth_value = frame_depth[pix_v, pix_u]
+                depth_value = frame_depth[pix_v*2, pix_u*2]
                 if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
                     x,y,z =self.calculate_coordinate(pix_u*2, pix_v*2, depth_value)/1000.0
-                    b, g, r = frame_rgb[pix_v, pix_u]
+                    b, g, r = frame_rgb[pix_v*2, pix_u*2]
                     rgb = (int(r) << 16) | (int(g) << 8) | int(b)
 
                     calculated_point_coordinates.append((x, y, z, rgb))
@@ -324,7 +332,28 @@ class VisualOdom(Node):
         publisher.publish(msg)
         self.get_logger().info(f"PointCloud mit {len(points_with_rgb)} Punkten gesendet!")
 
-    
+    def publish_odometry_msg(self, publisher, P, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
+        msg = Odometry()
+
+        # Header
+        msg.header.stamp = timestamp
+        msg.header.frame_id = parent_frame_id
+        msg.child_frame_id = child_frame_id
+
+        # Pose
+        msg.pose.pose.position.x = P[0]
+        msg.pose.pose.position.y = P[1]
+        msg.pose.pose.position.z = 0.0
+
+        euler = Rotation.from_euler('z', float(theta))
+        quat = euler.as_quat(canonical=True)
+        msg.pose.pose.orientation.x = quat[0]
+        msg.pose.pose.orientation.y = quat[1]
+        msg.pose.pose.orientation.z = quat[2]
+        msg.pose.pose.orientation.w = quat[3]
+
+        publisher.publish(msg)
+
     def calculate_coordinate(self, u: int, v: int, z: float) -> NDArray:
         y = z * (v - CV) / F
         x = z * (u - CU) / F
@@ -334,18 +363,23 @@ class VisualOdom(Node):
     
 def calculate_tf(translation, theta: float, timestamp, P_old: NDArray, parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
     
-    translation = np.array(translation) /1000.0 #Convert from mm to m
+    translation = np.array(translation) 
+    temp_trans = translation[0]
+    translation[0] = translation[1]
+    translation[1] = -temp_trans
+
     t = TransformStamped()
     t.header.stamp = timestamp
     t.header.frame_id = parent_frame_id
     t.child_frame_id = child_frame_id
 
-    R = np.array([[ np.cos(theta), np.sin(theta)],
-                    [ -np.sin(theta),  np.cos(theta)]])
+    R = np.array([[ np.cos(theta), -np.sin(theta)],
+                    [ np.sin(theta),  np.cos(theta)]])
 
-    delta_P_o = R @ translation 
+    delta_P_o = (R @ translation) #not sure which one is correct
+    #delta_P_o = (R @ translation.T ).T
 
-    P_new = P_old + delta_P_o
+    P_new = P_old + delta_P_o/1000.0 
     
     t.transform.translation.x = P_new[0]
     t.transform.translation.y = P_new[1]
