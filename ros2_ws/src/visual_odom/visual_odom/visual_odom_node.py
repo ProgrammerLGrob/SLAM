@@ -286,11 +286,11 @@ class VisualOdom(Node):
     def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
         calculated_point_coordinates = []
 
-        for pix_u in range(frame_depth.shape[1]):
-            for pix_v in range(frame_depth.shape[0]):
+        for pix_u in range(frame_depth.shape[1]//2):
+            for pix_v in range(frame_depth.shape[0]//2):
                 depth_value = frame_depth[pix_v, pix_u]
                 if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
-                    x,y,z =self.calculate_coordinate(pix_u, pix_v, depth_value)/1000.0
+                    x,y,z =self.calculate_coordinate(pix_u*2, pix_v*2, depth_value)/1000.0
                     b, g, r = frame_rgb[pix_v, pix_u]
                     rgb = (int(r) << 16) | (int(g) << 8) | int(b)
 
