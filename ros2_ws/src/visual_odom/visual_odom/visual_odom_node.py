@@ -146,8 +146,9 @@ class VisualOdom(Node):
         else:
             #create BFMatcher object
             bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-            self.pos_kinect_depth = base_link_to_kinect_depth(self.tf_buffer, self.pos_base, rgb_stamp)
-            visible_landmarks = self.visual_map.get_visible_landmarks(self.pos_base, self.theta)
+            # Get camera position in odom frame by transforming kinect origin (0,0,0) to odom
+            camera_pos_odom = kinect_depth_to_odom(self.tf_buffer, Coordinate(0.0, 0.0, 0.0))
+            visible_landmarks = self.visual_map.get_visible_landmarks(camera_pos_odom, self.theta)
 
             # Match descriptors.
             matches = bf.match(visible_landmarks.get_descriptors(), self.des)
@@ -156,7 +157,7 @@ class VisualOdom(Node):
                 self.get_logger().warn(f"Too few matches for RANSAC: {len(matches)} < {self.ransac_sample_size}")
                 return
         
-            ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_kps(), self.valid_kp, visible_landmarks.get_depth(), valid_kp_depth, rgb_stamp)
+            ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks, self.valid_kp, valid_kp_depth, self.tf_buffer)
             self.theta += normalize_angle(ransac_result[1])
             self.theta = normalize_angle(self.theta)
 
@@ -174,17 +175,23 @@ class VisualOdom(Node):
             self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
 
             #Add kps as landmarks to map
-            inlier_index = ransac_result[2]
-            self.visual_map.add_landmarks_from_kps(self.valid_kp[inlier_index], self.des[inlier_index], self.frame_rgb, self.frame_depth, rgb_stamp, self.tf_buffer)
+            #its not working only with the inliers
+            #inlier_index = ransac_result[2]
+            #inlier_kps = [self.valid_kp[i] for i in inlier_index]
+            #inlier_des = [self.des[i] for i in inlier_index]
+            #self.visual_map.add_landmarks_from_kps(inlier_kps, inlier_des, self.frame_rgb, self.frame_depth, rgb_stamp, self.tf_buffer)
+            self.visual_map.add_landmarks_from_kps(self.valid_kp, self.des, self.frame_rgb, self.frame_depth, rgb_stamp, self.tf_buffer)
+
 
             self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
             self.visual_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
         
-            self.frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, self.valid_kp[inlier_index], None, color=(0,255,0), flags=0)
+            self.frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, self.valid_kp, None, color=(0,255,0), flags=0)
+            #self.frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, inlier_kps, None, color=(0,255,0), flags=0)
             cv2.imshow("second RGB Image", self.frame_rgb_drawn)
             cv2.waitKey(1)
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks: VisualOdomMap, valid_kps: List[cv2.KeyPoint], valid_kp_depth: List[float], timestamp: Time) -> Tuple[NDArray, float, List[cv2.KeyPoint]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks: VisualOdomMap, valid_kps: List[cv2.KeyPoint], valid_kp_depth: List[float], buffer: tf2_ros.Buffer) -> Tuple[NDArray, float, List[cv2.KeyPoint]]:
         P = []
         Q = []
 
@@ -194,8 +201,8 @@ class VisualOdom(Node):
         best_theta = 0
 
         for m in range(len(matches)):            
-            coor = odom_to_kinect_depth(landmarks[matches[m].queryIdx].odom_coordinates, timestamp)
-            P.append([coor[0], coor[2]])
+            coor = odom_to_kinect_depth(buffer, landmarks[matches[m].queryIdx].odom_coordinates)
+            P.append([coor.x, coor.z])
             
             keypoint_frame = valid_kps[matches[m].trainIdx].pt
 
@@ -218,8 +225,8 @@ class VisualOdom(Node):
 
         P_inlier = []
         Q_inlier = []
-
         
+        index_kp_Q_inlier: List[int] = []
 
         iteration = len(matches)/100 * self.ransac_iteration # type: ignore #
         iteration = int(iteration)
@@ -242,7 +249,6 @@ class VisualOdom(Node):
             if inlier_count > best_inlier_count:
                 P_inlier = []
                 Q_inlier = []
-                index_kp_Q_inlier: List[int] = []
                 best_inlier_count = inlier_count
                 for i in range(len(e)):
                     if e[i] < tolerance:
@@ -256,6 +262,8 @@ class VisualOdom(Node):
 
         self.get_logger().info(f"RANSAC: Best inlier count: {best_inlier_count} / {len(P)}")
         
+        index_kp_Q_inlier = list(set(index_kp_Q_inlier))
+
         return best_t, best_theta, index_kp_Q_inlier
     
     def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
@@ -303,6 +311,31 @@ class VisualOdom(Node):
 
         publisher.publish(msg)
 
+    def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
+        from std_msgs.msg import Header
+        h = Header()
+        h.stamp = time
+        h.frame_id = frame_id
+
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1),
+        ]
+
+
+        msg = point_cloud2.create_cloud(
+            header=h,
+            fields=fields,
+            points=points_with_rgb
+        )
+
+        
+        publisher.publish(msg)
+        self.get_logger().info(f"PointCloud with {len(points_with_rgb)} points sent!")
+ 
+
     def _stamp_to_sec(self, stamp) -> float:
         return stamp.sec + stamp.nanosec * 1e-9
 
@@ -342,30 +375,7 @@ def calculate_tf(trans, theta: float, timestamp, P_old: NDArray, parent_frame_id
 
     return t, P_new
 
-def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
-        from std_msgs.msg import Header
-        h = Header()
-        h.stamp = time
-        h.frame_id = frame_id
 
-        fields = [
-            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
-            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
-            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
-            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1),
-        ]
-
-
-        msg = point_cloud2.create_cloud(
-            header=h,
-            fields=fields,
-            points=points_with_rgb
-        )
-
-        
-        publisher.publish(msg)
-        self.get_logger().info(f"PointCloud with {len(points_with_rgb)} points sent!")
- 
     
 def main():
     rclpy.init()
@@ -373,3 +383,4 @@ def main():
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
+    

@@ -10,9 +10,10 @@ from visual_odom.landmark import Coordinate
 
 
 
-def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate, timestamp: Time) -> Coordinate:
+def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate) -> Coordinate:
     """
-    Transform a point from the Kinect frame into the odom frame using the current TF.
+    Transform a point from the Kinect frame into the odom frame using the LATEST available TF.
+    Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
     """
     point_vector = np.array([
         kinect_point.x,
@@ -24,7 +25,7 @@ def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate, timestamp: Time) -
         transform = tf_buffer.lookup_transform(
             VISUAL_ODOM_FRAME_ID,
             KINECT_FRAME_ID,
-            timestamp,
+            Time(),  # Use latest available transform
         )
     except Exception as e:
         rclpy.logging.get_logger("tf_methods").error(f"Error in base_link_to_kinect_depth: {e}")
@@ -51,9 +52,10 @@ def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate, timestamp: Time) -
         float(transformed_point[2]),
     )
 
-def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time) -> Coordinate:
+def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time = None) -> Coordinate:
     """
     Transform a point from the base_link frame into the Kinect frame using the latest available TF.
+    Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
     """
     if isinstance(point, Coordinate):
         point_vector = np.array([point.x, point.y, point.z], dtype=float)
@@ -64,7 +66,7 @@ def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp:
         transform = tf_buffer.lookup_transform(
             KINECT_FRAME_ID,
             BASE_LINK_FRAME_ID,
-            timestamp,
+            Time(),  # Use latest available transform
         )
     except Exception as e:
         rclpy.logging.get_logger("tf_methods").error(f"Error in base_link_to_kinect_depth: {e}")
@@ -91,9 +93,10 @@ def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp:
         float(transformed_point[2]),
     )
 
-def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time) -> Coordinate:
+def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time = None) -> Coordinate:
     """
     Transform a point from the odom frame into the Kinect frame using the latest available TF.
+    Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
     """
     if isinstance(point, Coordinate):
         point_vector = np.array([point.x, point.y, point.z], dtype=float)
@@ -104,7 +107,7 @@ def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time
         transform = tf_buffer.lookup_transform(
             KINECT_FRAME_ID,
             VISUAL_ODOM_FRAME_ID,
-            timestamp,
+            Time(),  # Use latest available transform
         )
     except Exception as e:
         rclpy.logging.get_logger("tf_methods").error(f"Error in odom_to_kinect_depth: {e}")

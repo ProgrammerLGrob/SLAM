@@ -76,7 +76,7 @@ class VisualOdomMap(list):
     
 
     def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, frame_depth: np.ndarray, timestamp: Time, tf_buffer: tf2_ros.Buffer) -> None:
-        for p in kps:
+        for i, p in enumerate(kps):
             u, v = p.pt
             u = int(round(u))
             v = int(round(v))
@@ -84,20 +84,27 @@ class VisualOdomMap(list):
             depth_value = frame_depth[v, u]
             b, g, r = frame_rgb[v, u]
             rgb = (int(r) << 16) | (int(g) << 8) | int(b)
-            landmark = Landmark(u=u, v=v, z=depth_value, kp=p, des=des, color=rgb)
-            odom_coor = kinect_depth_to_odom(tf_buffer, landmark.get_kinect_coordinates(), timestamp)
-            if odom_coor is not None:
-                landmark.set_odom_coordinates(odom_coor)
+            # Use only the i-th descriptor for this specific landmark
+            landmark = Landmark(u=u, v=v, z=depth_value, kp=p, des=des[i], color=rgb)
+            odom_coor = kinect_depth_to_odom(tf_buffer, landmark.get_kinect_coordinates())
+
+            landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
 
-    def get_visible_landmarks(self, pos, theta) -> VisualOdomMap[Landmark]:
-        visible_landmarks = []
+    def get_visible_landmarks(self, camera_pos_odom, theta) -> VisualOdomMap:
+        visible_landmarks = VisualOdomMap()
+
+        if isinstance(camera_pos_odom, Coordinate):
+            point = np.array([camera_pos_odom.x, camera_pos_odom.y, camera_pos_odom.z], dtype=float)
+        else:
+            point = np.array(camera_pos_odom, dtype=float)
 
         for l in self:
             land_pos = l.get_odom_coordinates()
             
+            # Both camera and landmark are in odom_visual frame - direct comparison
             l_pos = np.array([land_pos.x, land_pos.y, land_pos.z])
-            delta = l_pos - pos
+            delta = l_pos - point
 
             distance = np.linalg.norm(delta)
 
@@ -172,9 +179,7 @@ class VisualOdomMap(list):
 
         points_with_rgb = []
         for l in self:
-            x, y, z = l.odom_coordinates.flatten()
-            rgb = l.color
-            points_with_rgb.append((x, y, z, rgb))
+            points_with_rgb.append(( l.get_odom_coordinates().x, l.get_odom_coordinates().y, l.get_odom_coordinates().z, l.get_color()))
 
         msg = point_cloud2.create_cloud(
             header=h,
@@ -183,4 +188,4 @@ class VisualOdomMap(list):
         )
 
         publisher.publish(msg)
-        self.get_logger().info(f"PointCloud with {len(points_with_rgb)} points sent!")
+        rclpy.logging.get_logger(__name__).info(f"PointCloud with {len(points_with_rgb)} points sent!")
