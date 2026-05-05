@@ -1,32 +1,9 @@
 #!/usr/bin/env python3
 
-KINECT_FRAME_ID = "kinect_depth"
-BASE_LINK_FRAME_ID = "base_link"
-VISUAL_ODOM_FRAME_ID = "odom_visual"
-
-
-POINTCLOUD_FRAME_ID = "points_3d"
-KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
-
-VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
-
-MIN_DEPTH = 400
-MAX_DEPTH = 5000
-
-DESCRIPTOR_TOLERANCE = 50
-RANSAC_EVALUATION_TOLERANCE = 45 #in mm
-RANSAC_ITERATION = 1000
-RANSAC_SAMPLE_SIZE = 3
-RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
-
-WAITING_FRAMES = 2
-
-F = 526.61
-CU = 318.525
-CV = 241.181
-
+from visual_odom.visual_odom_map import VisualOdomMap
+from visual_odom.constants import *
 import tf2_ros 
-from tf2_ros import TransformBroadcaster
+from tf2_ros import Buffer, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import TransformStamped
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
@@ -44,7 +21,8 @@ from sensor_msgs_py import point_cloud2
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-from visual_odom.landmark import kabsch
+from visual_odom.landmark import kabsch, Coordinate
+from visual_odom.tf_methods import *
 from nav_msgs.msg import Odometry
 
 class VisualOdom(Node):
@@ -52,8 +30,6 @@ class VisualOdom(Node):
         super().__init__('visual_odom')
         
         # Load parameters from config file with explicit type casting
-        self.min_depth: int = int(self.declare_parameter('min_depth', MIN_DEPTH).value)  # type: ignore
-        self.max_depth: int = int(self.declare_parameter('max_depth', MAX_DEPTH).value)  # type: ignore
         self.descriptor_tolerance: float = float(self.declare_parameter('descriptor_tolerance', DESCRIPTOR_TOLERANCE).value)  # type: ignore
         self.ransac_evaluation_tolerance: float = float(self.declare_parameter('ransac.evaluation_tolerance', RANSAC_EVALUATION_TOLERANCE).value)  # type: ignore
         self.ransac_iteration: int = int(self.declare_parameter('ransac.iterations', RANSAC_ITERATION).value)  # type: ignore
@@ -76,8 +52,13 @@ class VisualOdom(Node):
 
 
         self.tf_broadcaster = TransformBroadcaster(self)
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
 
         self.landmarks = []
+
+        self.visual_map = VisualOdomMap()
+        
         self.frame_rgb_first = None
         self.frame_rgb_sec = None
         self.frame_depth_first = None
@@ -87,24 +68,40 @@ class VisualOdom(Node):
         self.frame_rgb = None
         self.counter = 0
         self.theta = 0
-        self.P = np.array([0, 0]) #Position in odom frame
+        self.pos_base = np.array([0.0, 0.0, 0.0]) #Position in odom frame
+
+        self.get_logger().info(f"Start")
 
         
 
+
+    def listener_depth_callback(self,msg):
+        self.frame_depth=self.bridge.imgmsg_to_cv2(msg,'passthrough')
+        self.frame_depth_stamp = msg.header.stamp
+        odom_to_base_tf, self.pos_base = calculate_tf([0.0, 0.0], self.theta, self.frame_depth_stamp, self.pos_base, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
+        self.tf_broadcaster.sendTransform(odom_to_base_tf)
+        
+
     def listener_rgb_callback(self,msg):
+        # Convert ROS Image message to OpenCV format
         self.frame_rgb=self.bridge.imgmsg_to_cv2(msg,'bgr8')
+        # Detect keypoints in the RGB image using ORB
         self.kp = self.orb.detect(self.frame_rgb, None)
 
+
+        # Ensure that depth data is available and synchronized with the RGB frame before proceeding
         if self.frame_depth is None or self.frame_depth_stamp is None:
             return  
 
         rgb_stamp = msg.header.stamp
         if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > self.rgb_depth_sync_tolerance_sec:
-            self.get_logger().debug("RGB/Depth nicht ausreichend synchron - Frame wird uebersprungen.")
+            self.get_logger().debug("RGB/Depth not synchronized - Frame skipped.")
             return
+        
 
         # Evaluation of the detected keypoints: Only keypoints with valid depth values are kept for further processing
         valid_kp = []
+        valid_kp_depth = []
         h, w = self.frame_depth.shape[:2]
         calculated_keypoint_coordinates = []
 
@@ -118,88 +115,76 @@ class VisualOdom(Node):
 
             depth_value = self.frame_depth[v, u]
 
-            if depth_value > self.min_depth and depth_value < self.max_depth:
+            if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
                 valid_kp.append(p) 
+                valid_kp_depth.append(depth_value)
+
                 rgb = (int(0) << 16) | (int(255) << 8) | int(0)
 
                 x, y, z = self.calculate_coordinate(u, v, depth_value)/1000.0
                 calculated_keypoint_coordinates.append((x, y, z, rgb))
 
         if len(valid_kp) < self.ransac_sample_size: # type: ignore
-            self.get_logger().warn("Zu wenige valide Keypoints fuer robuste Schaetzung.")
+            self.get_logger().warn(f"Too few valid keypoints for RANSAC: {len(valid_kp)} < {self.ransac_sample_size}")
             return
-
-        if self.frame_rgb_first is None:
-            self.frame_rgb_first = self.frame_rgb
-            self.frame_depth_first = self.frame_depth
-            self.kp_first,self.des_first = self.orb.compute(self.frame_rgb, valid_kp)
-            self.get_logger().info(f"Start")
-            return
+        
+        self.valid_kp, self.des = self.orb.compute(self.frame_rgb, valid_kp)
 
         self.counter += 1
 
-        if self.frame_rgb_sec is None and self.counter > self.waiting_frames: # type: ignore
+        if self.counter > self.waiting_frames: # type: ignore
             self.counter = 0
-            self.frame_rgb_sec = self.frame_rgb
-            self.frame_depth_sec = self.frame_depth
-            self.kp_sec,self.des_sec = self.orb.compute(self.frame_rgb, valid_kp)
         else:
             return
 
         
-        #create BFMatcher object
-        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-        # Match descriptors.
-        matches = bf.match(self.des_first,self.des_sec)
-
-        if len(matches) < self.ransac_sample_size: # type: ignore
-            self.get_logger().warn(f"Zu wenige Matches fuer RANSAC: {len(matches)}")
+        if(len(self.visual_map) == 0):
+            self.get_logger().info(f"Visual Map is empty")
+            self.visual_map.add_landmarks_from_kps(self.valid_kp, self.des, self.frame_rgb, self.frame_depth, rgb_stamp, self.tf_buffer)
             return
-
-        ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, self.kp_first, self.kp_sec, self.frame_depth_first, self.frame_depth_sec)
-
-        self.theta += normalize_angle(ransac_result[1])
-        self.theta = normalize_angle(self.theta)
-
-        odom_to_base_footprint, self.P = calculate_tf(ransac_result[0], self.theta, rgb_stamp, self.P, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
-
-        self.tf_broadcaster.sendTransform(odom_to_base_footprint)
-
-        self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.P, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
-
-        self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180/pi}")
-        self.get_logger().info(f"RANSAC Result: Translation  in mm {ransac_result[0]}")
-        self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
-        
-        #Important for iteration
-        self.frame_rgb_first = self.frame_rgb_sec
-        self.frame_depth_first = self.frame_depth_sec       
-        self.kp_first,self.des_first = self.kp_sec,self.des_sec
-
-        kp = ransac_result[2] # type: ignore
-
-        self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
-        self.publish_pointcloud(calculated_keypoint_coordinates, self.publisher_keypoints_3d, rgb_stamp, KINECT_FRAME_ID)
-        
-        self.frame_rgb_sec = cv2.drawKeypoints(self.frame_rgb_sec, kp, None, color=(0,255,0), flags=0)
-        cv2.imshow("second RGB Image", self.frame_rgb_sec)
-        cv2.waitKey(1)
-
-        self.frame_rgb_sec = None
-        self.frame_depth_sec = None
             
+        else:
+            #create BFMatcher object
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+            self.pos_kinect_depth = base_link_to_kinect_depth(self.tf_buffer, self.pos_base, rgb_stamp)
+            visible_landmarks = self.visual_map.get_visible_landmarks(self.pos_base, self.theta)
 
-    def listener_depth_callback(self,msg):
-        self.frame_depth=self.bridge.imgmsg_to_cv2(msg,'passthrough')
-        self.frame_depth_stamp = msg.header.stamp
+            # Match descriptors.
+            matches = bf.match(visible_landmarks.get_descriptors(), self.des)
 
-         
+            if len(matches) < self.ransac_sample_size: # type: ignore
+                self.get_logger().warn(f"Too few matches for RANSAC: {len(matches)} < {self.ransac_sample_size}")
+                return
+        
+            ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_kps(), self.valid_kp, visible_landmarks.get_depth(), valid_kp_depth, rgb_stamp)
+            self.theta += normalize_angle(ransac_result[1])
+            self.theta = normalize_angle(self.theta)
 
-    def _stamp_to_sec(self, stamp) -> float:
-        return stamp.sec + stamp.nanosec * 1e-9
 
+            odom_to_base_tf, self.pos_base = calculate_tf(ransac_result[0], self.theta, rgb_stamp, self.pos_base, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], kp_first: List[cv2.KeyPoint], kp_sec: List[cv2.KeyPoint], frame_depth_first, frame_depth_sec) -> Tuple[NDArray, float, List[cv2.KeyPoint]]:
+            self.tf_broadcaster.sendTransform(odom_to_base_tf)
+            
+            #Publish odometry message for visualization in RViz
+            self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.pos_base, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
+
+            #Logging for RANSAC result
+            self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180/pi}")
+            self.get_logger().info(f"RANSAC Result: Translation  in mm {ransac_result[0]}")
+            self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
+
+            #Add kps as landmarks to map
+            inlier_index = ransac_result[2]
+            self.visual_map.add_landmarks_from_kps(self.valid_kp[inlier_index], self.des[inlier_index], self.frame_rgb, self.frame_depth, rgb_stamp, self.tf_buffer)
+
+            self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
+            self.visual_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+        
+            self.frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, self.valid_kp[inlier_index], None, color=(0,255,0), flags=0)
+            cv2.imshow("second RGB Image", self.frame_rgb_drawn)
+            cv2.waitKey(1)
+
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks: VisualOdomMap, valid_kps: List[cv2.KeyPoint], valid_kp_depth: List[float], timestamp: Time) -> Tuple[NDArray, float, List[cv2.KeyPoint]]:
         P = []
         Q = []
 
@@ -208,38 +193,19 @@ class VisualOdom(Node):
         best_t = np.zeros((2,1))
         best_theta = 0
 
-        h_first, w_first = frame_depth_first.shape[:2]
-        h_sec, w_sec = frame_depth_sec.shape[:2]
-
         for m in range(len(matches)):            
-            #Matrix mit Koordinaten im kinect frame
-            keypoint_first = kp_first[matches[m].queryIdx].pt
-            keypoint_sec = kp_sec[matches[m].trainIdx].pt
-            
-            u_first, v_first = keypoint_first
-            u_first = round(u_first)
-            v_first = round(v_first)
-
-            if not (0 <= u_first < w_first and 0 <= v_first < h_first):
-                continue
-
-            z_first = frame_depth_first[v_first, u_first]
-
-            u_sec, v_sec = keypoint_sec
-            u_sec = round(u_sec)
-            v_sec = round(v_sec)
-
-            if not (0 <= u_sec < w_sec and 0 <= v_sec < h_sec):
-                continue
-
-            z_sec = frame_depth_sec[v_sec, u_sec]
-
-            if z_first <= self.min_depth or z_first >= self.max_depth or z_sec <= self.min_depth or z_sec >= self.max_depth:
-                continue
-
-            coor = self.calculate_coordinate(u_first, v_first, z_first)
+            coor = odom_to_kinect_depth(landmarks[matches[m].queryIdx].odom_coordinates, timestamp)
             P.append([coor[0], coor[2]])
-            coor = self.calculate_coordinate(u_sec, v_sec, z_sec)
+            
+            keypoint_frame = valid_kps[matches[m].trainIdx].pt
+
+            u, v = keypoint_frame
+            u = round(u)
+            v = round(v)
+
+            z = valid_kp_depth[matches[m].trainIdx]
+
+            coor = self.calculate_coordinate(u, v, z)
             Q.append([coor[0], coor[2]])
 
 
@@ -253,7 +219,7 @@ class VisualOdom(Node):
         P_inlier = []
         Q_inlier = []
 
-        draw_Q_inlier: List[cv2.KeyPoint] = []
+        
 
         iteration = len(matches)/100 * self.ransac_iteration # type: ignore #
         iteration = int(iteration)
@@ -276,10 +242,11 @@ class VisualOdom(Node):
             if inlier_count > best_inlier_count:
                 P_inlier = []
                 Q_inlier = []
+                index_kp_Q_inlier: List[int] = []
                 best_inlier_count = inlier_count
                 for i in range(len(e)):
                     if e[i] < tolerance:
-                        draw_Q_inlier.append(kp_sec[matches[i].trainIdx])
+                        index_kp_Q_inlier.append(matches[i].trainIdx)
                         P_inlier.append(P_array[i])
                         Q_inlier.append(Q_array[i])
 
@@ -287,9 +254,9 @@ class VisualOdom(Node):
         best_t = t
         best_theta = theta
 
-        self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
+        self.get_logger().info(f"RANSAC: Best inlier count: {best_inlier_count} / {len(P)}")
         
-        return best_t, best_theta, draw_Q_inlier
+        return best_t, best_theta, index_kp_Q_inlier
     
     def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
         calculated_point_coordinates = []
@@ -307,7 +274,75 @@ class VisualOdom(Node):
 
         self.publish_pointcloud(calculated_point_coordinates, publisher=self.publisher_3d, time=time, frame_id=frame_id )
     
-    def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
+    def calculate_coordinate(self, u: int, v: int, z: float) -> NDArray:
+        y = z * (v - CV) / F
+        x = z * (u - CU) / F
+
+        p3d_vector = np.array([x, y, z])
+        return p3d_vector
+    
+    def publish_odometry_msg(self, publisher, pos, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
+        msg = Odometry()
+
+        # Header
+        msg.header.stamp = timestamp
+        msg.header.frame_id = parent_frame_id
+        msg.child_frame_id = child_frame_id
+
+        # Pose
+        msg.pose.pose.position.x = pos[0]
+        msg.pose.pose.position.y = pos[1]
+        msg.pose.pose.position.z = pos[2]
+
+        euler = Rotation.from_euler('z', float(theta))
+        quat = euler.as_quat(canonical=True)
+        msg.pose.pose.orientation.x = quat[0]
+        msg.pose.pose.orientation.y = quat[1]
+        msg.pose.pose.orientation.z = quat[2]
+        msg.pose.pose.orientation.w = quat[3]
+
+        publisher.publish(msg)
+
+    def _stamp_to_sec(self, stamp) -> float:
+        return stamp.sec + stamp.nanosec * 1e-9
+
+    
+def calculate_tf(trans, theta: float, timestamp, P_old: NDArray, parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
+    
+    translation = np.zeros(3)
+    translation[0] = trans[1]
+    translation[1] = -trans[0]
+    translation[2] = 0.0
+
+    t = TransformStamped()
+    t.header.stamp = timestamp
+    t.header.frame_id = parent_frame_id
+    t.child_frame_id = child_frame_id
+
+    R = np.array([[ np.cos(theta), -np.sin(theta), 0.0],
+                    [ np.sin(theta),  np.cos(theta), 0.0],
+                    [ 0.0, 0.0, 1.0]])
+
+    delta_P_o = (R @ translation) #not sure which one is correct
+    #delta_P_o = (R @ translation.T ).T
+
+    P_new = P_old + delta_P_o/1000.0 
+    
+    t.transform.translation.x = P_new[0]
+    t.transform.translation.y = P_new[1]
+    t.transform.translation.z = P_new[2]
+
+    euler = Rotation.from_euler('z', float(theta))
+    quat = euler.as_quat(canonical=True)
+    # Cast quaternion components to Python floats
+    t.transform.rotation.x = quat[0]
+    t.transform.rotation.y = quat[1]
+    t.transform.rotation.z = quat[2]
+    t.transform.rotation.w = quat[3]
+
+    return t, P_new
+
+def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
         from std_msgs.msg import Header
         h = Header()
         h.stamp = time
@@ -328,81 +363,9 @@ class VisualOdom(Node):
         )
 
         
-
         publisher.publish(msg)
-        self.get_logger().info(f"PointCloud mit {len(points_with_rgb)} Punkten gesendet!")
-
-    def publish_odometry_msg(self, publisher, P, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
-        msg = Odometry()
-
-        # Header
-        msg.header.stamp = timestamp
-        msg.header.frame_id = parent_frame_id
-        msg.child_frame_id = child_frame_id
-
-        # Pose
-        msg.pose.pose.position.x = P[0]
-        msg.pose.pose.position.y = P[1]
-        msg.pose.pose.position.z = 0.0
-
-        euler = Rotation.from_euler('z', float(theta))
-        quat = euler.as_quat(canonical=True)
-        msg.pose.pose.orientation.x = quat[0]
-        msg.pose.pose.orientation.y = quat[1]
-        msg.pose.pose.orientation.z = quat[2]
-        msg.pose.pose.orientation.w = quat[3]
-
-        publisher.publish(msg)
-
-    def calculate_coordinate(self, u: int, v: int, z: float) -> NDArray:
-        y = z * (v - CV) / F
-        x = z * (u - CU) / F
-
-        p3d_vector = np.array([x, y, z])
-        return p3d_vector
-    
-def calculate_tf(translation, theta: float, timestamp, P_old: NDArray, parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
-    
-    translation = np.array(translation) 
-    temp_trans = translation[0]
-    translation[0] = translation[1]
-    translation[1] = -temp_trans
-
-    t = TransformStamped()
-    t.header.stamp = timestamp
-    t.header.frame_id = parent_frame_id
-    t.child_frame_id = child_frame_id
-
-    R = np.array([[ np.cos(theta), -np.sin(theta)],
-                    [ np.sin(theta),  np.cos(theta)]])
-
-    delta_P_o = (R @ translation) #not sure which one is correct
-    #delta_P_o = (R @ translation.T ).T
-
-    P_new = P_old + delta_P_o/1000.0 
-    
-    t.transform.translation.x = P_new[0]
-    t.transform.translation.y = P_new[1]
-    t.transform.translation.z = 0.0
-
-    euler = Rotation.from_euler('z', float(theta))
-    quat = euler.as_quat(canonical=True)
-    # Cast quaternion components to Python floats
-    t.transform.rotation.x = quat[0]
-    t.transform.rotation.y = quat[1]
-    t.transform.rotation.z = quat[2]
-    t.transform.rotation.w = quat[3]
-
-    return t, P_new
-
-    
-def normalize_angle(angle: float) -> float:
-    if angle > pi:
-        angle -= 2*pi
-    elif angle < -pi:
-        angle += 2*pi
-
-    return angle    
+        self.get_logger().info(f"PointCloud with {len(points_with_rgb)} points sent!")
+ 
     
 def main():
     rclpy.init()
