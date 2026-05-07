@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from visual_odom import constants
-
 import threading
 import time
 from dataclasses import dataclass, field
@@ -13,8 +11,6 @@ from sensor_msgs.msg import Image, PointCloud2, PointField
 import tf2_ros 
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from scipy.spatial.transform import Rotation
-from numpy.typing import NDArray
 from rclpy.time import Time
 
 from math import pi, atan2, cos, sin
@@ -30,15 +26,10 @@ from cv_bridge import CvBridge
 import cv2
 import numpy as np
 from visual_odom.landmark import *
-from visual_odom.landmark import Landmark
 from nav_msgs.msg import Odometry
 
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
-
-
-
-DEPTH_ERROR = 10 # in mm
 
 
 class VisualOdomMap(list):
@@ -75,56 +66,66 @@ class VisualOdomMap(list):
         return len(self)
     
 
-    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, frame_depth: np.ndarray, timestamp: Time, tf_buffer: tf2_ros.Buffer) -> None:
+    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, valid_kp_depth: np.ndarray, tf_buffer: tf2_ros.Buffer) -> None:
         for i, p in enumerate(kps):
-            u, v = p.pt
-            u = int(round(u))
-            v = int(round(v))
 
-            depth_value = frame_depth[v, u]
+            u, v = int(p.pt[0]), int(p.pt[1])
+
+            depth_value = int(valid_kp_depth[i])
+            
             b, g, r = frame_rgb[v, u]
             rgb = (int(r) << 16) | (int(g) << 8) | int(b)
             # Use only the i-th descriptor for this specific landmark
             landmark = Landmark(u=u, v=v, z=depth_value, kp=p, des=des[i], color=rgb)
             odom_coor = kinect_depth_to_odom(tf_buffer, landmark.get_kinect_coordinates())
-
+            if odom_coor is None:
+                rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
+                continue
             landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
+            
 
-    def get_visible_landmarks(self, camera_pos_odom, theta) -> VisualOdomMap:
+    def get_visible_landmarks(self, pos, theta) -> VisualOdomMap:
         visible_landmarks = VisualOdomMap()
 
-        if isinstance(camera_pos_odom, Coordinate):
-            point = np.array([camera_pos_odom.x, camera_pos_odom.y, camera_pos_odom.z], dtype=float)
-        else:
-            point = np.array(camera_pos_odom, dtype=float)
+        point = np.array(
+            [pos.x, pos.y, pos.z] if isinstance(pos, Coordinate) else pos,
+            dtype=float
+        )
 
         for l in self:
             land_pos = l.get_odom_coordinates()
-            
-            # Both camera and landmark are in odom_visual frame - direct comparison
             l_pos = np.array([land_pos.x, land_pos.y, land_pos.z])
-            delta = l_pos - point
 
+            delta = l_pos - point
+            horizontal_dist = np.linalg.norm(delta[:2])
             distance = np.linalg.norm(delta)
 
-            delta_u_angle = abs(atan2(CU, F)) # max angle in u direction
-            delta_v_angle = abs(atan2(CV, F)) # max angle in v direction
-        
-            delta_azimuth = abs(atan2(delta[1], delta[0])-theta)
-            delta_azimuth = normalize_angle(delta_azimuth)
+            azimuth = normalize_angle(atan2(delta[1], delta[0]) - theta)
+            if abs(azimuth) > MAX_AZIMUTH:
+                continue
+            
+            altitude = atan2(delta[2], horizontal_dist)
 
-            delta_altitude = abs(atan2(delta[2], np.linalg.norm(delta[:2])))
-            delta_altitude = normalize_angle(delta_altitude)
+            # Hard FOV check
+            if abs(altitude) > MAX_ALTITUDE:
+                continue
+            
+            n = abs(cos(azimuth)*cos(altitude))
+            if n == 0:
+                continue
 
-            max_range = MAX_DEPTH/(cos(delta_azimuth)* cos(delta_altitude))
-            min_range = MIN_DEPTH/(cos(delta_azimuth)* cos(delta_altitude))
+            if not (MIN_DEPTH/(n*1000) < distance < MAX_DEPTH/(n*1000)):
+                continue
 
-            if delta_azimuth < delta_u_angle and delta_altitude < delta_v_angle and distance < max_range and distance > min_range:
-                visible_landmarks.append(l)
+            visible_landmarks.append(l)
+
+        if len(visible_landmarks) < 5:
+            rclpy.logging.get_logger(__name__).info(
+                f"Only a few visible landmarks: {len(visible_landmarks)}"
+            )
 
         return visible_landmarks
-        
     
     
     def get_descriptors(self) -> np.ndarray:

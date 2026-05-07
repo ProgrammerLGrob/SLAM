@@ -20,6 +20,25 @@ class Coordinate:
     y: float
     z: float
 
+    def __add__(self, other: "Coordinate") -> "Coordinate":
+        if not isinstance(other, Coordinate):
+            return NotImplemented
+        return Coordinate(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def __sub__(self, other: "Coordinate") -> "Coordinate":
+        if not isinstance(other, Coordinate):
+            return NotImplemented
+        return Coordinate(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    def __mul__(self, factor: float) -> "Coordinate":
+        return Coordinate(self.x * factor, self.y * factor, self.z * factor)
+
+    def __rmul__(self, factor: float) -> "Coordinate":
+        return self.__mul__(factor)
+
+    def __truediv__(self, factor: float) -> "Coordinate":
+        return Coordinate(self.x / factor, self.y / factor, self.z / factor)
+
 
 class Landmark:
     """Landmark class for storing features detected in images."""
@@ -35,16 +54,17 @@ class Landmark:
         self.des = des
         self.age = age
         self.color = color
-        coor = self.calculate_coordinate(u, v, z)
-        self.kinect_coordinates = Coordinate(coor[0], coor[1], coor[2])
+        coor = self.calculate_coordinate(u, v, z) # in mm
+        self.kinect_coordinates = Coordinate(coor[0], coor[1], coor[2]) # in mm
         self.odom_coordinates = odom_coordinates
 
     def calculate_coordinate(self, u: int, v: int, z: float) -> np.ndarray:
         """
-        Calculate 3D coordinates from pixel and depth values.
+        Calculate 3D coordinates in kinect frame from pixel and depth values.
         """
-        y = z * (v - CV) / F
         x = z * (u - CU) / F
+        y = z * (v - CV) / F
+        z = z
         return np.array([x, y, z])
     
     def get_descriptor(self) -> np.ndarray:
@@ -131,9 +151,6 @@ def kabsch(P_i: np.ndarray, Q_i: np.ndarray):
         sec_sum = np.sum(Q_i_centered[:,0]*P_i_centered[:,0] + Q_i_centered[:,1]*P_i_centered[:,1])
 
     theta = atan2(first_sum, sec_sum)
-    if (abs(theta) > 20*np.pi/180):
-        theta = 0
-    
     
     R = np.array([[ np.cos(theta), -np.sin(theta)],
                   [ np.sin(theta),  np.cos(theta)]])

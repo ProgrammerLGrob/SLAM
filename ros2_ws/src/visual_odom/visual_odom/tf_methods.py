@@ -15,11 +15,12 @@ def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate) -> Coordinate:
     Transform a point from the Kinect frame into the odom frame using the LATEST available TF.
     Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
     """
+    # Kinect coordinates are stored in millimeters; TF uses meters.
     point_vector = np.array([
         kinect_point.x,
         kinect_point.y,
         kinect_point.z,
-    ], dtype=float)
+    ], dtype=float) / 1000.0
 
     try:
         transform = tf_buffer.lookup_transform(
@@ -52,7 +53,7 @@ def kinect_depth_to_odom(tf_buffer, kinect_point: Coordinate) -> Coordinate:
         float(transformed_point[2]),
     )
 
-def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time = None) -> Coordinate:
+def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray) -> Coordinate:
     """
     Transform a point from the base_link frame into the Kinect frame using the latest available TF.
     Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
@@ -87,13 +88,16 @@ def base_link_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp:
         translation.z,
     ])
 
+    # Return Kinect coordinates in millimeters.
+    transformed_point *= 1000.0
+
     return Coordinate(
         float(transformed_point[0]),
         float(transformed_point[1]),
         float(transformed_point[2]),
     )
 
-def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time = None) -> Coordinate:
+def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray) -> Coordinate:
     """
     Transform a point from the odom frame into the Kinect frame using the latest available TF.
     Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
@@ -128,6 +132,59 @@ def odom_to_kinect_depth(tf_buffer, point: Coordinate | NDArray, timestamp: Time
         translation.z,
     ])
 
+    # Return Kinect coordinates in millimeters.
+    transformed_point *= 1000.0
+
+    return Coordinate(
+        float(transformed_point[0]),
+        float(transformed_point[1]),
+        float(transformed_point[2]),
+    )
+
+def kinect_depth_to_base_link(tf_buffer, kinect_point: Coordinate | NDArray) -> Coordinate:
+    """
+    Transform a point from the Kinect frame into the base_link frame using the latest available TF.
+    Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
+    
+    Input Kinect coordinates are expected in millimeters.
+    Returns base_link coordinates in meters.
+    """
+    # Convert Kinect coordinates from millimeters to meters for TF
+    if isinstance(kinect_point, Coordinate):
+        point_vector = np.array([
+            kinect_point.x,
+            kinect_point.y,
+            kinect_point.z,
+        ], dtype=float) / 1000.0
+    else:
+        point_vector = np.array(kinect_point, dtype=float) / 1000.0
+
+    try:
+        transform = tf_buffer.lookup_transform(
+            BASE_LINK_FRAME_ID,
+            KINECT_FRAME_ID,
+            Time(),  # Use latest available transform
+        )
+    except Exception as e:
+        rclpy.logging.get_logger("tf_methods").error(f"Error in kinect_depth_to_base_link: {e}")
+        return None
+
+    translation = transform.transform.translation
+    rotation = transform.transform.rotation
+    rotation_matrix = Rotation.from_quat([
+        rotation.x,
+        rotation.y,
+        rotation.z,
+        rotation.w,
+    ])
+
+    transformed_point = rotation_matrix.apply(point_vector) + np.array([
+        translation.x,
+        translation.y,
+        translation.z,
+    ])
+
+    # Return base_link coordinates in meters.
     return Coordinate(
         float(transformed_point[0]),
         float(transformed_point[1]),
