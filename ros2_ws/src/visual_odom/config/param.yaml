@@ -2,16 +2,16 @@ visual_odom:
   ros__parameters:
     # Depth filtering parameters
     min_depth: 400        # Minimum depth in mm
-    max_depth: 4500       # Maximum depth in mm
+    max_depth: 5000       # Maximum depth in mm
 
     # RANSAC parameters
     ransac:
-      evaluation_tolerance: 0.045    # Tolerance for inlier evaluation in m
-      iterations: 300             # Number of RANSAC iterations
+      evaluation_tolerance: 50    # Tolerance for inlier evaluation in mm
+      iterations: 1000             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
     
     # Temporal parameters
-    waiting_frames: 0             # Number of frames to wait before processing
+    waiting_frames: 3             # Number of frames to wait before processing
 
     # Camera intrinsic parameters
     camera:
