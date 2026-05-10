@@ -1,27 +1,19 @@
+#!/usr/bin/env python3
 from __future__ import annotations
-
-import threading
-import time
-from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional
+from typing import Iterable, Optional
 from .landmark import Landmark
 
-
-import tf2_ros 
 from rclpy.time import Time
 
-from math import pi, atan2, cos, sin
+from math import atan2, cos
 
 import rclpy
 from sensor_msgs.msg import PointField
 from sensor_msgs_py import point_cloud2
 
-from cv_bridge import CvBridge
 import cv2
 import numpy as np
 from visual_odom.landmark import *
-from nav_msgs.msg import Odometry
-
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
 
@@ -76,31 +68,25 @@ class VisualOdomMap(list):
             if odom_coor is None:
                 rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
                 continue
-            landmark.set_odom_coordinates(Coordinate(odom_coor[0], odom_coor[1], odom_coor[2]))
+            landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
             
 
-    def get_visible_landmarks(self, pos, theta) -> VisualOdomMap:
+    def get_visible_landmarks(self, pos: Coordinate, theta: float) -> VisualOdomMap:
         visible_landmarks = VisualOdomMap()
-
-        point = np.array(
-            [pos.x, pos.y, pos.z] if isinstance(pos, Coordinate) else pos,
-            dtype=float
-        )
 
         for l in self:
             land_pos = l.get_odom_coordinates()
-            l_pos = np.array([land_pos.x, land_pos.y, land_pos.z])
 
-            delta = l_pos - point
-            horizontal_dist = np.linalg.norm(delta[:2])
-            distance = np.linalg.norm(delta)
+            delta = land_pos - pos
+            horizontal_dist = np.linalg.norm([delta.x, delta.y])
+            distance = np.linalg.norm([delta.x, delta.y, delta.z])
 
-            azimuth = normalize_angle(atan2(delta[1], delta[0]) - theta)
+            azimuth = normalize_angle(atan2(delta.y, delta.x) - theta)
             if abs(azimuth) > MAX_AZIMUTH:
                 continue
             
-            altitude = atan2(delta[2], horizontal_dist)
+            altitude = atan2(delta.z, horizontal_dist)
 
             # Hard FOV check
             if abs(altitude) > MAX_ALTITUDE:
@@ -152,11 +138,11 @@ class VisualOdomMap(list):
         """Get all colors from all landmarks."""
         return [l.get_color() for l in self]
     
-    def get_odom_coordinates(self) -> list:
+    def get_odom_coordinates(self) -> list[Coordinate]:
         """Get all odom coordinates from all landmarks."""
         return [l.get_odom_coordinates() for l in self]
     
-    def get_kinect_coordinates(self) -> list:
+    def get_kinect_coordinates(self) -> list[Coordinate]:
         """Get all kinect coordinates from all landmarks."""
         return [l.get_kinect_coordinates() for l in self]
 

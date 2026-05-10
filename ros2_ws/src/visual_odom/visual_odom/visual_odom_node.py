@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-from visual_odom.constants import *
-
-import tf2_ros 
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import TransformStamped
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
 from rclpy.time import Time
 
-from math import pi, sin, cos
+from math import pi
 import random
 from typing import List, Tuple
 
@@ -18,13 +15,14 @@ from sensor_msgs.msg import Image, PointCloud2, PointField
 from sensor_msgs_py import point_cloud2
 
 import cv2
-
 from cv_bridge import CvBridge
 
 import numpy as np
+
 from visual_odom.landmark import *
 from visual_odom.visual_odom_map import VisualOdomMap
 from visual_odom.tf_methods import *
+from visual_odom.constants import *
 
 
 from nav_msgs.msg import Odometry
@@ -36,12 +34,10 @@ class VisualOdom(Node):
         # Load parameters from config file with explicit type casting
         self.min_depth: int = int(self.declare_parameter('min_depth', MIN_DEPTH).value)  # type: ignore
         self.max_depth: int = int(self.declare_parameter('max_depth', MAX_DEPTH).value)  # type: ignore
-        self.descriptor_tolerance: float = float(self.declare_parameter('descriptor_tolerance', DESCRIPTOR_TOLERANCE).value)  # type: ignore
         self.ransac_evaluation_tolerance: float = float(self.declare_parameter('ransac.evaluation_tolerance', RANSAC_EVALUATION_TOLERANCE).value)  # type: ignore
         self.ransac_iteration: int = int(self.declare_parameter('ransac.iterations', RANSAC_ITERATION).value)  # type: ignore
         self.ransac_sample_size: int = int(self.declare_parameter('ransac.sample_size', RANSAC_SAMPLE_SIZE).value)  # type: ignore
         self.rgb_depth_sync_tolerance_sec: float = float(self.declare_parameter('rgb_depth_sync_tolerance_sec', RGB_DEPTH_SYNC_TOLERANCE_SEC).value)  # type: ignore
-        self.waiting_frames: int = int(self.declare_parameter('waiting_frames', WAITING_FRAMES).value)  # type: ignore
 
         self.topic_visual_odometry_msg: str = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value  # type: ignore
 
@@ -63,17 +59,11 @@ class VisualOdom(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        self.landmarks = []
-        self.frame_rgb_first = None
-        self.frame_rgb_sec = None
-        self.frame_depth_first = None
-        self.frame_depth_sec = None
         self.frame_depth = None
         self.frame_depth_stamp = None
         self.frame_rgb = None
-        self.counter = 0
         self.theta = 0
-        self.pos_baselink = np.array([0.0, 0.0, 0.0]) #Position in odom frame
+        self.pos_baselink = Coordinate(0.0, 0.0, 0.0) #Position in odom frame
 
         self.first_iteration = True
         self.visual_odom_map = VisualOdomMap()
@@ -140,7 +130,7 @@ class VisualOdom(Node):
 
             ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
             self.theta = normalize_angle(ransac_result[1])
-            self.pos_baselink = np.array([ransac_result[0][0], ransac_result[0][1], 0.0])
+            self.pos_baselink = ransac_result[0]
 
 
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -149,13 +139,12 @@ class VisualOdom(Node):
             self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
             self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180.0/pi}")
-            self.get_logger().info(f"RANSAC Result: Translation  in mm {ransac_result[0]}")
+            self.get_logger().info(f"RANSAC Result: Translation  in m {ransac_result[0].x}, {ransac_result[0].y}")
             self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
             
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
-            self.publish_pointcloud(calculated_keypoint_coordinates, self.publisher_keypoints_3d, rgb_stamp, KINECT_FRAME_ID)
-            
+            visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
             self.visual_odom_map.add_landmarks_from_kps(valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
 
 
@@ -174,13 +163,13 @@ class VisualOdom(Node):
         return stamp.sec + stamp.nanosec * 1e-9
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[NDArray, float, List[cv2.KeyPoint]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint]]:
         P = []
         Q = []
 
         best_inlier_count = 0
         inlier_count = 0
-        best_t = np.zeros((2,1))
+        best_t = Coordinate(0.0, 0.0, 0.0)
         best_theta = 0.0
 
         for m in range(len(matches)):            
@@ -195,9 +184,9 @@ class VisualOdom(Node):
             coor_landmark = landmarks_odom_pos[matches[m].queryIdx]
             P.append([coor_landmark.x, coor_landmark.y])
 
-            coor = self.calculate_coordinate(u, v, z)
-            coor_base_link = kinect_depth_to_baselink(Coordinate(coor[0], coor[1], coor[2]))
-            Q.append([coor_base_link[0], coor_base_link[1]])
+            coor = pixel_to_kinect(u, v, z)
+            coor_base_link = kinect_depth_to_baselink(coor)
+            Q.append([coor_base_link.x, coor_base_link.y])
 
 
         if len(P) < n_samples:
@@ -241,28 +230,12 @@ class VisualOdom(Node):
                         Q_inlier.append(Q_array[i])
 
         R, t, theta  = kabsch(np.array(P_inlier), np.array(Q_inlier))
-        best_t = t
+        best_t = Coordinate(t[0], t[1], 0.0)
         best_theta = theta
 
         self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
         
         return best_t, best_theta, draw_Q_inlier
-    
-    def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
-        calculated_point_coordinates = []
-
-        for pix_u in range(frame_depth.shape[1]//2):
-            for pix_v in range(frame_depth.shape[0]//2):
-                depth_value = frame_depth[pix_v*2, pix_u*2]
-                if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
-                    x,y,z =self.calculate_coordinate(pix_u*2, pix_v*2, depth_value)
-                    b, g, r = frame_rgb[pix_v*2, pix_u*2]
-                    rgb = (int(r) << 16) | (int(g) << 8) | int(b)
-
-                    calculated_point_coordinates.append((x, y, z, rgb))
-
-
-        self.publish_pointcloud(calculated_point_coordinates, publisher=self.publisher_3d, time=time, frame_id=frame_id )
     
     def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
         from std_msgs.msg import Header
@@ -289,7 +262,7 @@ class VisualOdom(Node):
         publisher.publish(msg)
         self.get_logger().info(f"PointCloud mit {len(points_with_rgb)} Punkten gesendet!")
 
-    def publish_odometry_msg(self, publisher, P, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
+    def publish_odometry_msg(self, publisher, pos: Coordinate, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
         msg = Odometry()
 
         # Header
@@ -298,9 +271,9 @@ class VisualOdom(Node):
         msg.child_frame_id = child_frame_id
 
         # Pose
-        msg.pose.pose.position.x = P[0]
-        msg.pose.pose.position.y = P[1]
-        msg.pose.pose.position.z = P[2]
+        msg.pose.pose.position.x = pos.x
+        msg.pose.pose.position.y = pos.y
+        msg.pose.pose.position.z = pos.z
 
         euler = Rotation.from_euler('z', float(theta))
         quat = euler.as_quat(canonical=True)
@@ -310,24 +283,17 @@ class VisualOdom(Node):
         msg.pose.pose.orientation.w = quat[3]
 
         publisher.publish(msg)
-
-    def calculate_coordinate(self, u: int, v: int, z: float) -> NDArray:
-        y = z * (v - CV) / F
-        x = z * (u - CU) / F
-
-        p3d_vector = np.array([x, y, z])
-        return p3d_vector/1000.0
     
-def calculate_tf(Position: np.ndarray, theta: float, timestamp,  parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
+def calculate_tf(Position: Coordinate, theta: float, timestamp,  parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
 
     t = TransformStamped()
     t.header.stamp = timestamp
     t.header.frame_id = parent_frame_id
     t.child_frame_id = child_frame_id
 
-    t.transform.translation.x = Position[0]
-    t.transform.translation.y = Position[1]
-    t.transform.translation.z = Position[2]
+    t.transform.translation.x = Position.x
+    t.transform.translation.y = Position.y
+    t.transform.translation.z = Position.z
 
     euler = Rotation.from_euler('z', float(theta))
     quat = euler.as_quat(canonical=True)

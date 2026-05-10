@@ -1,11 +1,10 @@
+#!/usr/bin/env python3
 from math import atan2
 import numpy as np
 import cv2
 
 from visual_odom.constants import *
-from rclpy.time import Time
-
-
+from visual_odom.tf_methods import *
 
 class Landmark:
     """Landmark class for storing features detected in images."""
@@ -21,17 +20,9 @@ class Landmark:
         self.des = des
         self.age = age
         self.color = color
-        coor = self.calculate_coordinate(u, v, z)
-        self.kinect_coordinates = Coordinate(coor[0], coor[1], coor[2])
+        self.kinect_coordinates  = pixel_to_kinect(u, v, z)
         self.odom_coordinates = odom_coordinates
 
-    def calculate_coordinate(self, u: int, v: int, z: float) -> np.ndarray:
-        """
-        Calculate 3D coordinates from pixel and depth values.
-        """
-        y = z * (v - CV) / F
-        x = z * (u - CU) / F
-        return np.array([x, y, z])/1000.0
     
     def get_descriptor(self) -> np.ndarray:
         """

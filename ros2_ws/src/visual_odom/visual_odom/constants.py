@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+import numpy as np
 from math import pi, atan2
+
 
 from dataclasses import dataclass
 
@@ -18,11 +21,12 @@ class Coordinate:
             return NotImplemented
         return Coordinate(self.x - other.x, self.y - other.y, self.z - other.z)
 
-    def __mul__(self, factor: float) -> "Coordinate":
-        return Coordinate(self.x * factor, self.y * factor, self.z * factor)
-
-    def __rmul__(self, factor: float) -> "Coordinate":
-        return self.__mul__(factor)
+    def __mul__(self, factor) -> "Coordinate":
+        if isinstance(factor, (int, float)):
+            return Coordinate(self.x * factor, self.y * factor, self.z * factor)
+        return NotImplemented
+    
+    
 
     def __truediv__(self, factor: float) -> "Coordinate":
         return Coordinate(self.x / factor, self.y / factor, self.z / factor)
@@ -47,13 +51,10 @@ KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
 
 VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
 
-DESCRIPTOR_TOLERANCE = 50
 RANSAC_EVALUATION_TOLERANCE = 0.045 #in m
 RANSAC_ITERATION = 300
 RANSAC_SAMPLE_SIZE = 3
 RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
-
-WAITING_FRAMES = 1
 
 F = 526.61
 CU = 318.525
@@ -69,4 +70,8 @@ MAX_V = 480
 MAX_AZIMUTH = abs(atan2(CU, F))
 MAX_ALTITUDE = abs(atan2(CV, F))
 CAMERA_POS_IN_BASELINK = Coordinate(0.1, 0.0, 0.75)
+
+ROT_KB = np.array([[0.0, 0.0, 1.0],
+                     [-1.0, 0.0, 0.0],
+                     [0.0, -1.0, 0.0]])
 
