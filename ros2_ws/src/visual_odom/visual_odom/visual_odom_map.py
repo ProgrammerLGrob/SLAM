@@ -6,20 +6,14 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional
 from .landmark import Landmark
 
-from sensor_msgs.msg import Image, PointCloud2, PointField
 
 import tf2_ros 
-from tf2_ros import TransformBroadcaster
-from geometry_msgs.msg import TransformStamped
 from rclpy.time import Time
 
 from math import pi, atan2, cos, sin
-import random
-from typing import List, Tuple
 
 import rclpy
-from rclpy.node import Node
-from sensor_msgs.msg import Image, PointCloud2, PointField
+from sensor_msgs.msg import PointField
 from sensor_msgs_py import point_cloud2
 
 from cv_bridge import CvBridge
@@ -66,7 +60,7 @@ class VisualOdomMap(list):
         return len(self)
     
 
-    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, valid_kp_depth: np.ndarray, tf_buffer: tf2_ros.Buffer) -> None:
+    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, valid_kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
         for i, p in enumerate(kps):
 
             u, v = int(p.pt[0]), int(p.pt[1])
@@ -77,11 +71,12 @@ class VisualOdomMap(list):
             rgb = (int(r) << 16) | (int(g) << 8) | int(b)
             # Use only the i-th descriptor for this specific landmark
             landmark = Landmark(u=u, v=v, z=depth_value, kp=p, des=des[i], color=rgb)
-            odom_coor = kinect_depth_to_odom(tf_buffer, landmark.get_kinect_coordinates())
+
+            odom_coor = kinect_depth_to_odom(landmark.get_kinect_coordinates(), theta, pos_baselink)
             if odom_coor is None:
                 rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
                 continue
-            landmark.set_odom_coordinates(odom_coor)
+            landmark.set_odom_coordinates(Coordinate(odom_coor[0], odom_coor[1], odom_coor[2]))
             self.add_landmark(landmark)
             
 

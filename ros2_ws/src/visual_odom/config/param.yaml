@@ -6,8 +6,8 @@ visual_odom:
 
     # RANSAC parameters
     ransac:
-      evaluation_tolerance: 50    # Tolerance for inlier evaluation in mm
-      iterations: 1000             # Number of RANSAC iterations
+      evaluation_tolerance: 0.05    # Tolerance for inlier evaluation in m
+      iterations: 300             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
     
     # Temporal parameters
