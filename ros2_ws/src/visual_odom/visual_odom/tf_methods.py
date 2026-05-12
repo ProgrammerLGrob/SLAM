@@ -5,7 +5,6 @@ from visual_odom.constants import *
 import numpy as np
 
 
-
 def kinect_depth_to_odom(kinect_point: Coordinate, theta: float, pos_baselink: Coordinate) -> Coordinate:
     """
     Transform a point from the Kinect frame into the odom frame using the LATEST available TF.
@@ -31,15 +30,14 @@ def kinect_depth_to_baselink(kinect_point: Coordinate) -> Coordinate:
     """
 
     pos_baselink = ROT_KB@np.array([kinect_point.x, kinect_point.y, kinect_point.z])
-
     pos = CAMERA_POS_IN_BASELINK + Coordinate(float(pos_baselink[0]), float(pos_baselink[1]), float(pos_baselink[2]))
     
     return pos
 
 def pixel_to_kinect(u: int, v: int, z: float) -> Coordinate:
-        """
-        Calculate 3D coordinates from pixel and depth values.
-        """
-        y = z * (v - CV) / F
-        x = z * (u - CU) / F
-        return Coordinate(x, y, z)/1000.0 # Convert from mm to m
+    """
+    Calculate 3D coordinates from pixel and depth values.
+    """
+    y = z * (v - CV) / F
+    x = z * (u - CU) / F
+    return Coordinate(x, y, z)/1000.0 # Convert from mm to m

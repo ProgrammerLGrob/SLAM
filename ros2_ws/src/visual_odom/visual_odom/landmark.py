@@ -83,6 +83,46 @@ class Landmark:
         Get the kinect coordinates of the landmark.
         """
         return self.kinect_coordinates
+    
+    def is_visible(self, pos: Coordinate, theta: float) -> bool:
+        delta = self.odom_coordinates - pos
+        horizontal_dist = np.linalg.norm([delta.x, delta.y])
+        distance = np.linalg.norm([delta.x, delta.y, delta.z])
+
+        azimuth = normalize_angle(atan2(delta.y, delta.x) - theta)
+        
+        if abs(azimuth) > MAX_AZIMUTH:
+            return False
+        
+        altitude = atan2(delta.z, horizontal_dist)
+
+        # Hard FOV check
+        if abs(altitude) > MAX_ALTITUDE:
+            return False
+        
+        n = abs(cos(azimuth)*cos(altitude))
+        if n == 0:
+            return False
+
+        if not (MIN_DEPTH/(n*1000) < distance < MAX_DEPTH/(n*1000)):
+            return False
+
+        return True
+    
+
+    def reset_age(self) -> None:
+        """
+        Reset the age of the landmark to 0.
+        """
+        self.age = 0
+
+    def increase_age(self) -> None:
+        """
+        Increase the age of the landmark by 1.
+        """
+        self.age += 1
+
+    
 
 
 """

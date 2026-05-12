@@ -88,7 +88,6 @@ class VisualOdom(Node):
         valid_kp = []
         valid_des = []
         valid_kp_depth = []
-        visible_landmarks = VisualOdomMap()
         h, w = self.frame_depth.shape[:2]
         calculated_keypoint_coordinates = []
 
@@ -145,7 +144,9 @@ class VisualOdom(Node):
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
             visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_result[3])
             self.visual_odom_map.add_landmarks_from_kps(valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+
 
 
             frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_result[2], None, color=(0,255,0), flags=0)
@@ -163,7 +164,7 @@ class VisualOdom(Node):
         return stamp.sec + stamp.nanosec * 1e-9
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint], List[int]]:
         P = []
         Q = []
 
@@ -171,6 +172,8 @@ class VisualOdom(Node):
         inlier_count = 0
         best_t = Coordinate(0.0, 0.0, 0.0)
         best_theta = 0.0
+
+        landmark_index = [] 
 
         for m in range(len(matches)):            
             #Matrix mit Koordinaten im kinect frame
@@ -187,6 +190,8 @@ class VisualOdom(Node):
             coor = pixel_to_kinect(u, v, z)
             coor_base_link = kinect_depth_to_baselink(coor)
             Q.append([coor_base_link.x, coor_base_link.y])
+
+            landmark_index.append(matches[m].queryIdx)
 
 
         if len(P) < n_samples:
@@ -235,7 +240,7 @@ class VisualOdom(Node):
 
         self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
         
-        return best_t, best_theta, draw_Q_inlier
+        return best_t, best_theta, draw_Q_inlier, landmark_index
     
     def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
         from std_msgs.msg import Header

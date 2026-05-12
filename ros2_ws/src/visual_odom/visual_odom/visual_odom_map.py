@@ -53,6 +53,9 @@ class VisualOdomMap(list):
     
 
     def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, valid_kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
+        """
+        Add new landmarks to the map from keypoints, descriptors, and depth information.
+        """
         for i, p in enumerate(kps):
 
             u, v = int(p.pt[0]), int(p.pt[1])
@@ -73,33 +76,16 @@ class VisualOdomMap(list):
             
 
     def get_visible_landmarks(self, pos: Coordinate, theta: float) -> VisualOdomMap:
+        """
+        Get all landmarks that are currently visible from the given position and orientation.
+        """
         visible_landmarks = VisualOdomMap()
 
         for l in self:
-            land_pos = l.get_odom_coordinates()
+            is_visible = l.is_visible(pos, theta)
 
-            delta = land_pos - pos
-            horizontal_dist = np.linalg.norm([delta.x, delta.y])
-            distance = np.linalg.norm([delta.x, delta.y, delta.z])
-
-            azimuth = normalize_angle(atan2(delta.y, delta.x) - theta)
-            if abs(azimuth) > MAX_AZIMUTH:
-                continue
-            
-            altitude = atan2(delta.z, horizontal_dist)
-
-            # Hard FOV check
-            if abs(altitude) > MAX_ALTITUDE:
-                continue
-            
-            n = abs(cos(azimuth)*cos(altitude))
-            if n == 0:
-                continue
-
-            if not (MIN_DEPTH/(n*1000) < distance < MAX_DEPTH/(n*1000)):
-                continue
-
-            visible_landmarks.append(l)
+            if is_visible:
+                visible_landmarks.append(l)
 
         if len(visible_landmarks) < 5:
             rclpy.logging.get_logger(__name__).info(
@@ -110,16 +96,23 @@ class VisualOdomMap(list):
     
     
     def get_descriptors(self) -> np.ndarray:
+        """
+        Get the descriptors of all landmarks in the map as a numpy array.
+        """
         return np.array([l.get_descriptor() for l in self])
     
     
     def get_kps(self) -> list[cv2.KeyPoint]:
+        """
+        Get the keypoints of all landmarks in the map as a list.
+        """
         kps = []
         for l in self:
             kps.append(l.get_kp())
         return kps
     
     def get_depth(self) -> list[int]:
+        """Get all depth values from all landmarks."""
         return [l.get_depth() for l in self]
     
     def get_u_coordinates(self) -> list[int]:
@@ -147,6 +140,9 @@ class VisualOdomMap(list):
         return [l.get_kinect_coordinates() for l in self]
 
     def publish_pointcloud_map(self, publisher, time: Time):
+        """
+        Publish the current map as a PointCloud2 message for visualization in RViz.
+        """
         from std_msgs.msg import Header
         h = Header()
         h.stamp = time
@@ -171,3 +167,17 @@ class VisualOdomMap(list):
 
         publisher.publish(msg)
         rclpy.logging.get_logger(__name__).info(f"PointCloud with {len(points_with_rgb)} points sent!")
+
+    def age_and_cleanup_old_landmarks(self, visible_landmarks, landmark_index):
+        """
+        Increase the age of visible landmarks which are not in the current set of visible landmarks, and remove those which are too old and not matched in @MAX_LANDMARK_AGE frames.
+        """
+        for i, l in enumerate(visible_landmarks):
+            if i in landmark_index:
+                l.reset_age()
+            else:
+                l.increase_age()
+
+        for l in visible_landmarks:
+            if l.get_age() > MAX_LANDMARK_AGE:
+                self.remove(l)
