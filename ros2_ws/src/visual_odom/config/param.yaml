@@ -1,23 +1,17 @@
-visual_odom:
+visual_odom_node:
   ros__parameters:
     # Depth filtering parameters
     min_depth: 400        # Minimum depth in mm
     max_depth: 5000       # Maximum depth in mm
+    rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
+    pixel_tolerance: 100          # Tolerance in pixels for checking neighboring keypoints
 
     # RANSAC parameters
     ransac:
       evaluation_tolerance: 0.05    # Tolerance for inlier evaluation in m
       iterations: 300             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
-    
-    # Temporal parameters
-    waiting_frames: 3             # Number of frames to wait before processing
-
-    # Camera intrinsic parameters
-    camera:
-      focal_length: 526.61        # Focal length in pixels
-      principal_point_u: 318.525  # Principal point u coordinate
-      principal_point_v: 241.181  # Principal point v coordinate
+      
 
     # Rosbag configuration
     rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"

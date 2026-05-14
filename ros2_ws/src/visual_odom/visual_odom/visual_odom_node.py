@@ -4,6 +4,7 @@ from geometry_msgs.msg import TransformStamped
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
 from rclpy.time import Time
+from scipy.spatial import KDTree
 
 from math import pi
 import random
@@ -23,6 +24,7 @@ from visual_odom.landmark import *
 from visual_odom.visual_odom_map import VisualOdomMap
 from visual_odom.tf_methods import *
 from visual_odom.constants import *
+from visual_odom.extended_kalman_filter import *
 
 
 from nav_msgs.msg import Odometry
@@ -38,6 +40,8 @@ class VisualOdom(Node):
         self.ransac_iteration: int = int(self.declare_parameter('ransac.iterations', RANSAC_ITERATION).value)  # type: ignore
         self.ransac_sample_size: int = int(self.declare_parameter('ransac.sample_size', RANSAC_SAMPLE_SIZE).value)  # type: ignore
         self.rgb_depth_sync_tolerance_sec: float = float(self.declare_parameter('rgb_depth_sync_tolerance_sec', RGB_DEPTH_SYNC_TOLERANCE_SEC).value)  # type: ignore
+        self.pixel_tolerance: int = int(self.declare_parameter('pixel_tolerance', PIXEL_TOLERANCE).value)  # type: ignore
+        self.get_logger().info(f"pixel_tolerance: {self.pixel_tolerance}")
 
         self.topic_visual_odometry_msg: str = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value  # type: ignore
 
@@ -62,11 +66,13 @@ class VisualOdom(Node):
         self.frame_depth = None
         self.frame_depth_stamp = None
         self.frame_rgb = None
-        self.theta = 0
+        self.theta = -pi/2
         self.pos_baselink = Coordinate(0.0, 0.0, 0.0) #Position in odom frame
 
         self.first_iteration = True
         self.visual_odom_map = VisualOdomMap()
+
+        self.extended_kalman_filter = ExtendedKalmanFilter(State(self.pos_baselink.x, self.pos_baselink.y, self.theta))
 
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
 
@@ -90,24 +96,51 @@ class VisualOdom(Node):
         valid_kp_depth = []
         h, w = self.frame_depth.shape[:2]
         calculated_keypoint_coordinates = []
+        # 'pixel' Dictionary nutzen wir als super-schnellen Hash-Map Speicher
+        occupied_pixels = {} 
+        all_kp = []
+        valid_kp = []
+        valid_kp_depth = []
 
         for p in self.kp:
             u, v = p.pt
             u = int(round(u))
             v = int(round(v))
 
+            # Bildgrenzen prüfen
             if not (0 <= u < w and 0 <= v < h):
                 continue
 
             depth_value = self.frame_depth[v, u]
 
-            if depth_value > self.min_depth and depth_value < self.max_depth:
-                valid_kp.append(p)
-                valid_kp_depth.append(depth_value)
+            # Tiefenwert prüfen
+            if self.min_depth < depth_value < self.max_depth:
+                all_kp.append(p)
+                
+                is_too_close = False
+                
+                # Super-schneller Lookup im Dictionary
+                for neighbor_u in range(u - self.pixel_tolerance, u + self.pixel_tolerance + 1):
+                    for neighbor_v in range(v - self.pixel_tolerance, v + self.pixel_tolerance + 1):
+                        if (neighbor_u, neighbor_v) in occupied_pixels:
+                            is_too_close = True
+                            break
+                    if is_too_close:
+                        break
+                
+                # Wenn kein anderer Punkt im Umkreis ist -> Hinzufügen
+                if not is_too_close:
+                    valid_kp.append(p)
+                    valid_kp_depth.append(depth_value)
+                    
+                    # Position im Dictionary als "belegt" markieren
+                    occupied_pixels[(u, v)] = True
 
+        # ORB Deskriptoren nur für die validen Keypoints berechnen
         valid_kp, valid_des = self.orb.compute(self.frame_rgb, valid_kp)
 
-
+        self.get_logger().info(f"Anzahl gültiger Keypoints mit Tiefeninformation: {len(valid_kp)}; Anzahl aller Keypoints: {len(all_kp)}")
+        
         if self.first_iteration or len(self.visual_odom_map) == 0:
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
@@ -128,12 +161,45 @@ class VisualOdom(Node):
                 return
 
             ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
-            self.theta = normalize_angle(ransac_result[1])
-            self.pos_baselink = ransac_result[0]
+            """
+            self.theta += 0.5*normalize_angle(ransac_result[1])          
+
+            delta = ransac_result[0]
+            delta = np.array([delta.x, delta.y, delta.z])
+           
+            c = cos(self.theta)
+            s = sin(self.theta)
+            R = np.array([[c, -s, 0.0],
+                  [s, c, 0.0],
+                  [0.0, 0.0, 1.0]])
+            
+            delta = R@delta
+            self.pos_baselink += Coordinate(float(delta[0]), float(delta[1]), float(delta[2]))  
+
+            self.theta += 0.5*normalize_angle(ransac_result[1])          
+            """
+            z_dict = {}
+            for i in ransac_result[4]:
+                u, v = valid_kp[i].pt
+                u = int(round(u))
+                v = int(round(v))
+
+                depth_value = self.frame_depth[v, u]
+
+                pos = kinect_depth_to_baselink(pixel_to_kinect(u, v, depth_value))
+                key = valid_des[i].tobytes()
+                z_dict[key] = ([pos.x, pos.y], depth_value/1000.0)
+        
+            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_result[0], ransac_result[1], z_dict, visible_landmarks)
+
+            self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
+            self.theta = kalman_iteration_result[0].theta
 
 
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
+
+            
 
             self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
@@ -144,12 +210,14 @@ class VisualOdom(Node):
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
             visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
-            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_result[3])
+            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_result[2])
             self.visual_odom_map.add_landmarks_from_kps(valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
 
 
 
-            frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_result[2], None, color=(0,255,0), flags=0)
+            #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
+
+            frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_result[3], None, color=(0,255,0), flags=0)
             cv2.imshow("second RGB Image", frame_rgb_drawn)
             cv2.waitKey(1)
                 
@@ -164,7 +232,7 @@ class VisualOdom(Node):
         return stamp.sec + stamp.nanosec * 1e-9
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint], List[int]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int]]:
         P = []
         Q = []
 
@@ -185,7 +253,8 @@ class VisualOdom(Node):
             z = valid_kp_depth[matches[m].trainIdx]
 
             coor_landmark = landmarks_odom_pos[matches[m].queryIdx]
-            P.append([coor_landmark.x, coor_landmark.y])
+            coor_base_link = odom_to_baselink(coor_landmark, self.theta, self.pos_baselink)
+            P.append([coor_base_link.x, coor_base_link.y])
 
             coor = pixel_to_kinect(u, v, z)
             coor_base_link = kinect_depth_to_baselink(coor)
@@ -205,6 +274,7 @@ class VisualOdom(Node):
         Q_inlier = []
 
         draw_Q_inlier: List[cv2.KeyPoint] = []
+        valid_kp_index = []
 
         #iteration = len(matches)/100 * self.ransac_iteration # type: ignore #
         iteration = int(self.ransac_iteration)
@@ -230,7 +300,9 @@ class VisualOdom(Node):
                 best_inlier_count = inlier_count
                 for i in range(len(e)):
                     if e[i] < tolerance:
+                        valid_kp_index.append(matches[i].trainIdx)
                         draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
+
                         P_inlier.append(P_array[i])
                         Q_inlier.append(Q_array[i])
 
@@ -240,7 +312,25 @@ class VisualOdom(Node):
 
         self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
         
-        return best_t, best_theta, draw_Q_inlier, landmark_index
+        return best_t, best_theta, landmark_index, draw_Q_inlier, valid_kp_index
+
+
+    def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
+        calculated_point_coordinates = []
+
+        divisor = 10
+        for pix_u in range(frame_depth.shape[1]//divisor):
+            for pix_v in range(frame_depth.shape[0]//divisor):
+                depth_value = frame_depth[pix_v*divisor, pix_u*divisor]
+                if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
+                    pos = pixel_to_kinect(pix_u*divisor, pix_v*divisor, depth_value)
+                    b, g, r = frame_rgb[pix_v*divisor, pix_u*divisor]
+                    rgb = (int(r) << 16) | (int(g) << 8) | int(b)
+
+                    calculated_point_coordinates.append((pos.x, pos.y, pos.z, rgb))
+
+
+        self.publish_pointcloud(calculated_point_coordinates, publisher=self.publisher_3d, time=time, frame_id=frame_id )
     
     def publish_pointcloud(self, points_with_rgb, publisher, time: Time, frame_id: str):
         from std_msgs.msg import Header

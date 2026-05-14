@@ -25,11 +25,35 @@ class Coordinate:
         if isinstance(factor, (int, float)):
             return Coordinate(self.x * factor, self.y * factor, self.z * factor)
         return NotImplemented
-    
-    
 
     def __truediv__(self, factor: float) -> "Coordinate":
         return Coordinate(self.x / factor, self.y / factor, self.z / factor)
+    
+@dataclass 
+class State:
+    x: float
+    y: float
+    theta: float
+
+    def __add__(self, other: "State") -> "State":
+        if not isinstance(other, State):
+            return NotImplemented
+        return State(self.x + other.x, self.y + other.y, self.theta + other.theta)
+
+    def __sub__(self, other: "State") -> "State":
+        if not isinstance(other, State):
+            return NotImplemented
+        return State(self.x - other.x, self.y - other.y, self.theta - other.theta)
+
+    def __mul__(self, factor) -> "State":
+        if isinstance(factor, (int, float)):
+            return State(self.x * factor, self.y * factor, self.theta * factor)
+        return NotImplemented
+
+    def __truediv__(self, factor: float) -> "State":
+        return State(self.x / factor, self.y / factor, self.theta / factor)
+
+
 
 def normalize_angle(angle: float) -> float:
     while abs(angle) > pi:
@@ -43,7 +67,7 @@ def normalize_angle(angle: float) -> float:
 
 KINECT_FRAME_ID = "kinect_depth"
 BASE_LINK_FRAME_ID = "base_link"
-VISUAL_ODOM_FRAME_ID = "odom_visual"
+VISUAL_ODOM_FRAME_ID = "odom"
 
 
 POINTCLOUD_FRAME_ID = "points_3d"
@@ -57,6 +81,8 @@ RANSAC_SAMPLE_SIZE = 3
 RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
 
 MAX_LANDMARK_AGE = 15.0 
+
+PIXEL_TOLERANCE = 0
 
 F = 526.61
 CU = 318.525
@@ -77,3 +103,44 @@ ROT_KB = np.array([[0.0, 0.0, 1.0],
                      [-1.0, 0.0, 0.0],
                      [0.0, -1.0, 0.0]])
 
+
+#SIGMA POINT APPROXIMATION
+# --- ERROR X ---
+ERR_FUNC_X_CONST = -6.529873e+00 
+ERR_FUNC_X_D_1 =   1.787
+ERR_FUNC_X_T_1 =  -9.668554e+00
+ERR_FUNC_X_D_2 =  -6.820445e-02
+ERR_FUNC_X_D1_T1 = 1.888666e+00
+ERR_FUNC_X_T_2 =  -3.876097e+00
+ERR_FUNC_X_D_3 =  -2.427950e-03
+ERR_FUNC_X_D2_T1 = -4.202577e-02
+ERR_FUNC_X_D1_T2 =  5.908962e-01
+ERR_FUNC_X_T_3 =  -2.417847e-01
+
+
+# --- ERROR Y ---
+ERR_FUNC_Y_CONST =  6.435185e+00 
+ERR_FUNC_Y_D_1 =   -1.819108e+00
+ERR_FUNC_Y_T_1 =    8.910108e+00
+ERR_FUNC_Y_D_2 =    1.127993e-01
+ERR_FUNC_Y_D1_T1 = -1.965693e+00
+ERR_FUNC_Y_T_2 =    3.570893e+00
+ERR_FUNC_Y_D_3 =    3.033334e-03
+ERR_FUNC_Y_D2_T1 =  8.519163e-02
+ERR_FUNC_Y_D1_T2 = -4.980875e-01
+ERR_FUNC_Y_T_3 =    3.085193e-01
+
+
+# --- ERROR THETA ---
+ERR_FUNC_THETA_CONST =  7.607340e+00 
+ERR_FUNC_THETA_D_1 =   -1.974354e+00
+ERR_FUNC_THETA_T_1 =    8.981931e+00
+ERR_FUNC_THETA_D_2 =    1.057925e-01
+ERR_FUNC_THETA_D1_T1 = -1.908562e+00
+ERR_FUNC_THETA_T_2 =    2.821687e+00
+ERR_FUNC_THETA_D_3 =    3.266059e-03
+ERR_FUNC_THETA_D2_T1 =  7.723625e-02
+ERR_FUNC_THETA_D1_T2 = -4.240273e-01
+ERR_FUNC_THETA_T_3 =    6.209562e-02
+
+ 

@@ -34,6 +34,25 @@ def kinect_depth_to_baselink(kinect_point: Coordinate) -> Coordinate:
     
     return pos
 
+def odom_to_baselink(odom_point: Coordinate, theta: float, pos_baselink: Coordinate) -> Coordinate:
+    """
+    Transform a point from the odom frame into the baselink frame using the LATEST available TF.
+    Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
+    """
+    c = cos(theta)
+    s = sin(theta)
+    R = np.array([[c, -s, 0.0],
+                  [s, c, 0.0],
+                  [0.0, 0.0, 1.0]])
+
+    pos = R.T@(np.array([odom_point.x, odom_point.y, odom_point.z]) - np.array([pos_baselink.x, pos_baselink.y, pos_baselink.z]))
+
+    pos = Coordinate(float(pos[0]), float(pos[1]), float(pos[2]))
+    return pos
+
+
+
+
 def pixel_to_kinect(u: int, v: int, z: float) -> Coordinate:
     """
     Calculate 3D coordinates from pixel and depth values.
