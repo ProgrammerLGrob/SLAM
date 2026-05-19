@@ -23,6 +23,7 @@ class VisualOdomMap(list):
         landmarks: Optional[Iterable[Landmark]] = None,
     ) -> None:
         super().__init__()
+        self.descriptors = {}
 
         if landmarks is not None:
             self.extend(landmarks)
@@ -52,7 +53,7 @@ class VisualOdomMap(list):
         return len(self)
     
 
-    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, valid_kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
+    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
         """
         Add new landmarks to the map from keypoints, descriptors, and depth information.
         """
@@ -60,7 +61,7 @@ class VisualOdomMap(list):
 
             u, v = int(p.pt[0]), int(p.pt[1])
 
-            depth_value = int(valid_kp_depth[i])
+            depth_value = int(kp_depth[i])
             
             b, g, r = frame_rgb[v, u]
             rgb = (int(r) << 16) | (int(g) << 8) | int(b)
@@ -71,6 +72,10 @@ class VisualOdomMap(list):
             if odom_coor is None:
                 rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
                 continue
+            if landmark.get_descriptor().tobytes() in self.descriptors:
+                continue
+            self.descriptors[landmark.get_descriptor().tobytes()] = True
+
             landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
             

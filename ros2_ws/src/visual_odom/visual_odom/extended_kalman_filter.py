@@ -14,7 +14,13 @@ class ExtendedKalmanFilter:
 	def __init__(self, x: State):
 		self.x = x
 		self.Q = self.calculate_Q_matrix(self.x)
-		self.P = self.Q # initialize
+
+		# self.P = self.Q:
+		sigma_x0   = 0.1   # 10cm Anfangsunsicherheit in x
+		sigma_y0   = 0.1   # 10cm in y
+		sigma_th0  = 0.05  # ~3° in theta
+
+		self.P = np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
 
 	def state_func(self, x: State, delta: State) -> State:
 
@@ -51,13 +57,12 @@ class ExtendedKalmanFilter:
 					  [s, c, 0.0],
 					  [0.0, 0.0, 1.0]])
 
-		#sx, sy, st = self.sigma_Q_approximation(x)
+		sx, sy, st = self.sigma_Q_approximation(x)
 
-		sx, sy, st = 0.05, 0.05, 0.01
 		Q = np.array([[sx**2, 0, 0],
 					  [0, sy**2, 0],
 					  [0, 0, st**2]])
-		Q = R@Q
+		Q = R@Q@R.transpose()
 		return Q
 
 	def meas_func(self, coor: Coordinate, x_tt1: State) -> NDArray:
@@ -80,16 +85,20 @@ class ExtendedKalmanFilter:
 
 	def kalman_iteration(self, delta_p: Coordinate, delta_theta: float, z_dic: dict, visible_landmarks: VisualOdomMap) -> Tuple[State, NDArray]:
 		x_tt1, P_tt1 = self.prediction(self.x, delta_p, delta_theta)
+		self.x.theta = normalize_angle(self.x.theta)
 		self.x = x_tt1
 		self.P = P_tt1
 		for landmark in visible_landmarks:
 			key = landmark.get_descriptor().tobytes()
 			if  z_dic.get(key) is None:
+				#rclpy.logging.get_logger(__name__).info("Landmark with descriptor {} has no measurement, skipping update.".format(landmark.get_descriptor()))
 				continue
 
+			rclpy.logging.get_logger(__name__).info("Updating with landmark at odom coordinates {}, measurement: {}".format(landmark.get_odom_coordinates(), z_dic[key][0]))
 			z, depth_value = z_dic.get(key)
 			updated_x, updated_P = self.update(self.x, self.P, landmark, z, depth_value)
 			self.x = updated_x
+			self.x.theta = normalize_angle(self.x.theta)
 			self.P = updated_P
 
 		return self.x, self.P
@@ -133,9 +142,9 @@ class ExtendedKalmanFilter:
 		
 		delta =np.matmul(K, delta_z)
 		
-		self.x = x_tt1 + State(delta[0], delta[1], delta[2])
-		self.P = P_tt1 - np.matmul(K, np.matmul(self.JH, P_tt1))
-		return self.x, self.P
+		x = x_tt1 + State(delta[0], delta[1], delta[2])
+		P = P_tt1 - np.matmul(K, np.matmul(self.JH, P_tt1))
+		return x, P
 	
 	# set Jacobi matrix of the state transition
 	def set_JF(self, JF: NDArray) -> None:
@@ -166,6 +175,10 @@ class ExtendedKalmanFilter:
 		sx = max(abs(sx), 0.005)   # 5mm - typisches Encoder-Mindestrauschen
 		sy = max(abs(sy), 0.005)   # 5mm
 		st = max(abs(st), 0.001)   # ~0.06° - typisches Gyro-Mindestrauschen
+
+		sx = 0.005
+		sy = 0.005
+		st = 0.001
 
 		return sx, sy, st
 	

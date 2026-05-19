@@ -41,6 +41,7 @@ class VisualOdom(Node):
         self.ransac_sample_size: int = int(self.declare_parameter('ransac.sample_size', RANSAC_SAMPLE_SIZE).value)  # type: ignore
         self.rgb_depth_sync_tolerance_sec: float = float(self.declare_parameter('rgb_depth_sync_tolerance_sec', RGB_DEPTH_SYNC_TOLERANCE_SEC).value)  # type: ignore
         self.pixel_tolerance: int = int(self.declare_parameter('pixel_tolerance', PIXEL_TOLERANCE).value)  # type: ignore
+        self.matches_for_new_landmarks: int = int(self.declare_parameter('matches_for_new_landmarks', MATCHES_FOR_NEW_LANDMARKS).value)  # type: ignore
         self.get_logger().info(f"pixel_tolerance: {self.pixel_tolerance}")
 
         self.topic_visual_odometry_msg: str = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value  # type: ignore
@@ -73,6 +74,8 @@ class VisualOdom(Node):
         self.visual_odom_map = VisualOdomMap()
 
         self.extended_kalman_filter = ExtendedKalmanFilter(State(self.pos_baselink.x, self.pos_baselink.y, self.theta))
+
+        self.covariance_P = np.eye(3) * 0.001
 
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
 
@@ -139,7 +142,7 @@ class VisualOdom(Node):
         # ORB Deskriptoren nur für die validen Keypoints berechnen
         valid_kp, valid_des = self.orb.compute(self.frame_rgb, valid_kp)
 
-        self.get_logger().info(f"Anzahl gültiger Keypoints mit Tiefeninformation: {len(valid_kp)}; Anzahl aller Keypoints: {len(all_kp)}")
+        #self.get_logger().info(f"Anzahl gültiger Keypoints mit Tiefeninformation: {len(valid_kp)}; Anzahl aller Keypoints: {len(all_kp)}")
         
         if self.first_iteration or len(self.visual_odom_map) == 0:
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -161,25 +164,15 @@ class VisualOdom(Node):
                 return
 
             ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
-            """
-            self.theta += 0.5*normalize_angle(ransac_result[1])          
+            ransac_delta_p = ransac_result[0]
+            ransac_delta_theta = ransac_result[1]
+            ransac_landmark_indices = ransac_result[2]
+            ransac_draw_keypoints = ransac_result[3]
+            ransac_kp_indices = ransac_result[4]
+            ransac_not_matched_kp_indices = ransac_result[5]
 
-            delta = ransac_result[0]
-            delta = np.array([delta.x, delta.y, delta.z])
-           
-            c = cos(self.theta)
-            s = sin(self.theta)
-            R = np.array([[c, -s, 0.0],
-                  [s, c, 0.0],
-                  [0.0, 0.0, 1.0]])
-            
-            delta = R@delta
-            self.pos_baselink += Coordinate(float(delta[0]), float(delta[1]), float(delta[2]))  
-
-            self.theta += 0.5*normalize_angle(ransac_result[1])          
-            """
             z_dict = {}
-            for i in ransac_result[4]:
+            for i in ransac_kp_indices:
                 u, v = valid_kp[i].pt
                 u = int(round(u))
                 v = int(round(v))
@@ -189,11 +182,14 @@ class VisualOdom(Node):
                 pos = kinect_depth_to_baselink(pixel_to_kinect(u, v, depth_value))
                 key = valid_des[i].tobytes()
                 z_dict[key] = ([pos.x, pos.y], depth_value/1000.0)
+
+
         
-            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_result[0], ransac_result[1], z_dict, visible_landmarks)
+            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, visible_landmarks)
 
             self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
             self.theta = kalman_iteration_result[0].theta
+            self.covariance_P = kalman_iteration_result[1]
 
 
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -201,25 +197,35 @@ class VisualOdom(Node):
 
             
 
-            self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
+            self.publish_odometry_msg(self.publisher_visual_odometry_msg, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
 
-            self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180.0/pi}")
-            self.get_logger().info(f"RANSAC Result: Translation  in m {ransac_result[0].x}, {ransac_result[0].y}")
-            self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
+            #self.get_logger().info(f"RANSAC Result: Rotation um z Achse in ° {ransac_result[1]*180.0/pi}")
+            #self.get_logger().info(f"RANSAC Result: Translation  in m {ransac_result[0].x}, {ransac_result[0].y}")
+            #self.get_logger().info(f"RANSAC Result: Theta in ° {self.theta*180/pi}")
             
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
-            visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
-            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_result[2])
-            self.visual_odom_map.add_landmarks_from_kps(valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+            #visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_landmark_indices)
+            #self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
+            if len(matches) < self.matches_for_new_landmarks:
+                not_matched_kp = []
+                not_matched_des = []
+                not_matched_kp_depth = []
+                for idx in ransac_not_matched_kp_indices:
+                    not_matched_kp.append(valid_kp[idx])
+                    not_matched_des.append(valid_des[idx])
+                    not_matched_kp_depth.append(valid_kp_depth[idx])
 
+                self.visual_odom_map.add_landmarks_from_kps(not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
+                #self.get_logger().info(f"Zu wenige Matches ({len(matches)}) - Hinzufügen neuer Landmarken basierend auf den aktuellen Keypoints.")
 
-            #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
+           
 
-            frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_result[3], None, color=(0,255,0), flags=0)
-            cv2.imshow("second RGB Image", frame_rgb_drawn)
-            cv2.waitKey(1)
+            #frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_draw_keypoints, None, color=(0,255,0), flags=0)
+            #cv2.imshow("second RGB Image", frame_rgb_drawn)
+            #cv2.waitKey(1)
                 
 
     def listener_depth_callback(self,msg):
@@ -232,7 +238,7 @@ class VisualOdom(Node):
         return stamp.sec + stamp.nanosec * 1e-9
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int]]:
         P = []
         Q = []
 
@@ -265,7 +271,7 @@ class VisualOdom(Node):
 
         if len(P) < n_samples:
             self.get_logger().warn(f"Nicht genug Punkte für RANSAC: {len(P)} < {n_samples}")
-            return best_t, best_theta, []
+            return best_t, best_theta, [], [], [], []
 
         P_array = np.array(P)
         Q_array = np.array(Q)
@@ -275,6 +281,7 @@ class VisualOdom(Node):
 
         draw_Q_inlier: List[cv2.KeyPoint] = []
         valid_kp_index = []
+        not_matched_kp = []
 
         #iteration = len(matches)/100 * self.ransac_iteration # type: ignore #
         iteration = int(self.ransac_iteration)
@@ -302,9 +309,10 @@ class VisualOdom(Node):
                     if e[i] < tolerance:
                         valid_kp_index.append(matches[i].trainIdx)
                         draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
-
                         P_inlier.append(P_array[i])
                         Q_inlier.append(Q_array[i])
+                    else:
+                        not_matched_kp.append(matches[i].trainIdx)
 
         R, t, theta  = kabsch(np.array(P_inlier), np.array(Q_inlier))
         best_t = Coordinate(t[0], t[1], 0.0)
@@ -312,13 +320,13 @@ class VisualOdom(Node):
 
         self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
         
-        return best_t, best_theta, landmark_index, draw_Q_inlier, valid_kp_index
+        return best_t, best_theta, landmark_index, draw_Q_inlier, valid_kp_index, not_matched_kp
 
 
     def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
         calculated_point_coordinates = []
 
-        divisor = 10
+        divisor = 15
         for pix_u in range(frame_depth.shape[1]//divisor):
             for pix_v in range(frame_depth.shape[0]//divisor):
                 depth_value = frame_depth[pix_v*divisor, pix_u*divisor]
@@ -357,7 +365,7 @@ class VisualOdom(Node):
         publisher.publish(msg)
         self.get_logger().info(f"PointCloud mit {len(points_with_rgb)} Punkten gesendet!")
 
-    def publish_odometry_msg(self, publisher, pos: Coordinate, theta: float, timestamp, parent_frame_id: str, child_frame_id: str):
+    def publish_odometry_msg(self, publisher, pos: Coordinate, theta: float, covariance: NDArray, timestamp, parent_frame_id: str, child_frame_id: str):
         msg = Odometry()
 
         # Header
@@ -376,6 +384,18 @@ class VisualOdom(Node):
         msg.pose.pose.orientation.y = quat[1]
         msg.pose.pose.orientation.z = quat[2]
         msg.pose.pose.orientation.w = quat[3]
+
+        # Covariance
+        msg.pose.covariance = [
+           covariance[0, 0], covariance[0, 1],          0.0,    0.0,    0.0,   covariance[0, 2],
+            covariance[1, 0], covariance[1, 1],         0.0,    0.0,    0.0,    covariance[1, 2],
+            0.0,                0.0,                    0.0,    0.0,    0.0,    0.0,
+            0.0,                0.0,                    0.0,    0.0,    0.0,    0.0,
+            0.0,                0.0,                    0.0,    0.0,    0.0,    0.0,
+            covariance[2, 0],    covariance[2, 1],      0.0,    0.0,    0.0,    covariance[2, 2]
+        ]
+        #msg.pose.covariance *= 10.0  # Skalierung der Kovarianz für bessere Visualisierung in RViz
+
 
         publisher.publish(msg)
     
