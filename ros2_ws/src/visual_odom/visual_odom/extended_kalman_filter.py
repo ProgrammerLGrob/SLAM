@@ -89,6 +89,7 @@ class ExtendedKalmanFilter:
 		self.x = x_tt1
 		self.P = P_tt1
 		for landmark in visible_landmarks:
+			continue
 			key = landmark.get_descriptor().tobytes()
 			if  z_dic.get(key) is None:
 				#rclpy.logging.get_logger(__name__).info("Landmark with descriptor {} has no measurement, skipping update.".format(landmark.get_descriptor()))
@@ -155,11 +156,17 @@ class ExtendedKalmanFilter:
 		self.JH = JH
 
 	# set measurement noise -- eg. for EKF
-	def set_R(self, depth_value: float) -> None:
+	def set_R(self, depth_value: float, x: State) -> None:
 		sx, sy = self.sigma_R_approximation(depth_value)
 		#sx, sy = 0.01, 0.01
-		self.R = np.array([[sx**2, 0],
+		R = np.array([[sx**2, 0],
 					  [0, sy**2]])
+		#c = cos(x.theta)
+		#s = sin(x.theta)
+		#R_rot = np.array([[c, -s],
+		#		  		[s, c]])
+		#self.R = R_rot@R@R_rot.transpose()	
+				
 
 	# set model noise -- eg. for EKF
 	def set_Q(self, x: State) -> None:

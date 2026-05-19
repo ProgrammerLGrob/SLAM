@@ -67,7 +67,7 @@ class VisualOdom(Node):
         self.frame_depth = None
         self.frame_depth_stamp = None
         self.frame_rgb = None
-        self.theta = -pi/2
+        self.theta = -98.0 * pi / 180.0 
         self.pos_baselink = Coordinate(0.0, 0.0, 0.0) #Position in odom frame
 
         self.first_iteration = True
@@ -311,12 +311,19 @@ class VisualOdom(Node):
                         draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
                         P_inlier.append(P_array[i])
                         Q_inlier.append(Q_array[i])
-                    else:
-                        not_matched_kp.append(matches[i].trainIdx)
 
         R, t, theta  = kabsch(np.array(P_inlier), np.array(Q_inlier))
         best_t = Coordinate(t[0], t[1], 0.0)
         best_theta = theta
+
+        valid_set = set(valid_kp_index)
+
+        not_matched_kp = [
+            i
+            for i in range(len(valid_kp))
+            if i not in valid_set
+        ]
+
 
         self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
         
