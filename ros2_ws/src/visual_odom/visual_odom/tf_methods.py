@@ -51,12 +51,10 @@ def odom_to_baselink(odom_point: Coordinate, theta: float, pos_baselink: Coordin
     return pos
 
 
-
-
-def pixel_to_kinect(u: int, v: int, z: float) -> Coordinate:
+def pixel_to_kinect(kp: PixelCoordinate) -> Coordinate:
     """
     Calculate 3D coordinates from pixel and depth values.
     """
-    y = z * (v - CV) / F
-    x = z * (u - CU) / F
-    return Coordinate(x, y, z)/1000.0 # Convert from mm to m
+    y = kp.z * (kp.v - CV) / F
+    x = kp.z * (kp.u - CU) / F
+    return Coordinate(x, y, kp.z)/1000.0 # Convert from mm to m

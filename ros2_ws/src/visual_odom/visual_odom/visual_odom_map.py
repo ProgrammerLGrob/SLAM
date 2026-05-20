@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 from typing import Iterable, Optional
-from .landmark import Landmark
 
 from rclpy.time import Time
 
@@ -13,7 +12,7 @@ from sensor_msgs_py import point_cloud2
 
 import cv2
 import numpy as np
-from visual_odom.landmark import *
+from visual_odom.landmark import Landmark
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
 
@@ -53,7 +52,7 @@ class VisualOdomMap(list):
         return len(self)
     
 
-    def add_landmarks_from_kps(self, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
+    def add_landmarks_from_kps(self,  P_init: NDArray, kps: Iterable[cv2.KeyPoint], des: np.ndarray,frame_rgb: np.ndarray, kp_depth: np.ndarray, theta: float, pos_baselink: np.ndarray) -> None:
         """
         Add new landmarks to the map from keypoints, descriptors, and depth information.
         """
@@ -66,7 +65,7 @@ class VisualOdomMap(list):
             b, g, r = frame_rgb[v, u]
             rgb = (int(r) << 16) | (int(g) << 8) | int(b)
             # Use only the i-th descriptor for this specific landmark
-            landmark = Landmark(u=u, v=v, z=depth_value, kp=p, des=des[i], color=rgb)
+            landmark = Landmark(P_init=P_init, pixel_coor=PixelCoordinate(u, v, depth_value), kp=p, des=des[i], color=rgb)
 
             odom_coor = kinect_depth_to_odom(landmark.get_kinect_coordinates(), theta, pos_baselink)
             if odom_coor is None:
@@ -186,3 +185,11 @@ class VisualOdomMap(list):
         for l in visible_landmarks:
             if l.get_age() > MAX_LANDMARK_AGE:
                 self.remove(l)
+
+    def kalman_iteration(self, pos_baselink: Coordinate, delta_theta: float, landmark_indices: List[int], kp_pos: List[Coordinate]) -> None:
+        """
+        Perform a Kalman iteration for all visible landmarks.
+        """
+        for idx in range(len(self)):
+            if idx == landmark_indices:
+                self[idx].kalman_iteration(pos_baselink, delta_theta, kp_pos[landmark_indices.index(idx)])

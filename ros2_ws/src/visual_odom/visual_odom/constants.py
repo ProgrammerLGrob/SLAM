@@ -29,6 +29,13 @@ class Coordinate:
     def __truediv__(self, factor: float) -> "Coordinate":
         return Coordinate(self.x / factor, self.y / factor, self.z / factor)
     
+
+@dataclass
+class PixelCoordinate:
+    u: float
+    v: float
+    z: float
+
 @dataclass 
 class State:
     x: float
@@ -52,6 +59,7 @@ class State:
 
     def __truediv__(self, factor: float) -> "State":
         return State(self.x / factor, self.y / factor, self.theta / factor)
+    
 
 
 
@@ -104,6 +112,10 @@ ROT_KB = np.array([[0.0, 0.0, 1.0],
                      [-1.0, 0.0, 0.0],
                      [0.0, -1.0, 0.0]])
 
+#measruement noice/error
+SIGMA_PIXEL = 0.8/3 # in u, v direction, in pixels; 0,086°
+ERROR_MIN_DEPTH = 0.001477 # konstanter Offset (Rauschen bei minimalem Abstand)
+ERROR_QUADRATIC_DEPTH = 0.002294 # quadratischer Koeffizient (fitted)
 
 #SIGMA POINT APPROXIMATION
 # --- ERROR X ---

@@ -21,10 +21,10 @@ from cv_bridge import CvBridge
 import numpy as np
 
 from visual_odom.landmark import *
-from visual_odom.visual_odom_map import VisualOdomMap
+from visual_odom.visual_odom_map import *
 from visual_odom.tf_methods import *
 from visual_odom.constants import *
-from visual_odom.extended_kalman_filter import *
+from visual_odom.ekf_robot import *
 
 
 from nav_msgs.msg import Odometry
@@ -73,9 +73,13 @@ class VisualOdom(Node):
         self.first_iteration = True
         self.visual_odom_map = VisualOdomMap()
 
-        self.extended_kalman_filter = ExtendedKalmanFilter(State(self.pos_baselink.x, self.pos_baselink.y, self.theta))
 
-        self.covariance_P = np.eye(3) * 0.001
+		# self.P = self.Q:
+        sigma_x0   = 0.1   # 10cm Anfangsunsicherheit in x
+        sigma_y0   = 0.1   # 10cm in y
+        sigma_th0  = 0.05  # ~3° in theta
+        self.covariance_P = np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
+        self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P)
 
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
 
@@ -144,20 +148,24 @@ class VisualOdom(Node):
 
         #self.get_logger().info(f"Anzahl gültiger Keypoints mit Tiefeninformation: {len(valid_kp)}; Anzahl aller Keypoints: {len(all_kp)}")
         
-        if self.first_iteration or len(self.visual_odom_map) == 0:
+        if self.first_iteration or len(self.visual_odom_map) < 50:
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
             self.first_iteration = False
-            self.visual_odom_map.add_landmarks_from_kps(valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+            self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+            #self.get_logger().info(f"Erste Iteration: {len(valid_kp)} Landmarken zur Karte hinzugefügt.")
             return
         else:            
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
 
             visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+            #self.get_logger().info(f"Anzahl sichtbarer Landmarken: {len(visible_landmarks)}")
            
             # Match descriptors.
             matches = self.bf.match(visible_landmarks.get_descriptors(), valid_des)
+
+            self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
             if len(matches) < self.ransac_sample_size: # type: ignore
                 self.get_logger().warn(f"Zu wenige Matches fuer RANSAC: {len(matches)}")
@@ -172,6 +180,7 @@ class VisualOdom(Node):
             ransac_not_matched_kp_indices = ransac_result[5]
 
             z_dict = {}
+            kp_pos = []
             for i in ransac_kp_indices:
                 u, v = valid_kp[i].pt
                 u = int(round(u))
@@ -179,12 +188,11 @@ class VisualOdom(Node):
 
                 depth_value = self.frame_depth[v, u]
 
-                pos = kinect_depth_to_baselink(pixel_to_kinect(u, v, depth_value))
-                key = valid_des[i].tobytes()
-                z_dict[key] = ([pos.x, pos.y], depth_value/1000.0)
+                kp_pos.append(kinect_depth_to_baselink(pixel_to_kinect(PixelCoordinate(u, v, depth_value))))
 
 
-        
+            visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+
             kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, visible_landmarks)
 
             self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
@@ -206,6 +214,8 @@ class VisualOdom(Node):
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
             #visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+            #self.visual_odom_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+
             self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_landmark_indices)
             #self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
@@ -218,7 +228,7 @@ class VisualOdom(Node):
                     not_matched_des.append(valid_des[idx])
                     not_matched_kp_depth.append(valid_kp_depth[idx])
 
-                self.visual_odom_map.add_landmarks_from_kps(not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
+                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
                 #self.get_logger().info(f"Zu wenige Matches ({len(matches)}) - Hinzufügen neuer Landmarken basierend auf den aktuellen Keypoints.")
 
            
@@ -262,7 +272,7 @@ class VisualOdom(Node):
             coor_base_link = odom_to_baselink(coor_landmark, self.theta, self.pos_baselink)
             P.append([coor_base_link.x, coor_base_link.y])
 
-            coor = pixel_to_kinect(u, v, z)
+            coor = pixel_to_kinect(PixelCoordinate(u, v, z))
             coor_base_link = kinect_depth_to_baselink(coor)
             Q.append([coor_base_link.x, coor_base_link.y])
 
@@ -338,7 +348,7 @@ class VisualOdom(Node):
             for pix_v in range(frame_depth.shape[0]//divisor):
                 depth_value = frame_depth[pix_v*divisor, pix_u*divisor]
                 if depth_value > MIN_DEPTH and depth_value < MAX_DEPTH:
-                    pos = pixel_to_kinect(pix_u*divisor, pix_v*divisor, depth_value)
+                    pos = pixel_to_kinect(PixelCoordinate(pix_u*divisor, pix_v*divisor, depth_value))
                     b, g, r = frame_rgb[pix_v*divisor, pix_u*divisor]
                     rgb = (int(r) << 16) | (int(g) << 8) | int(b)
 

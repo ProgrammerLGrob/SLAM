@@ -7,20 +7,13 @@ from typing import List, Tuple
 from numpy.typing import NDArray
 
 from visual_odom.constants import *
-from visual_odom.landmark import *
 from visual_odom.visual_odom_map import *
 
-class ExtendedKalmanFilter:
-	def __init__(self, x: State):
+class ExtendedKalmanFilterRobot:
+	def __init__(self, x: State, P: NDArray):
 		self.x = x
+		self.P = P
 		self.Q = self.calculate_Q_matrix(self.x)
-
-		# self.P = self.Q:
-		sigma_x0   = 0.1   # 10cm Anfangsunsicherheit in x
-		sigma_y0   = 0.1   # 10cm in y
-		sigma_th0  = 0.05  # ~3° in theta
-
-		self.P = np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
 
 	def state_func(self, x: State, delta: State) -> State:
 

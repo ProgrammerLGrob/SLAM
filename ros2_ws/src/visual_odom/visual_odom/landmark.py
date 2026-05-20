@@ -5,23 +5,24 @@ import cv2
 
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
+from visual_odom.ekf_landmark import *
 
 class Landmark:
     """Landmark class for storing features detected in images."""
     
-    def __init__(self, u: int, v: int, z: int, kp: cv2.KeyPoint, des: np.ndarray, age: int = 0, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
+    def __init__(self, P_init: NDArray, pixel_coor: PixelCoordinate, kp: cv2.KeyPoint, des: np.ndarray, age: int = 0, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
         """
         Initialize a Landmark.
         """
-        self.u = u
-        self.v = v
-        self.z = z
+        self.pixel_coor = pixel_coor
         self.kp = kp
         self.des = des
         self.age = age
         self.color = color
-        self.kinect_coordinates  = pixel_to_kinect(u, v, z)
+        self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
+        self.P = P_init
+        self.ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P)
 
     
     def get_descriptor(self) -> np.ndarray:
@@ -40,19 +41,19 @@ class Landmark:
         """
         Get the depth value of the landmark.
         """
-        return self.z
+        return self.pixel_coor.z
     
     def get_u(self) -> int:
         """
         Get the u pixel coordinate.
         """
-        return self.u
+        return self.pixel_coor.u
     
     def get_v(self) -> int:
         """
         Get the v pixel coordinate.
         """
-        return self.v
+        return self.pixel_coor.v
     
     def get_age(self) -> int:
         """
@@ -83,6 +84,12 @@ class Landmark:
         Get the kinect coordinates of the landmark.
         """
         return self.kinect_coordinates
+    
+    def get_P(self) -> NDArray:
+        """
+        Get the covariance matrix P of the landmark.
+        """
+        return self.P
     
     def is_visible(self, pos: Coordinate, theta: float) -> bool:
         delta = self.odom_coordinates - pos
@@ -121,6 +128,12 @@ class Landmark:
         Increase the age of the landmark by 1.
         """
         self.age += 1
+
+    def kalman_iteration(self, pos_baselink: Coordinate, delta_theta: float, pixel_coor: PixelCoordinate) -> None:
+        """
+        Perform a Kalman iteration for the landmark's EKF.
+        """
+        self.odom_coordinates, self.P  = self.ekf.kalman_iteration(pos_baselink, delta_theta, pixel_coor)
 
     
 
