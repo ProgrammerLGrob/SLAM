@@ -16,20 +16,14 @@ class ExtendedKalmanFilterRobot:
 		self.Q = self.calculate_Q_matrix(self.x)
 
 	def state_func(self, x: State, delta: State) -> State:
-
-		x.theta += 0.5*delta.theta
-
-		x.theta = normalize_angle(x.theta)          
-
-		c = cos(x.theta)
-		s = sin(x.theta)
-		R = np.array([[c, -s, 0.0],
-					  [s, c, 0.0],
-					  [0.0, 0.0, 1.0]])
-		delta_x = R@np.array([[delta.x], [delta.y], [delta.theta]])
-
-		return State(float(delta_x[0]+x.x), float(delta_x[1]+x.y), float(normalize_angle(x.theta+delta_x[2]*0.5)))
-
+		theta_mid = normalize_angle(x.theta + 0.5 * delta.theta)  # kein In-place!
+		c, s = cos(theta_mid), sin(theta_mid)
+		R = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
+		delta_x = R @ np.array([delta.x, delta.y, delta.theta])
+		return State(float(x.x + delta_x[0]),
+					float(x.y + delta_x[1]),
+					float(normalize_angle(theta_mid + delta_x[2] * 0.5)))
+	
 	def set_jacobi_F_matrix(self, x_tt1: State, delta: State) -> None: 
 		c = cos(x_tt1.theta)
 		s = sin(x_tt1.theta)
@@ -81,19 +75,7 @@ class ExtendedKalmanFilterRobot:
 		self.x.theta = normalize_angle(self.x.theta)
 		self.x = x_tt1
 		self.P = P_tt1
-		for landmark in visible_landmarks:
-			continue
-			key = landmark.get_descriptor().tobytes()
-			if  z_dic.get(key) is None:
-				#rclpy.logging.get_logger(__name__).info("Landmark with descriptor {} has no measurement, skipping update.".format(landmark.get_descriptor()))
-				continue
-
-			rclpy.logging.get_logger(__name__).info("Updating with landmark at odom coordinates {}, measurement: {}".format(landmark.get_odom_coordinates(), z_dic[key][0]))
-			z, depth_value = z_dic.get(key)
-			updated_x, updated_P = self.update(self.x, self.P, landmark, z, depth_value)
-			self.x = updated_x
-			self.x.theta = normalize_angle(self.x.theta)
-			self.P = updated_P
+		
 
 		return self.x, self.P
 
@@ -154,11 +136,11 @@ class ExtendedKalmanFilterRobot:
 		#sx, sy = 0.01, 0.01
 		R = np.array([[sx**2, 0],
 					  [0, sy**2]])
-		#c = cos(x.theta)
-		#s = sin(x.theta)
-		#R_rot = np.array([[c, -s],
-		#		  		[s, c]])
-		#self.R = R_rot@R@R_rot.transpose()	
+		c = cos(x.theta)
+		s = sin(x.theta)
+		R_rot = np.array([[c, -s],
+				  		[s, c]])
+		self.R = R_rot@R@R_rot.transpose()	
 				
 
 	# set model noise -- eg. for EKF

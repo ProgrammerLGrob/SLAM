@@ -42,6 +42,10 @@ class VisualOdom(Node):
         self.rgb_depth_sync_tolerance_sec: float = float(self.declare_parameter('rgb_depth_sync_tolerance_sec', RGB_DEPTH_SYNC_TOLERANCE_SEC).value)  # type: ignore
         self.pixel_tolerance: int = int(self.declare_parameter('pixel_tolerance', PIXEL_TOLERANCE).value)  # type: ignore
         self.matches_for_new_landmarks: int = int(self.declare_parameter('matches_for_new_landmarks', MATCHES_FOR_NEW_LANDMARKS).value)  # type: ignore
+        self.min_matches_for_ransac: int = int(self.declare_parameter('ransac.min_matches_for_ransac', MIN_MATCHES_FOR_RANSAC).value) #type: ignore
+        self.max_rotation_angle_deg: float = float(self.declare_parameter('ransac.max_rotation_angle_deg', MAX_ROTATION_ANGLE_DEG).value) #type: ignore
+        self.max_landmark_age: float = float(self.declare_parameter('max_landmark_age', MAX_LANDMARK_AGE).value)  # type: ignore
+        self.ransac_min_inlier_ratio: float = float(self.declare_parameter('ransac.min_inlier_ratio', RANSAC_MIN_INLIER_RATIO).value)  # type: ignore
         self.get_logger().info(f"pixel_tolerance: {self.pixel_tolerance}")
 
         self.topic_visual_odometry_msg: str = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value  # type: ignore
@@ -67,7 +71,8 @@ class VisualOdom(Node):
         self.frame_depth = None
         self.frame_depth_stamp = None
         self.frame_rgb = None
-        self.theta = -98.0 * pi / 180.0 
+        #self.theta = -98.0 * pi / 180.0 
+        self.theta = 0.0 
         self.pos_baselink = Coordinate(0.0, 0.0, 0.0) #Position in odom frame
 
         self.first_iteration = True
@@ -167,10 +172,11 @@ class VisualOdom(Node):
 
             self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
-            if len(matches) < self.ransac_sample_size: # type: ignore
+            if len(matches) < self.min_matches_for_ransac:
                 self.get_logger().warn(f"Zu wenige Matches fuer RANSAC: {len(matches)}")
+                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 return
-
+            
             ransac_result = self.ransac(self.ransac_evaluation_tolerance, self.ransac_iteration, self.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
             ransac_delta_p = ransac_result[0]
             ransac_delta_theta = ransac_result[1]
@@ -178,6 +184,12 @@ class VisualOdom(Node):
             ransac_draw_keypoints = ransac_result[3]
             ransac_kp_indices = ransac_result[4]
             ransac_not_matched_kp_indices = ransac_result[5]
+            ransac_inlier_count = ransac_result[6]
+
+            if float(ransac_inlier_count)/len(matches) < self.ransac_min_inlier_ratio:  # Weniger als 10% Inlier nach RANSAC
+                self.get_logger().warn(f"RANSAC-Ergebnis hat zu wenige Inlier: {ransac_inlier_count} von {len(matches)} Matches. Hinzufügen neuer Landmarken basierend auf den aktuellen Keypoints.")
+                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+                return
 
             z_dict = {}
             kp_pos = []
@@ -188,16 +200,15 @@ class VisualOdom(Node):
 
                 depth_value = self.frame_depth[v, u]
 
-                kp_pos.append(kinect_depth_to_baselink(pixel_to_kinect(PixelCoordinate(u, v, depth_value))))
-
-
-            visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+                kp_pos.append(PixelCoordinate(u, v, depth_value))
 
             kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, visible_landmarks)
-
             self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
             self.theta = kalman_iteration_result[0].theta
             self.covariance_P = kalman_iteration_result[1]
+            
+
+            visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
 
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -214,9 +225,13 @@ class VisualOdom(Node):
           
             #self.publish_pixels(self.frame_depth, self.frame_rgb, self.publisher_3d, rgb_stamp, KINECT_FRAME_ID)
             #visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
-            #self.visual_odom_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
+            self.visual_odom_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
 
-            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks, ransac_landmark_indices)
+            self.visual_odom_map.age_and_cleanup_old_landmarks(
+                visible_landmarks,
+                ransac_landmark_indices,
+                self.max_landmark_age,
+            )
             #self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
             if len(matches) < self.matches_for_new_landmarks:
@@ -228,14 +243,16 @@ class VisualOdom(Node):
                     not_matched_des.append(valid_des[idx])
                     not_matched_kp_depth.append(valid_kp_depth[idx])
 
+                
+                #self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
                 #self.get_logger().info(f"Zu wenige Matches ({len(matches)}) - Hinzufügen neuer Landmarken basierend auf den aktuellen Keypoints.")
 
            
 
-            #frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_draw_keypoints, None, color=(0,255,0), flags=0)
-            #cv2.imshow("second RGB Image", frame_rgb_drawn)
-            #cv2.waitKey(1)
+            frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, ransac_draw_keypoints, None, color=(0,255,0), flags=0)
+            cv2.imshow("second RGB Image", frame_rgb_drawn)
+            cv2.waitKey(1)
                 
 
     def listener_depth_callback(self,msg):
@@ -248,7 +265,7 @@ class VisualOdom(Node):
         return stamp.sec + stamp.nanosec * 1e-9
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int]]:
+    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
         P = []
         Q = []
 
@@ -281,64 +298,70 @@ class VisualOdom(Node):
 
         if len(P) < n_samples:
             self.get_logger().warn(f"Nicht genug Punkte für RANSAC: {len(P)} < {n_samples}")
-            return best_t, best_theta, [], [], [], []
+            return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
 
         P_array = np.array(P)
         Q_array = np.array(Q)
 
-        P_inlier = []
-        Q_inlier = []
 
-        draw_Q_inlier: List[cv2.KeyPoint] = []
-        valid_kp_index = []
-        not_matched_kp = []
+        # NEU: Diese Listen speichern wir NUR für das allerbeste Modell
+        best_P_inlier = []
+        best_Q_inlier = []
+        best_valid_kp_index = []
+        best_draw_Q_inlier = []
+        best_landmark_index = []
 
-        #iteration = len(matches)/100 * self.ransac_iteration # type: ignore #
         iteration = int(self.ransac_iteration)
 
         for iter in range(iteration):
             P_samples = []
             Q_samples = []
 
-            inlier_count = 0 
-            samples = random.sample(range(len(P)), n_samples) #Take new random samples for next iteration
+            samples = random.sample(range(len(P)), n_samples)
             P_samples = [P[i] for i in samples]
             Q_samples = [Q[i] for i in samples]
 
-
-            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples))
+            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), self.max_rotation_angle_deg)
+            if R is None:
+                continue
    
-            e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1) #calculate error for all points
-            inlier_count = np.sum(e < tolerance) #count inliers with error smaller than tolerance
+            e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
+            inlier_count = np.sum(e < tolerance)
 
             if inlier_count > best_inlier_count:
-                P_inlier = []
-                Q_inlier = []
                 best_inlier_count = inlier_count
+                
+                # WICHTIG: Listen bei neuem Rekord komplett LEEREN!
+                best_P_inlier = []
+                best_Q_inlier = []
+                best_valid_kp_index = []
+                best_draw_Q_inlier = []
+                best_landmark_index = []
+                
                 for i in range(len(e)):
                     if e[i] < tolerance:
-                        valid_kp_index.append(matches[i].trainIdx)
-                        draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
-                        P_inlier.append(P_array[i])
-                        Q_inlier.append(Q_array[i])
+                        best_P_inlier.append(P_array[i])
+                        best_Q_inlier.append(Q_array[i])
+                        best_valid_kp_index.append(matches[i].trainIdx)
+                        best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
+                        best_landmark_index.append(matches[i].queryIdx) # NUR INLIER-LANDMARKEN!
 
-        R, t, theta  = kabsch(np.array(P_inlier), np.array(Q_inlier))
-        best_t = Coordinate(t[0], t[1], 0.0)
+        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
+        R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), self.max_rotation_angle_deg)
+        if R is None:
+            self.get_logger().warn("Kabsch returned None after RANSAC, likely due to large rotation.")
+            return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
+            
+        best_t = Coordinate(float(t[0]), float(t[1]), 0.0)
         best_theta = theta
 
-        valid_set = set(valid_kp_index)
+        valid_set = set(best_valid_kp_index)
+        not_matched_kp = [i for i in range(len(valid_kp)) if i not in valid_set]
 
-        not_matched_kp = [
-            i
-            for i in range(len(valid_kp))
-            if i not in valid_set
-        ]
-
-
-        self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier von {len(matches)} Punkten.")
+        self.get_logger().info(f"RANSAC abgeschlossen. Beste Lösung hatte {best_inlier_count} Inlier.")
         
-        return best_t, best_theta, landmark_index, draw_Q_inlier, valid_kp_index, not_matched_kp
-
+        # Gebe nun exakt die synchronisierten "best_"-Listen zurück
+        return best_t, best_theta, best_landmark_index, best_draw_Q_inlier, best_valid_kp_index, not_matched_kp, best_inlier_count
 
     def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher, time: Time, frame_id: str):
         calculated_point_coordinates = []

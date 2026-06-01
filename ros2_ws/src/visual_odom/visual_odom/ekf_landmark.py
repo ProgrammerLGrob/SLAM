@@ -1,6 +1,7 @@
 from math import *
 import matplotlib.pyplot as plt
 import numpy as np
+import rclpy
 import scipy.stats as stats
 
 from typing import List, Tuple
@@ -16,12 +17,10 @@ class ExtendedKalmanFilterLandmark:
 		self.Q = self.calculate_Q_matrix()
 
 	
-	def kalman_iteration(self, pos_baselink: Coordinate, delta_theta: float, pixel_coor: PixelCoordinate) -> Tuple[State, NDArray]:
+	def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> Tuple[State, NDArray]:
 		x_tt1, P_tt1 = self.prediction(self.x)
-		self.x.theta = normalize_angle(self.x.theta)
 
-		updated_x, updated_P = self.update(x_tt1, P_tt1, pos_baselink, delta_theta, pixel_coor)
-		self.x.theta = normalize_angle(self.x.theta)
+		updated_x, updated_P = self.update(x_tt1, P_tt1, pos_baselink, theta, pixel_coor)
 
 		self.x = updated_x
 		self.P = updated_P
@@ -40,7 +39,8 @@ class ExtendedKalmanFilterLandmark:
 	def calculate_Q_matrix(self) -> NDArray:
 		Q = np.array([[0.0, 0.0, 0.0],
 					  [0.0, 0.0, 0.0],
-					  [0.0, 0.0, 0.0]])
+					  [0.0, 0.0, 0.0]])#
+		Q = np.eye(3) * 1e-6
 		return Q
 	
 	def meas_func(self, x_tt1: Coordinate, pos_robot: Coordinate, theta_robot: float) -> NDArray:
@@ -64,7 +64,7 @@ class ExtendedKalmanFilterLandmark:
 	
 	def sigma_R_approximation(self, kp: PixelCoordinate) -> NDArray:
 		# Tiefenfehler (d^2 für Kinect structured light)
-		s_z = ERROR_MIN_DEPTH + ERROR_QUADRATIC_DEPTH * (kp.z - MIN_DEPTH/1000)**2
+		s_z = ERROR_MIN_DEPTH + ERROR_QUADRATIC_DEPTH * ((kp.z- MIN_DEPTH)/1000)**2
 
 		R_sigma = np.array([[SIGMA_PIXEL**2, 0, 0],
 							[0, SIGMA_PIXEL**2, 0],
@@ -112,6 +112,9 @@ class ExtendedKalmanFilterLandmark:
 	def update(self, x_tt1: State, P_tt1: NDArray, pos_robot: Coordinate, theta_robot: float, kp: PixelCoordinate) -> Tuple[Coordinate, NDArray]:
 		z = kinect_depth_to_baselink(pixel_to_kinect(kp))
 
+		#rclpy.logging.get_logger(__name__).warning("Updating landmark with measurement: {}".format(z))
+
+
 		self.set_jacobian_H(theta_robot)
 		self.set_R(kp)
 		K = self.computeKalmanGain(P_tt1)
@@ -120,8 +123,8 @@ class ExtendedKalmanFilterLandmark:
 		#print("Predicted measurement:", z_tt1)
 		#print("Actual measurement:", z)
 
+		delta_z = np.array([z.x-z_tt1[0], z.y-z_tt1[1], z.z-z_tt1[2]])
 	
-		delta_z = (z-z_tt1) #Compare measurement with hat(z) in base link 
 		#rclpy.logging.get_logger(__name__).info("Actual measurement delta: {}".format(delta_z))
 		
 		delta = K@delta_z

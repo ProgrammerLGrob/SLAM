@@ -2,20 +2,26 @@ visual_odom_node:
   ros__parameters:
     # Depth filtering parameters
     min_depth: 400        # Minimum depth in mm
-    max_depth: 5000       # Maximum depth in mm
+    max_depth: 6500       # Maximum depth in mm
     rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
     pixel_tolerance: 3          # Tolerance in pixels for checking neighboring keypoints
-    matches_for_new_landmarks: 50
+    matches_for_new_landmarks: 500000000
+    max_landmark_age: 30.0        # Maximum age in frames before a landmark is removed
 
     # RANSAC parameters
     ransac:
       evaluation_tolerance: 0.05    # Tolerance for inlier evaluation in m
-      iterations: 300             # Number of RANSAC iterations
-      sample_size: 3              # Minimum number of samples for robust estimation
+      iterations: 400             # Number of RANSAC iterations
+      sample_size: 2              # Minimum number of samples for robust estimation
+      min_matches_for_ransac: 10.0  # Minimum number of matches required for RANSAC
+      max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
+      min_inlier_ratio: 0.18        # Minimum inlier ratio for RANSAC to be considered valid
       
 
     # Rosbag configuration
-    rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
+    rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260519_TransXY_bag/rosbag2_2026_05_19-16_13_19_0.mcap"
+
+    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
     #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/20260421_pure_translation/20260421_pure_translation/rosbag2_2026_04_21-13_47_13_0.mcap"
     #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
 

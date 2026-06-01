@@ -78,6 +78,7 @@ class Landmark:
         Set the odom coordinates of the landmark.
         """
         self.odom_coordinates = odom_coordinates
+        self.ekf.x = odom_coordinates
 
     def get_kinect_coordinates(self) -> Coordinate:
         """
@@ -129,11 +130,11 @@ class Landmark:
         """
         self.age += 1
 
-    def kalman_iteration(self, pos_baselink: Coordinate, delta_theta: float, pixel_coor: PixelCoordinate) -> None:
+    def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
         """
         Perform a Kalman iteration for the landmark's EKF.
         """
-        self.odom_coordinates, self.P  = self.ekf.kalman_iteration(pos_baselink, delta_theta, pixel_coor)
+        self.odom_coordinates, self.P  = self.ekf.kalman_iteration(pos_baselink, theta, pixel_coor)
 
     
 
@@ -142,7 +143,7 @@ class Landmark:
 @param P_i: 2D points in the first frame
 @param Q_i: 2D points in the second frame
 """
-def kabsch(P_i: np.ndarray, Q_i: np.ndarray):
+def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.0):
 
     m_P = np.mean(P_i,axis=0)
     m_Q = np.mean(Q_i,axis=0)
@@ -162,6 +163,8 @@ def kabsch(P_i: np.ndarray, Q_i: np.ndarray):
 
     theta = atan2(first_sum, sec_sum)
     
+    if abs(theta) > np.deg2rad(max_rotation_angle_deg):
+        return None, None, None
     
     R = np.array([[ np.cos(theta), -np.sin(theta)],
                   [ np.sin(theta),  np.cos(theta)]])

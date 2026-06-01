@@ -172,24 +172,22 @@ class VisualOdomMap(list):
         publisher.publish(msg)
         rclpy.logging.get_logger(__name__).info(f"PointCloud with {len(points_with_rgb)} points sent!")
 
-    def age_and_cleanup_old_landmarks(self, visible_landmarks, landmark_index):
+    def age_and_cleanup_old_landmarks(self, visible_landmarks, landmark_index, max_landmark_age: int):
         """
         Increase the age of visible landmarks which are not in the current set of visible landmarks, and remove those which are too old and not matched in @MAX_LANDMARK_AGE frames.
         """
+        matched_landmark_indices = set(landmark_index)
         for i, l in enumerate(visible_landmarks):
-            if i in landmark_index:
+            if i in matched_landmark_indices:
                 l.reset_age()
             else:
                 l.increase_age()
 
         for l in visible_landmarks:
-            if l.get_age() > MAX_LANDMARK_AGE:
+            if l.get_age() > max_landmark_age:
                 self.remove(l)
 
-    def kalman_iteration(self, pos_baselink: Coordinate, delta_theta: float, landmark_indices: List[int], kp_pos: List[Coordinate]) -> None:
-        """
-        Perform a Kalman iteration for all visible landmarks.
-        """
-        for idx in range(len(self)):
-            if idx == landmark_indices:
-                self[idx].kalman_iteration(pos_baselink, delta_theta, kp_pos[landmark_indices.index(idx)])
+    def kalman_iteration(self, pos_baselink: Coordinate, theta: float,landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> None:
+       
+        for idx, kp in zip(landmark_indices, kp_pos):
+            self[idx].kalman_iteration(pos_baselink, theta, kp)
