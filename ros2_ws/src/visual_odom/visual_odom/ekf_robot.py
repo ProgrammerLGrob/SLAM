@@ -10,10 +10,10 @@ from visual_odom.constants import *
 from visual_odom.visual_odom_map import *
 
 class ExtendedKalmanFilterRobot:
-	def __init__(self, x: State, P: NDArray):
+	def __init__(self, x: State, P: NDArray, Q: NDArray):
 		self.x = x
 		self.P = P
-		self.Q = self.calculate_Q_matrix(self.x)
+		self.Q = Q
 
 	def state_func(self, x: State, delta: State) -> State:
 		theta_mid = normalize_angle(x.theta + 0.5 * delta.theta)  # kein In-place!
@@ -114,7 +114,6 @@ class ExtendedKalmanFilterRobot:
 
 	
 		delta_z = (z-z_tt1) #Compare measurement with hat(z) in base link 
-		#rclpy.logging.get_logger(__name__).info("Actual measurement delta: {}".format(delta_z))
 		
 		delta =np.matmul(K, delta_z)
 		

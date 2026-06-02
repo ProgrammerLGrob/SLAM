@@ -61,6 +61,24 @@ class State:
         return State(self.x / factor, self.y / factor, self.theta / factor)
     
 
+@dataclass
+class Parameters:
+    min_depth: int 
+    max_depth: int
+    ransac_evaluation_tolerance: float
+    ransac_iteration: int
+    ransac_sample_size: int
+    rgb_depth_sync_tolerance_sec: float
+    pixel_tolerance: int
+    matches_for_new_landmarks: int
+    min_matches_for_ransac: int
+    max_rotation_angle_deg: float
+    max_landmark_age: float
+    ransac_min_inlier_ratio: float
+    n_robot_samples: int
+    topic_visual_odometry_msg: str
+    
+
 
 
 def normalize_angle(angle: float) -> float:
@@ -83,10 +101,12 @@ KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
 
 VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
 
+N_ROBOT_SAMPLES = 1000
+
 RANSAC_EVALUATION_TOLERANCE = 0.045 #in m
 RANSAC_ITERATION = 300
 RANSAC_SAMPLE_SIZE = 3
-MIN_MATCHES_FOR_RANSAC = 15.0
+MIN_MATCHES_FOR_RANSAC = 15
 RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
 MAX_ROTATION_ANGLE_DEG = 15.0
 

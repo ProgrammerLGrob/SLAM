@@ -112,9 +112,6 @@ class ExtendedKalmanFilterLandmark:
 	def update(self, x_tt1: State, P_tt1: NDArray, pos_robot: Coordinate, theta_robot: float, kp: PixelCoordinate) -> Tuple[Coordinate, NDArray]:
 		z = kinect_depth_to_baselink(pixel_to_kinect(kp))
 
-		#rclpy.logging.get_logger(__name__).warning("Updating landmark with measurement: {}".format(z))
-
-
 		self.set_jacobian_H(theta_robot)
 		self.set_R(kp)
 		K = self.computeKalmanGain(P_tt1)
@@ -124,9 +121,7 @@ class ExtendedKalmanFilterLandmark:
 		#print("Actual measurement:", z)
 
 		delta_z = np.array([z.x-z_tt1[0], z.y-z_tt1[1], z.z-z_tt1[2]])
-	
-		#rclpy.logging.get_logger(__name__).info("Actual measurement delta: {}".format(delta_z))
-		
+			
 		delta = K@delta_z
 		
 		x = x_tt1 + Coordinate(delta[0], delta[1], delta[2])

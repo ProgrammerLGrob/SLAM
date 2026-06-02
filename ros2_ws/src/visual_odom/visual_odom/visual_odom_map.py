@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Iterable, Optional, List, Tuple
+from numpy.typing import NDArray
+
 
 from rclpy.time import Time
 
@@ -91,11 +93,6 @@ class VisualOdomMap(list):
             if is_visible:
                 visible_landmarks.append(l)
 
-        if len(visible_landmarks) < 5:
-            rclpy.logging.get_logger(__name__).info(
-                f"Only a few visible landmarks: {len(visible_landmarks)}"
-            )
-
         return visible_landmarks
     
     
@@ -170,7 +167,6 @@ class VisualOdomMap(list):
         )
 
         publisher.publish(msg)
-        rclpy.logging.get_logger(__name__).info(f"PointCloud with {len(points_with_rgb)} points sent!")
 
     def age_and_cleanup_old_landmarks(self, visible_landmarks, landmark_index, max_landmark_age: int):
         """
