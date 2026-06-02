@@ -227,11 +227,7 @@ class VisualOdom(Node):
             #visible_landmarks.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
             self.visual_odom_map.publish_pointcloud_map(self.publisher_keypoints_3d, rgb_stamp)
 
-            self.visual_odom_map.age_and_cleanup_old_landmarks(
-                visible_landmarks,
-                ransac_landmark_indices,
-                self.max_landmark_age,
-            )
+            #self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.max_landmark_age,)
             #self.get_logger().info(f"Anzahl der Matches: {len(matches)}")
 
             if len(matches) < self.matches_for_new_landmarks:
@@ -310,6 +306,7 @@ class VisualOdom(Node):
         best_valid_kp_index = []
         best_draw_Q_inlier = []
         best_landmark_index = []
+        mean_last_e = 10000.0
 
         iteration = int(self.ransac_iteration)
 
@@ -326,12 +323,14 @@ class VisualOdom(Node):
                 continue
    
             e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
+            mean_e = np.mean(e)
+
             inlier_count = np.sum(e < tolerance)
 
-            if inlier_count > best_inlier_count:
+            if inlier_count > best_inlier_count or (inlier_count == best_inlier_count and mean_e < mean_last_e):
                 best_inlier_count = inlier_count
-                
-                # WICHTIG: Listen bei neuem Rekord komplett LEEREN!
+                mean_last_e = mean_e
+
                 best_P_inlier = []
                 best_Q_inlier = []
                 best_valid_kp_index = []
@@ -344,7 +343,7 @@ class VisualOdom(Node):
                         best_Q_inlier.append(Q_array[i])
                         best_valid_kp_index.append(matches[i].trainIdx)
                         best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
-                        best_landmark_index.append(matches[i].queryIdx) # NUR INLIER-LANDMARKEN!
+                        best_landmark_index.append(matches[i].queryIdx) 
 
         # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
         R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), self.max_rotation_angle_deg)

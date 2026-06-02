@@ -185,7 +185,8 @@ class VisualOdomMap(list):
 
         for l in visible_landmarks:
             if l.get_age() > max_landmark_age:
-                self.remove(l)
+                if l in self:
+                    self.remove(l)
 
     def kalman_iteration(self, pos_baselink: Coordinate, theta: float,landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> None:
        
