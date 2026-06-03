@@ -45,5 +45,3 @@ def main():
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
-
-

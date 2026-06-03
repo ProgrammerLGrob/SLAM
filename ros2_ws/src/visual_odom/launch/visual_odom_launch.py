@@ -13,7 +13,7 @@ def generate_launch_description():
     # Load rosbag path from config
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
-    rosbag_path = config.get('visual_odom', {}).get('ros__parameters', {}).get('rosbag_path', '')
+    rosbag_path = config.get('visual_odom_node', {}).get('ros__parameters', {}).get('rosbag_path', '')
     
     visual_odom_node = Node(
         package='visual_odom',
@@ -22,9 +22,17 @@ def generate_launch_description():
         output='screen',
         parameters=[config_file]
     )
+
+    csv_creator_node = Node(
+        package='visual_odom',
+        executable='csv_creator_node',
+        name='csv_creator_node',
+        output='screen',
+        parameters=[config_file]
+    )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock'],
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics','/serf01/nav_rgbd_1/rgb/image_raw','/serf01/nav_rgbd_1/depth/image_raw','/serf01/odometry/wheel','/serf01/odometry/filtered', '/serf01/odometry/imu','/tf_static'],
         output='screen'
     )
     rviz2 = ExecuteProcess(
@@ -34,6 +42,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         visual_odom_node,
+        #csv_creator_node,
         rosbag_play_normal,
         rviz2
     ])

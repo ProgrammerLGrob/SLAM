@@ -1,26 +1,33 @@
-visual_odom:
+visual_odom_node:
   ros__parameters:
     # Depth filtering parameters
     min_depth: 400        # Minimum depth in mm
     max_depth: 5000       # Maximum depth in mm
+    rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
+    pixel_tolerance: 3          # Tolerance in pixels for checking neighboring keypoints
+    matches_for_new_landmarks: 65
+    max_landmark_age: 5.0        # Maximum age in frames before a landmark is removed
 
     # RANSAC parameters
     ransac:
-      evaluation_tolerance: 50    # Tolerance for inlier evaluation in mm
-      iterations: 1000             # Number of RANSAC iterations
-      sample_size: 3              # Minimum number of samples for robust estimation
-    
-    # Temporal parameters
-    waiting_frames: 3             # Number of frames to wait before processing
+      evaluation_tolerance: 0.063    # Tolerance for inlier evaluation in m
+      iterations: 60             # Number of RANSAC iterations
+      sample_size: 2              # Minimum number of samples for robust estimation
+      min_matches_for_ransac: 6  # Minimum number of matches required for RANSAC
+      max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
+      min_inlier_ratio: 0.24        # Minimum inlier ratio for RANSAC to be considered valid
 
-    # Camera intrinsic parameters
-    camera:
-      focal_length: 526.61        # Focal length in pixels
-      principal_point_u: 318.525  # Principal point u coordinate
-      principal_point_v: 241.181  # Principal point v coordinate
+
+    n_robot_samples: 20                   # Number of samples for robot pose estimation in RANSAC      
 
     # Rosbag configuration
-  #rosbag_path: "/media/sf_VM_Exchange/Rosbags/trans_rot_2_bag/rosbag2_2026_03_24-10_48_57_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/trans_rot_2_bag/rosbag2_2026_03_24-10_48_57_0.mcap"
     #rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
     #rosbag_path: "/media/sf_VM_Exchange/Rosbags/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
-    rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_translation_2_bag/rosbag2_2026_03_24-10_47_45_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_translation_2_bag/rosbag2_2026_03_24-10_47_45_0.mcap"
+    #rosbag_path:  "/media/sf_VM_Exchange/Rosbags/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
+    rosbag_path:  "/mnt/c/Users/pauls/Desktop/Studium/5.Sem/Projekt/VM_Exchange/Rosbags/trans_rot_trans/trans_rot_trans.mcap"
+    #rosbag_path:  "/media/sf_VM_Exchange/Rosbags/trans_rot_trans/trans_rot_trans.mcap"
+
+    
+
