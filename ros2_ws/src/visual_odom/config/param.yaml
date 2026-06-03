@@ -21,6 +21,7 @@ visual_odom_node:
 
     n_robot_samples: 20                   # Number of samples for robot pose estimation in RANSAC      
 
+
     # Rosbag configuration
     #rosbag_path: "/media/sf_VM_Exchange/Rosbags/trans_rot_2_bag/rosbag2_2026_03_24-10_48_57_0.mcap"
     #rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"

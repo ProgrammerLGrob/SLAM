@@ -366,4 +366,3 @@ ERR_FUNC_THETA_D1_T2 = -4.240273e-01
 ERR_FUNC_THETA_T_3 =    6.209562e-02
 
  
->>>>>>> origin/dev_lg
