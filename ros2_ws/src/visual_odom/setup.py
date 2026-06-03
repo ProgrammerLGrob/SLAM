@@ -26,7 +26,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'visual_odom_node = visual_odom.visual_odom_node:main'
+            'visual_odom_node = visual_odom.visual_odom_node:main',
+            #'csv_creator_node = visual_odom.csv_creator_node:main'
         ],
     },
 )
