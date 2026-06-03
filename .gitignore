@@ -211,3 +211,7 @@ __marimo__/
 
 # Test folders
 test/
+deltawerte.xlsx
+Korrelation.m
+odom_imu_data.csv
+odom_imu_data.csv.xlsx
