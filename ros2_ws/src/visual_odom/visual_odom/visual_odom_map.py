@@ -168,9 +168,9 @@ class VisualOdomMap(list):
 
         publisher.publish(msg)
 
-    def age_and_cleanup_old_landmarks(self, visible_landmarks, landmark_index, min_landmark_trust: int):
+    def cleanup_old_landmarks(self, visible_landmarks, landmark_index, min_landmark_trust: int):
         """
-        Increase the age of visible landmarks which are not in the current set of visible landmarks, and remove those which are too old and not matched in @MAX_LANDMARK_AGE frames.
+        Modify trust value of visible landmarks which are not in the current set of visible landmarks, and remove those which can not be trusted
         """
         """
         #old landmark algorithm

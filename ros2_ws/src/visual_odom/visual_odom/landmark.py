@@ -125,17 +125,17 @@ class Landmark:
 
     def increase_trust(self) -> None:
         """
-        Increase the trust of the landmark by 5.0
+        Increase the trust of the landmark by 20.0
         Value has to be vlaidated and adjusted manually!
         """
         self.trust += 20.0
     
     def decrease_trust(self) -> None:
         """
-        Decrease the trust of the landmark to 0.9 Value
+        Decrease the trust of the landmark to 0.95 of the original Value
         Value has to be vlaidated and adjusted manually!
         """
-        self.trust *= 0.92
+        self.trust *= 0.95
 
     def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
         """
