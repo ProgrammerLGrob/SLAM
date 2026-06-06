@@ -15,10 +15,10 @@ visual_odom_node:
       sample_size: 2              # Minimum number of samples for robust estimation
       min_matches_for_ransac: 6  # Minimum number of matches required for RANSAC
       max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
-      min_inlier_ratio: 0.24        # Minimum inlier ratio for RANSAC to be considered valid
+      min_inlier_ratio: 0.28        # Minimum inlier ratio for RANSAC to be considered valid
 
 
-    n_robot_samples: 20                   # Number of samples for robot pose estimation in RANSAC      
+    n_robot_samples: 2                   # Number of samples for robot pose estimation in RANSAC      
 
 
     # Rosbag configuration

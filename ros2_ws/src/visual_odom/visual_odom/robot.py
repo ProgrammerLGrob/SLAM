@@ -49,6 +49,7 @@ class VisualRobotSample():
         self.noise_Q = np.eye(3) * 1e-6
         self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
         self.parameters = parameters
+        self.weight = 0.0
 
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -58,6 +59,7 @@ class VisualRobotSample():
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
         self.frame_rgb = frame_rgb
         self.frame_depth = depth_frame
+        c = Coordinate()
 
         if self.first_iteration and len(self.visual_odom_map) < 50:
             self.first_iteration = False
@@ -66,16 +68,16 @@ class VisualRobotSample():
         else:            
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
 
-            visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+            self.visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
 
             # Match descriptors.
-            matches = self.bf.match(visible_landmarks.get_descriptors(), valid_des)
+            matches = self.bf.match(self.visible_landmarks.get_descriptors(), valid_des)
 
             if len(matches) < self.parameters.min_matches_for_ransac:
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 return
             
-            ransac_result = self.ransac(self.parameters.ransac_evaluation_tolerance, self.parameters.ransac_iteration, self.parameters.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
+            ransac_result = self.ransac(self.parameters.ransac_evaluation_tolerance, self.parameters.ransac_iteration, self.parameters.ransac_sample_size, matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
             ransac_delta_p = ransac_result[0]
             ransac_delta_theta = ransac_result[1]
             ransac_landmark_indices = ransac_result[2]
@@ -99,14 +101,15 @@ class VisualRobotSample():
 
                 kp_pos.append(PixelCoordinate(u, v, depth_value))
 
-            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, visible_landmarks)
+            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, self.visible_landmarks)
             self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
             self.theta = kalman_iteration_result[0].theta
             self.covariance_P = kalman_iteration_result[1]
             
-            #visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+            self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+            self.weight = self.visible_landmarks.calculate_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            #self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
+            #self.visual_odom_map.age_and_cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
 
             if len(matches) < self.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
@@ -250,15 +253,12 @@ class VisualRobotSample():
             covariance[2, 0],    covariance[2, 1],      0.0,    0.0,    0.0,    covariance[2, 2]
         ]
         #msg.pose.covariance *= 10.0  # Skalierung der Kovarianz für bessere Visualisierung in RViz
-
-
         publisher.publish(msg)
 
     def publish_pointcloud_map(self, publisher: Publisher, time: Time):
         self.visual_odom_map.publish_pointcloud_map(publisher, time)
 
     def get_drawn_keypoints(self):
-
         return self.ransac_draw_keypoints
         
     def get_position(self) -> Coordinate:
@@ -269,3 +269,6 @@ class VisualRobotSample():
     
     def get_covariance_P(self) -> NDArray:
         return self.covariance_P
+    
+    def get_weight(self) -> float:
+        return self.weight

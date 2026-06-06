@@ -39,8 +39,15 @@ class VisualOdom(Node):
         self.parameters = self.parameter_initialization()
         
         self.bridge = CvBridge()
-        # Initiate ORB detector
-        self.orb = cv2.ORB_create(nfeatures=1500, patchSize=31)
+        self.orb = cv2.ORB_create(
+            nfeatures=2000,        # maximale Anzahl an zu detektierenden Keypoints
+            scaleFactor=1.1,       # Skalierungsfaktor zwischen den Pyramidenlevels (feine Größenabstufung)
+            nlevels=10,            # Anzahl der Bildpyramiden-Level (Skalenbereich)
+            edgeThreshold=40,      # Mindestabstand eines Keypoints vom Bildrand
+            patchSize=40,          # Größe des Bereichs zur Descriptor-Berechnung
+            fastThreshold=5,      # Schwellwert für FAST-Feature-Erkennung (Empfindlichkeit)
+            scoreType=cv2.ORB_HARRIS_SCORE  # Methode zur Bewertung der Keypoint-Qualität
+        )
         #create BFMatcher object
         self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
@@ -73,6 +80,8 @@ class VisualOdom(Node):
         self.covariance_P =  np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
 
         self.robots: List[VisualRobotSample] = []
+        self.best_robot_idx = 0
+        self.best_weight = 0.0
 
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
 
@@ -80,6 +89,9 @@ class VisualOdom(Node):
 
     def listener_rgb_callback(self,msg):
         valid_kp, valid_des, valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
+
+        if valid_kp is None or valid_des is None or valid_kp_depth is None:
+            return
       
         if self.first_iteration:
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -87,12 +99,11 @@ class VisualOdom(Node):
 
             self.first_iteration = False
             for _ in range(self.parameters.n_robot_samples):
+                
                 self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
             return
         else:  
             self.robot_iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
-
-            self.best_robot = self.get_best_robot()
           
             self.pos_baselink = self.best_robot.get_position()
             self.theta = self.best_robot.get_theta()
@@ -152,21 +163,24 @@ class VisualOdom(Node):
         self.get_logger().info(f"PointCloud mit {len(calculated_point_coordinates)} Punkten gesendet!")
 
     def img_to_kp_des_filtered(self, msg) -> Tuple[List[cv2.KeyPoint], np.ndarray, np.ndarray, Time]:
-        self.frame_rgb=self.bridge.imgmsg_to_cv2(msg,'bgr8')
-        kp = self.orb.detect(self.frame_rgb, None)
-
-        if self.frame_depth is None or self.frame_depth_stamp is None:
-            return  
-
-        rgb_stamp = msg.header.stamp
-        if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > self.parameters.rgb_depth_sync_tolerance_sec:
-            self.get_logger().debug("RGB/Depth nicht ausreichend synchron - Frame wird uebersprungen.")
-            return
-
-        # Evaluation of the detected keypoints: Only keypoints with valid depth values are kept for further processing
         valid_kp = []
         valid_des = []
         valid_kp_depth = []
+
+        self.frame_rgb=self.bridge.imgmsg_to_cv2(msg,'bgr8')
+        kp = self.orb.detect(self.frame_rgb, None)
+
+
+        rgb_stamp = msg.header.stamp
+        if self.frame_depth is None or self.frame_depth_stamp is None:
+            return None, None, None, None  
+
+        
+        if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > self.parameters.rgb_depth_sync_tolerance_sec:
+            self.get_logger().debug("RGB/Depth nicht ausreichend synchron - Frame wird uebersprungen.")
+            return None, None, None, None
+
+        # Evaluation of the detected keypoints: Only keypoints with valid depth values are kept for further processing
         h, w = self.frame_depth.shape[:2]
 
         occupied_pixels = {} 
@@ -214,12 +228,19 @@ class VisualOdom(Node):
         return valid_kp, valid_des, valid_kp_depth, rgb_stamp
  
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time):
+        weights = []
         for robot in self.robots:
             robot.robot_iteration(valid_kp, valid_des, valid_kp_depth, frame_rgb, frame_depth, rgb_stamp)
+            weights.append(robot.get_weight())
 
-    def get_best_robot(self) -> VisualRobotSample:
-        return self.robots[0]
+        sum = np.sum(weights)
+        
+        normalized_weights = weights/sum
     
+        self.best_robot_idx = np.argmax(normalized_weights)
+        self.best_weight = normalized_weights[self.best_robot_idx]
+        self.best_robot = self.robots[self.best_robot_idx]
+
 
     def parameter_initialization(self) -> Parameters:
         # Load parameters from config file with explicit type casting

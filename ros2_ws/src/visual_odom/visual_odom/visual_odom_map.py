@@ -19,7 +19,7 @@ from visual_odom.constants import *
 from visual_odom.tf_methods import *
 
 
-class VisualOdomMap(list):
+class VisualOdomMap(list[Landmark]):
     def __init__(self,
         landmarks: Optional[Iterable[Landmark]] = None,
     ) -> None:
@@ -81,14 +81,14 @@ class VisualOdomMap(list):
             self.add_landmark(landmark)
             
 
-    def get_visible_landmarks(self, pos: Coordinate, theta: float) -> VisualOdomMap:
+    def get_visible_landmarks(self, camera_pos: Coordinate, theta: float) -> VisualOdomMap:
         """
         Get all landmarks that are currently visible from the given position and orientation.
         """
         visible_landmarks = VisualOdomMap()
 
         for l in self:
-            is_visible = l.is_visible(pos, theta)
+            is_visible = l.is_visible(camera_pos, theta)
 
             if is_visible:
                 visible_landmarks.append(l)
@@ -184,7 +184,14 @@ class VisualOdomMap(list):
                 if l in self:
                     self.remove(l)
 
-    def kalman_iteration(self, pos_baselink: Coordinate, theta: float,landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> None:
-       
+    def landmark_kalman_iteration(self, pos_baselink: Coordinate, theta: float,landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> None:
         for idx, kp in zip(landmark_indices, kp_pos):
-            self[idx].kalman_iteration(pos_baselink, theta, kp)
+            self[idx].landmark_kalman_iteration(pos_baselink, theta, kp)
+
+    def calculate_weight(self, pos_baselink: Coordinate, theta: float, landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> float:
+        weight = 1.0
+        for idx, kp in zip(landmark_indices, kp_pos):
+            z_pos_odom = kinect_depth_to_odom(pixel_to_kinect(kp), theta, pos_baselink)
+            weight *= self[idx].calculate_likelihood(z_pos_odom, theta)
+
+        return weight

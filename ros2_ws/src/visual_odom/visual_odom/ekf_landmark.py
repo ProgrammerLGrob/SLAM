@@ -11,13 +11,13 @@ from visual_odom.constants import *
 from visual_odom.tf_methods import *
 
 class ExtendedKalmanFilterLandmark:
-	def __init__(self, x: State, P: NDArray):
+	def __init__(self, x: Coordinate, P: NDArray):
 		self.x = x
 		self.P = P
 		self.Q = self.calculate_Q_matrix()
 
 	
-	def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> Tuple[State, NDArray]:
+	def landmark_kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> Tuple[Coordinate, NDArray]:
 		x_tt1, P_tt1 = self.prediction(self.x)
 
 		updated_x, updated_P = self.update(x_tt1, P_tt1, pos_baselink, theta, pixel_coor)
@@ -80,7 +80,7 @@ class ExtendedKalmanFilterLandmark:
 						  [0, 0, 1]])
 		
 		R_sigma_kinect = J_kinect@R_sigma_pixel@J_kinect.T  # Transformiere die Pixel-Varianz in die Kinect-Koordinaten
-		J_baselink = ROT_KB.T  # Rotation von Kinect zu Base Link
+		J_baselink = ROT_BK  # Rotation von Kinect zu Base Link
 		R_sigma_base_link = J_baselink@R_sigma_kinect@J_baselink.T
 
 		return R_sigma_base_link
@@ -109,7 +109,7 @@ class ExtendedKalmanFilterLandmark:
 		return K
 
 	# Update self.x and self.P, return tuple (x_{t|t}, P_{t_t})
-	def update(self, x_tt1: State, P_tt1: NDArray, pos_robot: Coordinate, theta_robot: float, kp: PixelCoordinate) -> Tuple[Coordinate, NDArray]:
+	def update(self, x_tt1: Coordinate, P_tt1: NDArray, pos_robot: Coordinate, theta_robot: float, kp: PixelCoordinate) -> Tuple[Coordinate, NDArray]:
 		z = kinect_depth_to_baselink(pixel_to_kinect(kp))
 
 		self.set_jacobian_H(theta_robot)
@@ -143,5 +143,11 @@ class ExtendedKalmanFilterLandmark:
 	# set model noise -- eg. for EKF
 	def set_Q(self) -> None:
 		self.Q = self.calculate_Q_matrix()
+	
+	def get_R(self) -> NDArray:
+		"""
+		Returns the Measurement noise matrix in Baselink base
+		"""
+		return self.R
 	
 	

@@ -22,8 +22,7 @@ class Landmark:
         self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
         self.P = P_init
-        self.ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P)
-
+        self.landmark_ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P)
     
     def get_descriptor(self) -> np.ndarray:
         """
@@ -78,7 +77,7 @@ class Landmark:
         Set the odom coordinates of the landmark.
         """
         self.odom_coordinates = odom_coordinates
-        self.ekf.x = odom_coordinates
+        self.landmark_ekf.x = odom_coordinates
 
     def get_kinect_coordinates(self) -> Coordinate:
         """
@@ -92,29 +91,57 @@ class Landmark:
         """
         return self.P
     
-    def is_visible(self, pos: Coordinate, theta: float) -> bool:
-        delta = self.odom_coordinates - pos
-        horizontal_dist = np.linalg.norm([delta.x, delta.y])
-        distance = np.linalg.norm([delta.x, delta.y, delta.z])
-
-        azimuth = normalize_angle(atan2(delta.y, delta.x) - theta)
+    def is_visible(self, pos_camera_odom: Coordinate, theta_robot: float) -> bool:
+        """
+        Prüft, ob das Landmark im Sichtfeld der Kamera liegt.
+        ANNAHME: Kamera blickt starr in Roboter-X-Richtung, unkippt.
+        """
+        # 1. Globaler Differenzvektor von der Kamera-Linse zum Landmark
+        delta_odom = self.odom_coordinates - pos_camera_odom
         
-        if abs(azimuth) > MAX_AZIMUTH:
-            return False
+        # 2. Wir drehen diesen Vektor um das aktuelle Theta des Roboters ZURÜCK.
+        # Dadurch eliminieren wir die Rotation des Roboters im Raum.
+        c = cos(theta_robot)
+        s = sin(theta_robot)
         
-        altitude = atan2(delta.z, horizontal_dist)
-
-        # Hard FOV check
-        if abs(altitude) > MAX_ALTITUDE:
-            return False
+        # Rotation um die Z-Achse rückgängig machen (Inverser Rotationsschritt)
+        local_x =  c * delta_odom.x + s * delta_odom.y
+        local_y = -s * delta_odom.x + c * delta_odom.y
+        local_z =  delta_odom.z  # Da die Kamera nicht gekippt ist, bleibt Z-Global = Z-Lokal
         
-        n = abs(cos(azimuth)*cos(altitude))
-        if n == 0:
+        # JETZT SIND WIR IM LOKALEN GEOMETRIE-RAUM DES ROBOTERS AN DER KAMERAPOSITION:
+        # Weil die Kamera perfekt nach vorne schaut, gilt hier:
+        # local_x: Abstand des Landmarks vor der Kamera (echte Messtiefe!)
+        # local_y: Abstand des Landmarks nach links (positiv) oder rechts (negativ)
+        # local_z: Abstand des Landmarks nach oben/unten relativ zur Linsenhöhe (75cm)
+
+        # 3. Harte Tiefenprüfung (Reichweite des Kinect-Sensors vor der Linse)
+        # Nutze deine Konstanten MIN_DEPTH und MAX_DEPTH (falls sie in Metern sind, sonst / 1000)
+        # Typischerweise: 0.5 Meter bis 5.0 Meter
+        if local_x < 0.5 or local_x > 5.0:
             return False
 
-        if not (MIN_DEPTH/(n*1000) < distance < MAX_DEPTH/(n*1000)):
+        # 4. Horizontaler Sichtwinkel (Azimut) im Bildfeld
+        # local_y ist die Abweichung zur Seite, local_x ist der Abstand nach vorne
+        azimuth = atan2(local_y, local_x)
+        
+        # Der horizontale Öffnungswinkel der Kinect v1 beträgt ca. 57°
+        # Die Hälfte davon ist das maximale Limit: 28.5° = ca. 0.50 Radian
+        MAX_AZIMUTH_RAD = (57.0 / 2.0) * (pi / 180.0) 
+        if abs(azimuth) > MAX_AZIMUTH_RAD:
             return False
 
+        # 5. Vertikaler Sichtwinkel (Elevation / Altitude) im Bildfeld
+        # local_z ist die Höhe relativ zur Kamera, local_x ist der Abstand nach vorne
+        altitude = atan2(local_z, local_x)
+        
+        # Der vertikale Öffnungswinkel der Kinect v1 beträgt ca. 43°
+        # Die Hälfte davon ist das maximale Limit: 21.5° = ca. 0.37 Radian
+        MAX_ALTITUDE_RAD = (43.0 / 2.0) * (pi / 180.0)
+        if abs(altitude) > MAX_ALTITUDE_RAD:
+            return False
+
+        # Wenn der Punkt alle geometrischen Filter überstanden hat, ist er SICHTBAR
         return True
     
 
@@ -130,21 +157,45 @@ class Landmark:
         """
         self.age += 1
 
-    def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
+    def landmark_kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
         """
         Perform a Kalman iteration for the landmark's EKF.
         """
-        self.odom_coordinates, self.P  = self.ekf.kalman_iteration(pos_baselink, theta, pixel_coor)
+        self.odom_coordinates, self.P = self.landmark_ekf.landmark_kalman_iteration(pos_baselink, theta, pixel_coor)
 
+    def calculate_likelihood(self, z_pos_odom: Coordinate, theta: float) -> float:
+        """
+        Calculate the likelihood of the landmark. Must be after the kalman iteration
+        """
+        R_noice = self.landmark_ekf.get_R()
+        c = cos(theta)
+        s = sin(theta)
+
+        R_ob = np.array([
+            [c, -s, 0.0],
+            [s,  c, 0.0],
+            [0.0, 0.0, 1.0]
+        ])
+        s_matrix = self.P + R_ob*R_noice*R_ob.T
+
+        det_s = np.linalg.det(s_matrix)
+
+        if det_s <= MIN_DET_VALUE:
+            det_s = MIN_DET_VALUE
+
+        error = z_pos_odom - self.odom_coordinates
+        error_vector = np.array([error.x, error.y, error.z])
+        likelihood = (1.0 / np.sqrt((2 * np.pi) ** 3 * det_s)) * np.exp(-0.5 * error_vector.T @ np.linalg.inv(s_matrix) @ error_vector)
+        return likelihood
     
 
 
-"""
-@param P_i: 2D points in the first frame
-@param Q_i: 2D points in the second frame
-"""
-def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.0):
 
+def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.0):
+    """
+    @param P_i: 2D points in the first frame
+    @param Q_i: 2D points in the second frame
+    """
     m_P = np.mean(P_i,axis=0)
     m_Q = np.mean(Q_i,axis=0)
 
@@ -171,5 +222,18 @@ def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.
     
     t = m_P - R @ m_Q
 
+    """
+    # Pseudo-Code nach dem RANSAC/Kabsch-Schritt im Node:
+    MAX_ALLOWED_SPEED_PER_FRAME = 0.08 # 5 cm pro Frame max bei Vorwärtsfahrt
+    MAX_ALLOWED_ROTATION_PER_FRAME = 0.08 # ca. 4,5 Grad pro Frame max
+
+    if abs(sqrt(t[0]**2 + t[1]**2)) > MAX_ALLOWED_SPEED_PER_FRAME or abs(theta) > MAX_ALLOWED_ROTATION_PER_FRAME:
+        t = np.array([0.0, 0.0])
+        theta = 0.0
+        R = np.array([[ np.cos(theta), -np.sin(theta)],
+                  [ np.sin(theta),  np.cos(theta)]])
+    """
+
+        
     return R, t, theta
 
