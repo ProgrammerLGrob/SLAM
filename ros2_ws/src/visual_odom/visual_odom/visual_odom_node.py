@@ -238,7 +238,7 @@ class VisualOdom(Node):
             matches_for_new_landmarks = int(self.declare_parameter('matches_for_new_landmarks', MATCHES_FOR_NEW_LANDMARKS).value),
             min_matches_for_ransac = int(self.declare_parameter('ransac.min_matches_for_ransac', MIN_MATCHES_FOR_RANSAC).value),
             max_rotation_angle_deg = float(self.declare_parameter('ransac.max_rotation_angle_deg', MAX_ROTATION_ANGLE_DEG).value),
-            max_landmark_age = float(self.declare_parameter('max_landmark_age', MAX_LANDMARK_AGE).value),
+            min_landmark_trust = float(self.declare_parameter('min_landmark_trust', MIN_LANDMARK_TRUST).value),
             ransac_min_inlier_ratio = float(self.declare_parameter('ransac.min_inlier_ratio', RANSAC_MIN_INLIER_RATIO).value),
             n_robot_samples = int(self.declare_parameter('n_robot_samples', N_ROBOT_SAMPLES).value),
             topic_visual_odometry_msg = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value

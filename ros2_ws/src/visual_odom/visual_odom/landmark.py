@@ -10,14 +10,14 @@ from visual_odom.ekf_landmark import *
 class Landmark:
     """Landmark class for storing features detected in images."""
     
-    def __init__(self, P_init: NDArray, pixel_coor: PixelCoordinate, kp: cv2.KeyPoint, des: np.ndarray, age: int = 0, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
+    def __init__(self, P_init: NDArray, pixel_coor: PixelCoordinate, kp: cv2.KeyPoint, des: np.ndarray, trust: float = 30, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
         """
         Initialize a Landmark.
         """
         self.pixel_coor = pixel_coor
         self.kp = kp
         self.des = des
-        self.age = age
+        self.trust = trust
         self.color = color
         self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
@@ -54,11 +54,11 @@ class Landmark:
         """
         return self.pixel_coor.v
     
-    def get_age(self) -> int:
+    def get_trust(self) -> int:
         """
-        Get the age of the landmark.
+        Get the trust value of the landmark.
         """
-        return self.age
+        return self.trust
     
     def get_color(self) -> int:
         """
@@ -117,17 +117,25 @@ class Landmark:
         return True
     
 
-    def reset_age(self) -> None:
+    def reset_trust(self) -> None:
         """
-        Reset the age of the landmark to 0.
+        Reset the trust of the landmark to 1.0.
         """
-        self.age = 0
+        self.trust = 1.0
 
-    def increase_age(self) -> None:
+    def increase_trust(self) -> None:
         """
-        Increase the age of the landmark by 1.
+        Increase the trust of the landmark by 5.0
+        Value has to be vlaidated and adjusted manually!
         """
-        self.age += 1
+        self.trust += 20.0
+    
+    def decrease_trust(self) -> None:
+        """
+        Decrease the trust of the landmark to 0.9 Value
+        Value has to be vlaidated and adjusted manually!
+        """
+        self.trust *= 0.92
 
     def kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
         """

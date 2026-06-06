@@ -112,7 +112,7 @@ class VisualRobotSample():
             
             #visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
+            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.min_landmark_trust,)
 
             if len(matches) < self.parameters.matches_for_new_landmarks:
                 not_matched_kp = []

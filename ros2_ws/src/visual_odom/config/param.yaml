@@ -6,7 +6,7 @@ visual_odom_node:
     rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
     pixel_tolerance: 3          # Tolerance in pixels for checking neighboring keypoints
     matches_for_new_landmarks: 65
-    max_landmark_age: 5.0        # Maximum age in frames before a landmark is removed
+    max_landmark_age: 0.3        # Maximum age in frames before a landmark is removed
 
     # RANSAC parameters
     ransac:

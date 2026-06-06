@@ -73,7 +73,7 @@ class Parameters:
     matches_for_new_landmarks: int
     min_matches_for_ransac: int
     max_rotation_angle_deg: float
-    max_landmark_age: float
+    min_landmark_trust: float
     ransac_min_inlier_ratio: float
     n_robot_samples: int
     topic_visual_odometry_msg: str
@@ -110,7 +110,7 @@ MIN_MATCHES_FOR_RANSAC = 15
 RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
 MAX_ROTATION_ANGLE_DEG = 15.0
 
-MAX_LANDMARK_AGE = 15.0 
+MIN_LANDMARK_TRUST = 20.0 
 
 RANSAC_MIN_INLIER_RATIO = 0.3
 
