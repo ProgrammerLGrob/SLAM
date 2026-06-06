@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Point
 from scipy.spatial.transform import Rotation
 
 from numpy.typing import NDArray
 from rclpy.time import Time
 from scipy.spatial import KDTree
 
-from math import pi
+from math import pi, tan, radians, cos, sin
 import random
 from typing import List, Tuple
 
 import rclpy
+from rclpy.logging import get_logger
 from rclpy.node import Node, Publisher
 from sensor_msgs.msg import Image, PointCloud2, PointField
 from sensor_msgs_py import point_cloud2
@@ -29,9 +30,10 @@ from visual_odom.ekf_robot import *
 
 
 from nav_msgs.msg import Odometry
+from visualization_msgs.msg import Marker
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):
         self.theta = theta 
         self.pos_baselink = pos
 
@@ -44,6 +46,8 @@ class VisualRobotSample():
     
         self.odometry_msg_publisher = odom_publisher
         self.map_publisher = map_publisher
+        self.cone_publisher = cone_publisher
+        self.logger = get_logger("vision_cone")
 
         self.covariance_P = covariance_P
         self.noise_Q = np.eye(3) * 1e-6
@@ -53,6 +57,8 @@ class VisualRobotSample():
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
+        #Debug vision cone for best robot only!
+        self.publish_vision_cone(rgb_stamp)
         
 
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
@@ -106,7 +112,7 @@ class VisualRobotSample():
             
             #visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            #self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
+            self.visual_odom_map.age_and_cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
 
             if len(matches) < self.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
@@ -253,6 +259,146 @@ class VisualRobotSample():
 
 
         publisher.publish(msg)
+
+    def publish_vision_cone(self, rgb_stamp):
+        
+        cone_msg = self.init_camera_cone(rgb_stamp);
+        
+        self.cone_publisher.publish(cone_msg)
+        self.logger.info(f"Vision_Cone published!")
+
+    
+    
+    def init_camera_cone(self, rgb_stamp):
+        cone_msg = Marker()
+        #TODO: Initialisierung ersetzen mit Marker_setup Funktion!
+        cone_msg.header.frame_id = "kinect_depth"
+        cone_msg.header.stamp = rgb_stamp
+        cone_msg.ns = "vision_cone"
+        cone_msg.id = 0
+
+        cone_msg.type = Marker.TRIANGLE_LIST    #cone-mode
+        cone_msg.action = Marker.ADD
+        cone_msg.scale.x = 1.0
+        cone_msg.scale.y = 1.0
+        cone_msg.scale.z = 1.0
+
+        cone_msg.color.r = 0.0
+        cone_msg.color.g = 1.0
+        cone_msg.color.b = 0.0
+        cone_msg.color.a = 0.3      #transparency
+        """
+        fov_h = radians(43)      #height degrees
+        fov_w = radians(57)      #width degrees
+        
+        h = tan(fov_h / 2)               #half for angle calcualtion
+        w = tan(fov_w / 2)               #half for angle calculation
+        d = MAX_DEPTH/1000          #depth in meters for ros
+        
+        #base point
+        p0 = Point()
+        p0.x = 0.0 
+        p0.y = 0.0
+        p0.z = 0.0
+        #upper left
+        p1 = Point()
+        p1.z = d 
+        p1.x = d * w
+        p1.y = d * h
+
+        #upper right
+        p2 = Point()
+        p2.z = d 
+        p2.x = -d * w 
+        p2.y = d * h
+
+        #lower left
+        p3 = Point()
+        p3.z = d
+        p3.x = d * w
+        p3.y = -d * h
+
+        #lower right
+        p4 = Point()
+        p4.z = d
+        p4.x = -d * w
+        p4.y = -d * h
+
+
+        cone_msg.points = []
+        cone_msg.points.extend([p0, p1, p3, 
+                                p0, p2, p4,
+                                p0, p1, p2,
+                                p0, p3, p4])        
+        """
+        steps_v = RESOLUTION_CONE_V
+        steps_h = RESOLUTION_CONE_H
+        fov_v = radians(CAMERA_ANGLE_V_DEG)
+        fov_h = radians(CAMERA_ANGLE_H_DEG)
+        r = MAX_DEPTH/1000
+
+        points = []
+        cone_msg.points = []
+
+        p0 = Point()
+        p0.x = 0.0 
+        p0.y = 0.0
+        p0.z = 0.0
+
+        def idx(i, j):
+            return i * (steps_h + 1) + j
+        
+        for i in range(steps_v + 1):
+            pitch = -fov_v/2 + i * (fov_v / steps_v)
+
+            for j in range(steps_h + 1):
+                yaw = -fov_h/2 + j * (fov_h / steps_h)
+
+                p = Point()
+                p.z = r * cos(pitch) * cos(yaw)
+                p.x = r * cos(pitch) * sin(yaw)
+                p.y = r * sin(pitch)
+
+                points.append(p)
+        
+        # Fläche unten
+        for i in range(steps_v):
+            for j in range(steps_h):
+
+                p1 = points[idx(i, j)]
+                p2 = points[idx(i, j+1)]
+                p3 = points[idx(i+1, j)]
+                p4 = points[idx(i+1, j+1)]
+
+                cone_msg.points += [p1, p2, p3]
+                cone_msg.points += [p2, p4, p3]
+        
+        #Wand links
+        for i in range(steps_v):
+            p1 = points[idx(i, 0)]
+            p2 = points[idx(i + 1, 0)]
+
+            cone_msg.points.extend([p0, p1, p2])
+        #Wand rechts
+        for i in range(steps_v):
+            p1 = points[idx(i, steps_h)]
+            p2 = points[idx(i + 1, steps_h)]
+
+            cone_msg.points.extend([p0, p1, p2])
+        #Wand oben
+        for j in range(steps_h):
+            p1 = points[idx(0, j)]
+            p2 = points[idx(0, j + 1)]
+
+            cone_msg.points.extend([p0, p1, p2])
+        #Wand unten
+        for j in range(steps_h):
+            p1 = points[idx(steps_v, j)]
+            p2 = points[idx(steps_v, j + 1)]
+
+            cone_msg.points.extend([p0, p1, p2])
+        
+        return cone_msg
 
     def publish_pointcloud_map(self, publisher: Publisher, time: Time):
         self.visual_odom_map.publish_pointcloud_map(publisher, time)

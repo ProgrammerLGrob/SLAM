@@ -23,7 +23,6 @@ class Landmark:
         self.odom_coordinates = odom_coordinates
         self.P = P_init
         self.ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P)
-
     
     def get_descriptor(self) -> np.ndarray:
         """

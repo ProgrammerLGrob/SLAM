@@ -172,6 +172,20 @@ class VisualOdomMap(list):
         """
         Increase the age of visible landmarks which are not in the current set of visible landmarks, and remove those which are too old and not matched in @MAX_LANDMARK_AGE frames.
         """
+        """
+        #old landmark algorithm
+        matched_landmark_indices = set(landmark_index)
+        for i, l in enumerate(visible_landmarks):
+            if i in matched_landmark_indices:
+                l.reset_age()
+            else:
+                l.increase_age()
+
+        for l in visible_landmarks:
+            if l.get_age() > max_landmark_age:
+                if l in self:
+                    self.remove(l)
+        """
         matched_landmark_indices = set(landmark_index)
         for i, l in enumerate(visible_landmarks):
             if i in matched_landmark_indices:

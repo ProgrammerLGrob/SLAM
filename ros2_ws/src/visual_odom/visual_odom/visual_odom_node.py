@@ -16,6 +16,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image, PointCloud2, PointField
 from sensor_msgs_py import point_cloud2
+from visualization_msgs.msg import Marker
 
 import cv2
 from cv_bridge import CvBridge
@@ -50,7 +51,7 @@ class VisualOdom(Node):
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, self.parameters.topic_visual_odometry_msg, 10)
-
+        self.publisher_cone = self.create_publisher(Marker, "vision_cone", 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
@@ -81,13 +82,16 @@ class VisualOdom(Node):
     def listener_rgb_callback(self,msg):
         valid_kp, valid_des, valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
       
+        if (valid_kp is None or valid_des is None or valid_kp_depth is None):
+            return
+        
         if self.first_iteration:
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
             self.first_iteration = False
             for _ in range(self.parameters.n_robot_samples):
-                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
+                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
             return
         else:  
             self.robot_iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
@@ -152,27 +156,27 @@ class VisualOdom(Node):
         self.get_logger().info(f"PointCloud mit {len(calculated_point_coordinates)} Punkten gesendet!")
 
     def img_to_kp_des_filtered(self, msg) -> Tuple[List[cv2.KeyPoint], np.ndarray, np.ndarray, Time]:
+        
         self.frame_rgb=self.bridge.imgmsg_to_cv2(msg,'bgr8')
         kp = self.orb.detect(self.frame_rgb, None)
 
         if self.frame_depth is None or self.frame_depth_stamp is None:
-            return  
+            return None, None, None, None
 
         rgb_stamp = msg.header.stamp
+        
         if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > self.parameters.rgb_depth_sync_tolerance_sec:
             self.get_logger().debug("RGB/Depth nicht ausreichend synchron - Frame wird uebersprungen.")
-            return
+            return None, None, None, None
 
         # Evaluation of the detected keypoints: Only keypoints with valid depth values are kept for further processing
-        valid_kp = []
-        valid_des = []
-        valid_kp_depth = []
+        
         h, w = self.frame_depth.shape[:2]
-
         occupied_pixels = {} 
         all_kp = []
         valid_kp = []
         valid_kp_depth = []
+        valid_des = []
 
         for p in kp:
             u, v = p.pt
