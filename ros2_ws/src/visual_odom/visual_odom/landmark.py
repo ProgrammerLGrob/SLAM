@@ -98,21 +98,21 @@ class Landmark:
         c = cos(theta_robot)
         s = sin(theta_robot)
         
-       
-        local_x =  c * delta_odom.x + s * delta_odom.y
-        local_y = -s * delta_odom.x + c * delta_odom.y
-        local_z =  delta_odom.z  
+        delta_base_link = Coordinate(0.0, 0.0, 0.0)
+        delta_base_link.x =  c * delta_odom.x + s * delta_odom.y
+        delta_base_link.y = -s * delta_odom.x + c * delta_odom.y
+        delta_base_link.z =  delta_odom.z  
 
-        if local_x < MIN_DEPTH/1000 or local_x > MAX_DEPTH/1000:
+        if delta_base_link.x < MIN_DEPTH/1000 or delta_base_link.x > MAX_DEPTH/1000:
             return False
         
-        azimuth = atan2(local_y, local_x)
+        azimuth = atan2(delta_base_link.y, delta_base_link.x)
         
         max_azimuth = CAMERA_ANGLE_HOR_RAD/ 2.0
         if abs(azimuth) > max_azimuth:
             return False
 
-        altitude = atan2(local_z, local_x)
+        altitude = atan2(delta_base_link.z, delta_base_link.x)
         
         max_alt = CAMERA_ANGLE_VER_RAD/ 2.0
         if abs(altitude) > max_alt:
