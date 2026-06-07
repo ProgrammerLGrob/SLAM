@@ -110,7 +110,7 @@ class Parameters:
         matches_for_new_landmarks (int): Required match counter threshold before declaring a stable new map landmark.
         min_matches_for_ransac (int): Minimum required feature matches to attempt a RANSAC visual odometry calculation.
         max_rotation_angle_deg (float): Safety constraint capping the maximum plausible robot rotation per frame step.
-        max_landmark_age (float): Lifespan limit before an unobserved landmark is pruned from the map memory.
+        min_landmark_trust (float): Minimum trust value before an unobserved landmark is pruned from the map memory.
         ransac_min_inlier_ratio (float): Minimum acceptable percentage of inliers needed to trust a RANSAC solution.
         n_robot_samples (int): Number of particles/samples generated within the localization filter.
         topic_visual_odometry_msg (str): ROS 2 topic name where the calculated odometry path is published.
@@ -135,7 +135,7 @@ class Parameters:
     """Minimum required feature matches to attempt a RANSAC visual odometry calculation."""
     max_rotation_angle_deg: float
     """Safety constraint capping the maximum plausible robot rotation per frame step."""
-    max_landmark_age: float
+    min_landmark_trust: float
     """Lifespan limit before an unobserved landmark is pruned from the map memory."""
     ransac_min_inlier_ratio: float
     """Minimum acceptable percentage of inliers needed to trust a RANSAC solution."""
@@ -198,8 +198,9 @@ RGB_DEPTH_SYNC_TOLERANCE_SEC = 0.05
 MAX_ROTATION_ANGLE_DEG = 15.0
 """Safety constraint capping the maximum plausible robot rotation per frame step."""
 
-MAX_LANDMARK_AGE = 15.0
-"""Forgetting-factor threshold; old landmarks unseen for 15 frames face map deletion."""
+MIN_LANDMARK_TRUST = 20.0
+
+INCREASE_TRUST_VALUE = 10.0
 
 RANSAC_MIN_INLIER_RATIO = 0.3
 """Filter constraint requiring at least 30% of matched pairs to fit the final consensus."""
@@ -243,6 +244,17 @@ MAX_ALTITUDE = abs(atan2(CV, F))
 
 CAMERA_POS_IN_BASELINK = Coordinate(0.1, 0.0, 0.75)
 """Fixed physical offset of the camera frame relative to base_link (10cm forward, 75cm high)."""
+
+RESOLUTION_CONE_H = 40
+RESOLUTION_CONE_V = 30 
+CAMERA_ANGLE_VER_RAD = 43*pi/180
+"""Vertical field of view angle of the RGB-D camera in radians."""
+CAMERA_ANGLE_HOR_RAD = 57*pi/180
+"""Horizontal field of view angle of the RGB-D camera in radians."""
+
+DECREASE_TRUST_FACTOR = 0.95
+
+
 
 ROT_BK = np.array([[0.0, 0.0, 1.0],
                    [-1.0, 0.0, 0.0],

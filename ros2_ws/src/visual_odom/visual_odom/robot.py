@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Point
 from scipy.spatial.transform import Rotation
+from visualization_msgs.msg import Marker
 
 from numpy.typing import NDArray
 from rclpy.time import Time
 from scipy.spatial import KDTree
 
-from math import pi
+from math import pi, sin, cos, tan
 import random
 from typing import List, Tuple
 
@@ -31,7 +32,7 @@ from visual_odom.ekf_robot import *
 from nav_msgs.msg import Odometry
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):        
         self.theta = theta 
         self.pos_baselink = pos
 
@@ -44,7 +45,7 @@ class VisualRobotSample():
     
         self.odometry_msg_publisher = odom_publisher
         self.map_publisher = map_publisher
-
+        self.cone_publisher = cone_publisher
         self.covariance_P = covariance_P
         self.noise_Q = np.eye(3) * 1e-6
         self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
@@ -54,12 +55,11 @@ class VisualRobotSample():
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
-        
+        self.publish_vision_cone(self.cone_publisher, rgb_stamp)
 
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
         self.frame_rgb = frame_rgb
         self.frame_depth = depth_frame
-        c = Coordinate()
 
         if self.first_iteration and len(self.visual_odom_map) < 50:
             self.first_iteration = False
@@ -109,7 +109,7 @@ class VisualRobotSample():
             self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
             self.weight = self.visible_landmarks.calculate_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            #self.visual_odom_map.age_and_cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,self.parameters.max_landmark_age,)
+            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,self.parameters.min_landmark_trust)
 
             if len(matches) < self.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
@@ -255,8 +255,76 @@ class VisualRobotSample():
         #msg.pose.covariance *= 10.0  # Skalierung der Kovarianz für bessere Visualisierung in RViz
         publisher.publish(msg)
 
+    def publish_vision_cone(self, cone_publisher:Publisher, rgb_stamp:Time):
+        cone_msg = self.init_camera_cone(rgb_stamp)
+        cone_publisher.publish(cone_msg)
+
+    def init_camera_cone(self, rgb_stamp):
+        cone_msg = Marker()
+        cone_msg.header.frame_id = "kinect_depth"
+        cone_msg.header.stamp = rgb_stamp
+        cone_msg.ns = "vision_cone"
+        cone_msg.id = 0
+
+        cone_msg.type = Marker.TRIANGLE_LIST    #cone-mode
+        cone_msg.action = Marker.ADD
+        cone_msg.scale.x = 1.0
+        cone_msg.scale.y = 1.0
+        cone_msg.scale.z = 1.0
+
+        cone_msg.color.r = 0.0
+        cone_msg.color.g = 1.0
+        cone_msg.color.b = 0.0
+        cone_msg.color.a = 0.3      #transparency
+              
+        h = tan(CAMERA_ANGLE_VER_RAD / 2)               #half for angle calcualtion
+        w = tan(CAMERA_ANGLE_HOR_RAD / 2)               #half for angle calculation
+        d = MAX_DEPTH/1000          #depth in meters for ros
+        
+        #center point of the cone
+        p0 = Point()
+        p0.x = 0.0 
+        p0.y = 0.0
+        p0.z = 0.0
+
+        #lower right
+        p1 = Point()
+        p1.z = d 
+        p1.x = d * w
+        p1.y = d * h
+
+        #lower left
+        p2 = Point()
+        p2.z = d 
+        p2.x = -d * w 
+        p2.y = d * h
+
+        #upper right
+        p3 = Point()
+        p3.z = d
+        p3.x = d * w
+        p3.y = -d * h
+
+        #upper left
+        p4 = Point()
+        p4.z = d
+        p4.x = -d * w
+        p4.y = -d * h
+
+
+        cone_msg.points = []
+        cone_msg.points.extend([p0, p1, p3, 
+                                p0, p4, p2,
+                                p0, p2, p1,
+                                p0, p3, p4,
+                                p1, p2, p4,
+                                p4, p3, p1])        
+    
+        return cone_msg
+    
     def publish_pointcloud_map(self, publisher: Publisher, time: Time):
         self.visual_odom_map.publish_pointcloud_map(publisher, time)
+
 
     def get_drawn_keypoints(self):
         return self.ransac_draw_keypoints

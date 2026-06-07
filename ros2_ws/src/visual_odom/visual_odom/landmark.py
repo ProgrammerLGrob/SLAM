@@ -10,14 +10,14 @@ from visual_odom.ekf_landmark import *
 class Landmark:
     """Landmark class for storing features detected in images."""
     
-    def __init__(self, P_init: NDArray, pixel_coor: PixelCoordinate, kp: cv2.KeyPoint, des: np.ndarray, age: int = 0, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
+    def __init__(self, P_init: NDArray, pixel_coor: PixelCoordinate, kp: cv2.KeyPoint, des: np.ndarray, trust: float = 30, color: int = 0, odom_coordinates: Coordinate = Coordinate(0.0, 0.0, 0.0)) -> None:
         """
         Initialize a Landmark.
         """
         self.pixel_coor = pixel_coor
         self.kp = kp
         self.des = des
-        self.age = age
+        self.trust = trust
         self.color = color
         self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
@@ -54,12 +54,12 @@ class Landmark:
         """
         return self.pixel_coor.v
     
-    def get_age(self) -> int:
+    def get_trust(self) -> float:
         """
-        Get the age of the landmark.
+        Get the trust value of the landmark.
         """
-        return self.age
-    
+        return self.trust
+
     def get_color(self) -> int:
         """
         Get the color value of the landmark.
@@ -92,70 +92,51 @@ class Landmark:
         return self.P
     
     def is_visible(self, pos_camera_odom: Coordinate, theta_robot: float) -> bool:
-        """
-        Prüft, ob das Landmark im Sichtfeld der Kamera liegt.
-        ANNAHME: Kamera blickt starr in Roboter-X-Richtung, unkippt.
-        """
-        # 1. Globaler Differenzvektor von der Kamera-Linse zum Landmark
+
         delta_odom = self.odom_coordinates - pos_camera_odom
-        
-        # 2. Wir drehen diesen Vektor um das aktuelle Theta des Roboters ZURÜCK.
-        # Dadurch eliminieren wir die Rotation des Roboters im Raum.
+
         c = cos(theta_robot)
         s = sin(theta_robot)
         
-        # Rotation um die Z-Achse rückgängig machen (Inverser Rotationsschritt)
+       
         local_x =  c * delta_odom.x + s * delta_odom.y
         local_y = -s * delta_odom.x + c * delta_odom.y
-        local_z =  delta_odom.z  # Da die Kamera nicht gekippt ist, bleibt Z-Global = Z-Lokal
-        
-        # JETZT SIND WIR IM LOKALEN GEOMETRIE-RAUM DES ROBOTERS AN DER KAMERAPOSITION:
-        # Weil die Kamera perfekt nach vorne schaut, gilt hier:
-        # local_x: Abstand des Landmarks vor der Kamera (echte Messtiefe!)
-        # local_y: Abstand des Landmarks nach links (positiv) oder rechts (negativ)
-        # local_z: Abstand des Landmarks nach oben/unten relativ zur Linsenhöhe (75cm)
+        local_z =  delta_odom.z  
 
-        # 3. Harte Tiefenprüfung (Reichweite des Kinect-Sensors vor der Linse)
-        # Nutze deine Konstanten MIN_DEPTH und MAX_DEPTH (falls sie in Metern sind, sonst / 1000)
-        # Typischerweise: 0.5 Meter bis 5.0 Meter
-        if local_x < 0.5 or local_x > 5.0:
+        if local_x < MIN_DEPTH/1000 or local_x > MAX_DEPTH/1000:
             return False
-
-        # 4. Horizontaler Sichtwinkel (Azimut) im Bildfeld
-        # local_y ist die Abweichung zur Seite, local_x ist der Abstand nach vorne
+        
         azimuth = atan2(local_y, local_x)
         
-        # Der horizontale Öffnungswinkel der Kinect v1 beträgt ca. 57°
-        # Die Hälfte davon ist das maximale Limit: 28.5° = ca. 0.50 Radian
-        MAX_AZIMUTH_RAD = (57.0 / 2.0) * (pi / 180.0) 
-        if abs(azimuth) > MAX_AZIMUTH_RAD:
+        max_azimuth = CAMERA_ANGLE_HOR_RAD/ 2.0
+        if abs(azimuth) > max_azimuth:
             return False
 
-        # 5. Vertikaler Sichtwinkel (Elevation / Altitude) im Bildfeld
-        # local_z ist die Höhe relativ zur Kamera, local_x ist der Abstand nach vorne
         altitude = atan2(local_z, local_x)
         
-        # Der vertikale Öffnungswinkel der Kinect v1 beträgt ca. 43°
-        # Die Hälfte davon ist das maximale Limit: 21.5° = ca. 0.37 Radian
-        MAX_ALTITUDE_RAD = (43.0 / 2.0) * (pi / 180.0)
-        if abs(altitude) > MAX_ALTITUDE_RAD:
+        max_alt = CAMERA_ANGLE_VER_RAD/ 2.0
+        if abs(altitude) > max_alt:
             return False
 
-        # Wenn der Punkt alle geometrischen Filter überstanden hat, ist er SICHTBAR
         return True
     
 
-    def reset_age(self) -> None:
+    def reset_trust(self) -> None:
         """
-        Reset the age of the landmark to 0.
+        Reset the trust value of the landmark to its initial value.
         """
-        self.age = 0
+        self.trust = 30.0
 
-    def increase_age(self) -> None:
+    def increase_trust(self) -> None:
         """
-        Increase the age of the landmark by 1.
+        Increase the trust value of the landmark by INCREASE_TRUST_VALUE.
         """
-        self.age += 1
+        self.trust += INCREASE_TRUST_VALUE  # Increment trust by a fraction of the minimum trust threshold
+
+    def decrease_trust(self) -> None:
+        self.trust *= DECREASE_TRUST_FACTOR  # Exponentieller Abfall, z.B. 0.8 oder 0.9 pro Frame ohne Sichtung
+
+
 
     def landmark_kalman_iteration(self, pos_baselink: Coordinate, theta: float, pixel_coor: PixelCoordinate) -> None:
         """

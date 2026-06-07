@@ -5,6 +5,7 @@ from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
 from rclpy.time import Time
 from scipy.spatial import KDTree
+from visualization_msgs.msg import Marker
 
 from math import pi
 import random
@@ -41,8 +42,6 @@ class VisualOdom(Node):
         self.bridge = CvBridge()
         self.orb = cv2.ORB_create(
             nfeatures=2000,        # maximale Anzahl an zu detektierenden Keypoints
-            scaleFactor=1.1,       # Skalierungsfaktor zwischen den Pyramidenlevels (feine Größenabstufung)
-            nlevels=10,            # Anzahl der Bildpyramiden-Level (Skalenbereich)
             edgeThreshold=40,      # Mindestabstand eines Keypoints vom Bildrand
             patchSize=40,          # Größe des Bereichs zur Descriptor-Berechnung
             fastThreshold=5,      # Schwellwert für FAST-Feature-Erkennung (Empfindlichkeit)
@@ -57,7 +56,7 @@ class VisualOdom(Node):
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, self.parameters.topic_visual_odometry_msg, 10)
-
+        self.publisher_cone = self.create_publisher(Marker, "vision_cone", 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
@@ -100,7 +99,7 @@ class VisualOdom(Node):
             self.first_iteration = False
             for _ in range(self.parameters.n_robot_samples):
                 
-                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
+                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
             return
         else:  
             self.robot_iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
@@ -255,7 +254,7 @@ class VisualOdom(Node):
             matches_for_new_landmarks = int(self.declare_parameter('matches_for_new_landmarks', MATCHES_FOR_NEW_LANDMARKS).value),
             min_matches_for_ransac = int(self.declare_parameter('ransac.min_matches_for_ransac', MIN_MATCHES_FOR_RANSAC).value),
             max_rotation_angle_deg = float(self.declare_parameter('ransac.max_rotation_angle_deg', MAX_ROTATION_ANGLE_DEG).value),
-            max_landmark_age = float(self.declare_parameter('max_landmark_age', MAX_LANDMARK_AGE).value),
+            min_landmark_trust = float(self.declare_parameter('min_landmark_trust', MIN_LANDMARK_TRUST).value),
             ransac_min_inlier_ratio = float(self.declare_parameter('ransac.min_inlier_ratio', RANSAC_MIN_INLIER_RATIO).value),
             n_robot_samples = int(self.declare_parameter('n_robot_samples', N_ROBOT_SAMPLES).value),
             topic_visual_odometry_msg = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value
