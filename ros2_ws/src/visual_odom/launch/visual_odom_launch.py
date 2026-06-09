@@ -10,7 +10,6 @@ def generate_launch_description():
     visual_odom_share = get_package_share_directory('visual_odom')
     config_file = os.path.join(visual_odom_share, 'config', 'param.yaml')
     
-    # Load rosbag path from config
     with open(config_file, 'r') as f:
         config = yaml.safe_load(f)
     rosbag_path = config.get('visual_odom_node', {}).get('ros__parameters', {}).get('rosbag_path', '')
@@ -22,27 +21,25 @@ def generate_launch_description():
         output='screen',
         parameters=[config_file]
     )
-
-    csv_creator_node = Node(
-        package='visual_odom',
-        executable='csv_creator_node',
-        name='csv_creator_node',
-        output='screen',
-        parameters=[config_file]
-    )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics','/serf01/nav_rgbd_1/rgb/image_raw','/serf01/nav_rgbd_1/depth/image_raw','/serf01/odometry/wheel','/serf01/odometry/filtered', '/serf01/odometry/imu','/tf_static'],
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics',
+             '/serf01/nav_rgbd_1/rgb/image_raw',
+             '/serf01/nav_rgbd_1/depth/image_raw',
+             '/serf01/odometry/wheel',
+             '/serf01/odometry/filtered',
+             '/serf01/odometry/imu',
+             '/tf_static'],
         output='screen'
     )
+
     rviz2 = ExecuteProcess(
         cmd=['rviz2'],
         output='screen'
     )
-
+    
     return LaunchDescription([
         visual_odom_node,
-        #csv_creator_node,
         rosbag_play_normal,
-        rviz2
+        rviz2,
     ])

@@ -29,6 +29,13 @@ from visual_odom.tf_methods import *
 from visual_odom.constants import *
 from visual_odom.ekf_robot import *
 from visual_odom.robot import *
+import visual_odom.constants as constants
+
+
+import cProfile
+import pstats
+import io
+import shutil
 
 
 from nav_msgs.msg import Odometry
@@ -37,7 +44,7 @@ class VisualOdom(Node):
     def __init__(self):
         super().__init__('visual_odom')
 
-        self.parameters = self.parameter_initialization()
+        constants.parameters = self.parameter_initialization()
         
         self.bridge = CvBridge()
         self.orb = cv2.ORB_create(
@@ -55,7 +62,7 @@ class VisualOdom(Node):
 
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
-        self.publisher_visual_odometry_msg = self.create_publisher(Odometry, self.parameters.topic_visual_odometry_msg, 10)
+        self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, "vision_cone", 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
@@ -97,9 +104,9 @@ class VisualOdom(Node):
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
             self.first_iteration = False
-            for _ in range(self.parameters.n_robot_samples):
+            for _ in range(constants.parameters.n_robot_samples):
                 
-                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.parameters))
+                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,valid_kp, valid_des, valid_kp_depth, self.frame_rgb))
             return
         else:  
             self.robot_iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
@@ -133,7 +140,7 @@ class VisualOdom(Node):
         for pix_u in range(frame_depth.shape[1]//divisor):
             for pix_v in range(frame_depth.shape[0]//divisor):
                 depth_value = frame_depth[pix_v*divisor, pix_u*divisor]
-                if depth_value > self.parameters.min_depth and depth_value < self.parameters.max_depth:
+                if depth_value > MIN_DEPTH and depth_value < constants.parameters.max_depth:
                     pos = pixel_to_kinect(PixelCoordinate(pix_u*divisor, pix_v*divisor, depth_value))
                     b, g, r = frame_rgb[pix_v*divisor, pix_u*divisor]
                     rgb = (int(r) << 16) | (int(g) << 8) | int(b)
@@ -175,7 +182,7 @@ class VisualOdom(Node):
             return None, None, None, None  
 
         
-        if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > self.parameters.rgb_depth_sync_tolerance_sec:
+        if abs(self._stamp_to_sec(rgb_stamp) - self._stamp_to_sec(self.frame_depth_stamp)) > constants.parameters.rgb_depth_sync_tolerance_sec:
             self.get_logger().debug("RGB/Depth nicht ausreichend synchron - Frame wird uebersprungen.")
             return None, None, None, None
 
@@ -199,14 +206,14 @@ class VisualOdom(Node):
             depth_value = self.frame_depth[v, u]
 
             # Tiefenwert prüfen
-            if self.parameters.min_depth < depth_value < self.parameters.max_depth:
+            if MIN_DEPTH < depth_value < constants.parameters.max_depth:
                 all_kp.append(p)
                 
                 is_too_close = False
                 
                 # Super-schneller Lookup im Dictionary
-                for neighbor_u in range(u - self.parameters.pixel_tolerance, u + self.parameters.pixel_tolerance + 1):
-                    for neighbor_v in range(v - self.parameters.pixel_tolerance, v + self.parameters.pixel_tolerance + 1):
+                for neighbor_u in range(u - constants.parameters.pixel_tolerance, u + constants.parameters.pixel_tolerance + 1):
+                    for neighbor_v in range(v - constants.parameters.pixel_tolerance, v + constants.parameters.pixel_tolerance + 1):
                         if (neighbor_u, neighbor_v) in occupied_pixels:
                             is_too_close = True
                             break
@@ -227,10 +234,16 @@ class VisualOdom(Node):
         return valid_kp, valid_des, valid_kp_depth, rgb_stamp
  
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time):
-        weights = []
+        log_weights = []
         for robot in self.robots:
             robot.robot_iteration(valid_kp, valid_des, valid_kp_depth, frame_rgb, frame_depth, rgb_stamp)
-            weights.append(robot.get_weight())
+            log_weights.append(robot.get_log_weight())
+
+        
+        log_weights -= np.max(log_weights)
+        weights = np.exp(log_weights)
+
+        weights /= np.sum(weights)
 
         sum = np.sum(weights)
         
@@ -244,7 +257,6 @@ class VisualOdom(Node):
     def parameter_initialization(self) -> Parameters:
         # Load parameters from config file with explicit type casting
         parameters = Parameters(
-            min_depth = int(self.declare_parameter('min_depth', MIN_DEPTH).value),
             max_depth = int(self.declare_parameter('max_depth', MAX_DEPTH).value),
             ransac_evaluation_tolerance = float(self.declare_parameter('ransac.evaluation_tolerance', RANSAC_EVALUATION_TOLERANCE).value),
             ransac_iteration = int(self.declare_parameter('ransac.iterations', RANSAC_ITERATION).value),
@@ -285,7 +297,29 @@ def calculate_tf(Position: Coordinate, theta: float, timestamp,  parent_frame_id
 
 def main():
     rclpy.init()
-    node=VisualOdom()
-    rclpy.spin(node)
-    node.destroy_node()
-    rclpy.shutdown()
+    node = VisualOdom()
+    
+    profiler = cProfile.Profile()
+    profiler.enable()
+    
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        profiler.disable()
+        
+        # Als Text ausgeben
+        stream = io.StringIO()
+        stats = pstats.Stats(profiler, stream=stream)
+        stats.sort_stats('cumulative')
+        stats.print_stats(30)
+        print(stream.getvalue())
+        
+        # Als Datei speichern und nach Windows kopieren
+        profiler.dump_stats('/tmp/profile.prof')
+        shutil.copy('/tmp/profile.prof', '/mnt/c/Users/lukas/Desktop/profile.prof')
+        print("Profiling-Daten gespeichert: /mnt/c/Users/lukas/Desktop/profile.prof")
+        
+        node.destroy_node()
+        rclpy.shutdown()

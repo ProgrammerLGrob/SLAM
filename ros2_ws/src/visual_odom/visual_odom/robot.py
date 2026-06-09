@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import math
+
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import TransformStamped, Point
 from scipy.spatial.transform import Rotation
@@ -27,12 +29,13 @@ from visual_odom.visual_odom_map import *
 from visual_odom.tf_methods import *
 from visual_odom.constants import *
 from visual_odom.ekf_robot import *
+import visual_odom.constants as constants
 
 
 from nav_msgs.msg import Odometry
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):        
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, visual_odom_map: VisualOdomMap = VisualOdomMap()):        
         self.theta = theta 
         self.pos_baselink = pos
 
@@ -49,8 +52,8 @@ class VisualRobotSample():
         self.covariance_P = covariance_P
         self.noise_Q = np.eye(3) * 1e-6
         self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
-        self.parameters = parameters
-        self.weight = 0.0
+        self.log_weight = 0.0
+        self.ransac_draw_keypoints = []
 
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -69,15 +72,16 @@ class VisualRobotSample():
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
 
             self.visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+            #self.visible_landmarks = self.visual_odom_map
 
             # Match descriptors.
             matches = self.bf.match(self.visible_landmarks.get_descriptors(), valid_des)
 
-            if len(matches) < self.parameters.min_matches_for_ransac:
+            if len(matches) < constants.parameters.min_matches_for_ransac:
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 return
             
-            ransac_result = self.ransac(self.parameters.ransac_evaluation_tolerance, self.parameters.ransac_iteration, self.parameters.ransac_sample_size, matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
+            ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
             ransac_delta_p = ransac_result[0]
             ransac_delta_theta = ransac_result[1]
             ransac_landmark_indices = ransac_result[2]
@@ -86,7 +90,7 @@ class VisualRobotSample():
             ransac_not_matched_kp_indices = ransac_result[5]
             ransac_inlier_count = ransac_result[6]
 
-            if float(ransac_inlier_count)/len(matches) < self.parameters.ransac_min_inlier_ratio:  # Weniger als 10% Inlier nach RANSAC
+            if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als 10% Inlier nach RANSAC
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 return
 
@@ -106,12 +110,12 @@ class VisualRobotSample():
             self.theta = kalman_iteration_result[0].theta
             self.covariance_P = kalman_iteration_result[1]
             
+            self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
             self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
-            self.weight = self.visible_landmarks.calculate_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,self.parameters.min_landmark_trust)
+            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,constants.parameters.min_landmark_trust)
 
-            if len(matches) < self.parameters.matches_for_new_landmarks:
+            if len(matches) < constants.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
                 not_matched_des = []
                 not_matched_kp_depth = []
@@ -125,7 +129,7 @@ class VisualRobotSample():
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
+    def ransac(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
         #Abbruchbedingung
         
         P = []
@@ -157,10 +161,6 @@ class VisualRobotSample():
 
             landmark_index.append(matches[m].queryIdx)
 
-
-        if len(P) < n_samples:
-            return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
-
         P_array = np.array(P)
         Q_array = np.array(Q)
 
@@ -172,24 +172,31 @@ class VisualRobotSample():
         best_landmark_index = []
         mean_last_e = 10000.0
 
-        iteration = int(self.parameters.ransac_iteration)
+        iteration = int(constants.parameters.ransac_iteration)
 
-        for iter in range(iteration):
+        #p = 0.99          # gewünschte Erfolgswahrscheinlichkeit
+        #w = 0.7           # geschätzter Inlier-Anteil
+        #s = 3             # Anzahl Samples pro RANSAC-Hypothese
+
+        #k = int(math.log(1 - p) / math.log(1 - w**s))+1
+
+        for iter in range(iteration): # k statt iteration
             P_samples = []
             Q_samples = []
 
-            samples = random.sample(range(len(P)), n_samples)
+            samples = random.sample(range(len(P)-1), constants.parameters.ransac_sample_size)
             P_samples = [P[i] for i in samples]
             Q_samples = [Q[i] for i in samples]
 
-            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), self.parameters.max_rotation_angle_deg)
+            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
             if R is None:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC at iteration {iter} failed to compute transformation")
                 continue
    
             e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
             mean_e = np.mean(e)
 
-            inlier_count = np.sum(e < tolerance)
+            inlier_count = np.sum(e < constants.parameters.ransac_evaluation_tolerance)
 
             if inlier_count > best_inlier_count or (inlier_count == best_inlier_count and mean_e < mean_last_e):
                 best_inlier_count = inlier_count
@@ -202,17 +209,24 @@ class VisualRobotSample():
                 best_landmark_index = []
                 
                 for i in range(len(e)):
-                    if e[i] < tolerance:
+                    if e[i] < constants.parameters.ransac_evaluation_tolerance:
                         best_P_inlier.append(P_array[i])
                         best_Q_inlier.append(Q_array[i])
                         best_valid_kp_index.append(matches[i].trainIdx)
                         best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
                         best_landmark_index.append(matches[i].queryIdx) 
 
-        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
-        R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), self.parameters.max_rotation_angle_deg)
-        if R is None:
+            if mean_e < constants.parameters.ransac_evaluation_tolerance:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
+                break
+
+        if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
+            rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")
+
             return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
+        
+        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
+        R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
             
         best_t = Coordinate(float(t[0]), float(t[1]), 0.0)
         best_theta = theta
@@ -279,7 +293,7 @@ class VisualRobotSample():
               
         h = tan(CAMERA_ANGLE_VER_RAD / 2)               #half for angle calcualtion
         w = tan(CAMERA_ANGLE_HOR_RAD / 2)               #half for angle calculation
-        d = MAX_DEPTH/1000          #depth in meters for ros
+        d = constants.parameters.max_depth/1000          #depth in meters for ros
         
         #center point of the cone
         p0 = Point()
@@ -338,5 +352,5 @@ class VisualRobotSample():
     def get_covariance_P(self) -> NDArray:
         return self.covariance_P
     
-    def get_weight(self) -> float:
-        return self.weight
+    def get_log_weight(self) -> float:
+        return self.log_weight

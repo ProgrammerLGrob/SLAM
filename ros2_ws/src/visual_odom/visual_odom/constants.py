@@ -115,8 +115,6 @@ class Parameters:
         n_robot_samples (int): Number of particles/samples generated within the localization filter.
         topic_visual_odometry_msg (str): ROS 2 topic name where the calculated odometry path is published.
     """
-    min_depth: int
-    """Minimum reliable sensor range threshold."""
     max_depth: int
     """Maximum reliable sensor range threshold."""
     ransac_evaluation_tolerance: float
@@ -183,7 +181,7 @@ N_ROBOT_SAMPLES = 1000
 RANSAC_EVALUATION_TOLERANCE = 0.045
 """Distance margin (4.5 centimeters) defining whether a point validates a RANSAC hypothesis."""
 
-RANSAC_ITERATION = 300
+RANSAC_ITERATION = 100
 """Loop iteration budget assigned to find the optimal geometric transform."""
 
 RANSAC_SAMPLE_SIZE = 3
@@ -227,8 +225,8 @@ CV = 241.181
 MIN_DEPTH = 400
 """Hard hardware sensor limit ignoring range readings closer than 40 centimeters."""
 
-MAX_DEPTH = 5000
-"""Hard hardware sensor limit dropping range readings farther than 5.0 meters."""
+MAX_DEPTH = 7000
+"""Hard hardware sensor limit dropping range readings farther than 7.0 meters."""
 
 MAX_U = 640
 """Image plane horizontal pixel boundary layout dimension."""
@@ -370,3 +368,5 @@ ERR_FUNC_THETA_D1_T2 = -4.240273e-01
 
 ERR_FUNC_THETA_T_3 = 6.209562e-02
 """Third-order cubic heading scaling coefficient for tracking noise in Heading."""
+
+parameters = None

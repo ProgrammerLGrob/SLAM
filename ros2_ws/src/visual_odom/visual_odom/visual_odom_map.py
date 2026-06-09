@@ -186,10 +186,17 @@ class VisualOdomMap(list[Landmark]):
         for idx, kp in zip(landmark_indices, kp_pos):
             self[idx].landmark_kalman_iteration(pos_baselink, theta, kp)
 
-    def calculate_weight(self, pos_baselink: Coordinate, theta: float, landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> float:
-        weight = 1.0
+    def calculate_log_weight(self, pos_baselink: Coordinate, theta: float, landmark_indices: List[int], kp_pos: List[PixelCoordinate]) -> float:
+        log_weight = 0.0
+
         for idx, kp in zip(landmark_indices, kp_pos):
             z_pos_odom = kinect_depth_to_odom(pixel_to_kinect(kp), theta, pos_baselink)
-            weight *= self[idx].calculate_likelihood(z_pos_odom, theta)
+           
+            likelihood = self[idx].calculate_likelihood(z_pos_odom, theta)
+            
+            if likelihood > 0:
+                log_weight += np.log(likelihood)
+            else:
+                log_weight += np.log(1e-300)  # sicherer Minimalwert
 
-        return weight
+        return log_weight

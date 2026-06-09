@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-from math import atan2
+from math import atan2, pi
 import numpy as np
 import cv2
 
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
 from visual_odom.ekf_landmark import *
+import visual_odom.constants as constants
 
 class Landmark:
     """Landmark class for storing features detected in images."""
@@ -22,7 +23,7 @@ class Landmark:
         self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
         self.P = P_init
-        self.landmark_ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P)
+        self.landmark_ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P, pix_coor=self.pixel_coor)
     
     def get_descriptor(self) -> np.ndarray:
         """
@@ -103,7 +104,7 @@ class Landmark:
         delta_base_link.y = -s * delta_odom.x + c * delta_odom.y
         delta_base_link.z =  delta_odom.z  
 
-        if delta_base_link.x < MIN_DEPTH/1000 or delta_base_link.x > MAX_DEPTH/1000:
+        if delta_base_link.x < MIN_DEPTH/1000 or delta_base_link.x > constants.parameters.max_depth/1000:
             return False
         
         azimuth = atan2(delta_base_link.y, delta_base_link.x)
@@ -157,7 +158,7 @@ class Landmark:
             [s,  c, 0.0],
             [0.0, 0.0, 1.0]
         ])
-        s_matrix = self.P + R_ob*R_noice*R_ob.T
+        s_matrix = self.P + R_ob @ R_noice @ R_ob.T
 
         det_s = np.linalg.det(s_matrix)
 
@@ -177,44 +178,29 @@ def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.
     @param P_i: 2D points in the first frame
     @param Q_i: 2D points in the second frame
     """
-    m_P = np.mean(P_i,axis=0)
-    m_Q = np.mean(Q_i,axis=0)
+     
+    if P_i.shape[0] > 1 and Q_i.shape[0] > 1:
+        m_P = np.mean(P_i,axis=0)
+        m_Q = np.mean(Q_i,axis=0)
 
 
-    P_i_centered = P_i - m_P
-    Q_i_centered = Q_i - m_Q   
-
-    if P_i_centered.shape[0] == 0 or Q_i_centered.shape[0] == 0:
-        return np.eye(2), np.zeros((2,1)), 0.0
-    elif P_i_centered.shape[0] == 1 or Q_i_centered.shape[0] == 1:
-        first_sum = Q_i_centered[0,0]*P_i_centered[0,1] - Q_i_centered[0,1]*P_i_centered[0,0]
-        sec_sum = Q_i_centered[0,0]*P_i_centered[0,0] + Q_i_centered[0,1]*P_i_centered[0,1]
-    else:
+        P_i_centered = P_i - m_P
+        Q_i_centered = Q_i - m_Q 
         first_sum = np.sum(Q_i_centered[:,0]*P_i_centered[:,1] - Q_i_centered[:,1]*P_i_centered[:,0])
         sec_sum = np.sum(Q_i_centered[:,0]*P_i_centered[:,0] + Q_i_centered[:,1]*P_i_centered[:,1])
-
+    else:
+        rclpy.logging.get_logger("Kabsch").info(f"Only one point pair, cannot compute rotation, skipping Kabsch")
+        return None, None, None
+    
     theta = atan2(first_sum, sec_sum)
     
-    if abs(theta) > np.deg2rad(max_rotation_angle_deg):
-        return None, None, None
+    #if abs(theta) > max_rotation_angle_deg * pi / 180.0:
+     #  return None, None, None
     
     R = np.array([[ np.cos(theta), -np.sin(theta)],
                   [ np.sin(theta),  np.cos(theta)]])
     
     t = m_P - R @ m_Q
-
-    """
-    # Pseudo-Code nach dem RANSAC/Kabsch-Schritt im Node:
-    MAX_ALLOWED_SPEED_PER_FRAME = 0.08 # 5 cm pro Frame max bei Vorwärtsfahrt
-    MAX_ALLOWED_ROTATION_PER_FRAME = 0.08 # ca. 4,5 Grad pro Frame max
-
-    if abs(sqrt(t[0]**2 + t[1]**2)) > MAX_ALLOWED_SPEED_PER_FRAME or abs(theta) > MAX_ALLOWED_ROTATION_PER_FRAME:
-        t = np.array([0.0, 0.0])
-        theta = 0.0
-        R = np.array([[ np.cos(theta), -np.sin(theta)],
-                  [ np.sin(theta),  np.cos(theta)]])
-    """
-
         
     return R, t, theta
 
