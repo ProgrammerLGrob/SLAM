@@ -4,17 +4,17 @@ visual_odom_node:
     max_depth: 6800       # Maximum depth in mm
     rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
     pixel_tolerance: 4          # Tolerance in pixels for checking neighboring keypoints
-    matches_for_new_landmarks: 65
-    min_landmark_trust: 30.0
+    matches_for_new_landmarks: 100 # kann man noch rumspielen, macht schon einen unterschied
+    min_landmark_trust: 15.0
 
     # RANSAC parameters
     ransac:
-      evaluation_tolerance: 0.045 # Tolerance for inlier evaluation in m
-      iterations: 60             # Number of RANSAC iterations
+      evaluation_tolerance: 0.05 # Tolerance for inlier evaluation in m
+      iterations: 100             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
-      min_matches_for_ransac: 6  # Minimum number of matches required for RANSAC
+      min_matches_for_ransac: 5  # Minimum number of matches required for RANSAC
       max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
-      min_inlier_ratio: 0.28        # Minimum inlier ratio for RANSAC to be considered valid
+      min_inlier_ratio: 0.19        # Minimum inlier ratio for RANSAC to be considered valid
 
 
     n_robot_samples: 2                   # Number of samples for robot pose estimation in RANSAC      

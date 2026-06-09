@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from tf2_ros import Buffer, TransformBroadcaster, TransformListener
+import builtin_interfaces
+from sensor_msgs import msg
+from tf2_ros import Buffer, Duration, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import TransformStamped
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
@@ -31,6 +33,7 @@ from visual_odom.ekf_robot import *
 from visual_odom.robot import *
 import visual_odom.constants as constants
 
+from std_msgs.msg import Header
 
 import cProfile
 import pstats
@@ -90,11 +93,18 @@ class VisualOdom(Node):
         self.best_weight = 0.0
 
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
+        self.frame_stamp = builtin_interfaces.msg.Time()
 
         
 
     def listener_rgb_callback(self,msg):
+        if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.1:
+            self.frame_stamp = msg.header.stamp
+        else:
+            return
+        
         valid_kp, valid_des, valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
+
 
         if valid_kp is None or valid_des is None or valid_kp_depth is None:
             return
@@ -147,7 +157,7 @@ class VisualOdom(Node):
 
                     calculated_point_coordinates.append((pos.x, pos.y, pos.z, rgb))
 
-        from std_msgs.msg import Header
+       
         h = Header()
         h.stamp = time
         h.frame_id = frame_id

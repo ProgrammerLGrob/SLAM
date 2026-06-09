@@ -90,8 +90,9 @@ class VisualRobotSample():
             ransac_not_matched_kp_indices = ransac_result[5]
             ransac_inlier_count = ransac_result[6]
 
-            if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als 10% Inlier nach RANSAC
+            if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
                 return
 
             z_dict = {}
@@ -113,7 +114,7 @@ class VisualRobotSample():
             self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
             self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices,constants.parameters.min_landmark_trust)
+            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices)
 
             if len(matches) < constants.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
@@ -184,7 +185,7 @@ class VisualRobotSample():
             P_samples = []
             Q_samples = []
 
-            samples = random.sample(range(len(P)-1), constants.parameters.ransac_sample_size)
+            samples = random.sample(range(len(P)), constants.parameters.ransac_sample_size)
             P_samples = [P[i] for i in samples]
             Q_samples = [Q[i] for i in samples]
 
@@ -216,13 +217,15 @@ class VisualRobotSample():
                         best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
                         best_landmark_index.append(matches[i].queryIdx) 
 
-            if mean_e < constants.parameters.ransac_evaluation_tolerance:
-                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
+            if (best_inlier_count/ len(matches)) > 0.80:
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
                 break
+
+            if(iter == iteration-1):
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
 
         if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
             rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")
-
             return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
         
         # Kabsch noch einmal mit den endgültigen besten Inliern berechnen

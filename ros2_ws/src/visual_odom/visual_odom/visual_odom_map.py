@@ -17,6 +17,7 @@ import numpy as np
 from visual_odom.landmark import Landmark
 from visual_odom.constants import *
 from visual_odom.tf_methods import *
+import visual_odom.constants as constants
 
 
 class VisualOdomMap(list[Landmark]):
@@ -73,9 +74,6 @@ class VisualOdomMap(list[Landmark]):
             if odom_coor is None:
                 rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
                 continue
-            if landmark.get_descriptor().tobytes() in self.descriptors:
-                continue
-            self.descriptors[landmark.get_descriptor().tobytes()] = True
 
             landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
@@ -168,7 +166,7 @@ class VisualOdomMap(list[Landmark]):
 
         publisher.publish(msg)
 
-    def cleanup_old_landmarks(self, visible_landmarks, landmark_index, min_landmark_trust: float):
+    def cleanup_old_landmarks(self, visible_landmarks, landmark_index):
         
         matched_landmark_indices = set(landmark_index)
         for i, l in enumerate(visible_landmarks):
@@ -178,7 +176,7 @@ class VisualOdomMap(list[Landmark]):
                 l.decrease_trust()
 
         for l in visible_landmarks:
-            if l.get_trust() < min_landmark_trust:
+            if l.get_trust() < constants.parameters.min_landmark_trust:
                 if l in self:
                     self.remove(l)
 

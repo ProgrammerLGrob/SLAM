@@ -22,7 +22,7 @@ class ExtendedKalmanFilterRobot:
 		delta_x = R @ np.array([delta.x, delta.y, delta.theta])
 		return State(float(x.x + delta_x[0]),
 					float(x.y + delta_x[1]),
-					float(normalize_angle(theta_mid + delta_x[2] * 0.5)))
+					float(normalize_angle(theta_mid + delta.theta * 0.5)))
 	
 	def set_jacobi_F_matrix(self, x_tt1: State, delta: State) -> None: 
 		c = cos(x_tt1.theta)
@@ -105,7 +105,7 @@ class ExtendedKalmanFilterRobot:
 	# Update self.x and self.P, return tuple (x_{t|t}, P_{t_t})
 	def update(self, x_tt1: State, P_tt1: NDArray, l: Landmark, z: NDArray, depth_value: float) -> Tuple[State, NDArray]:
 		self.calc_and_set_jacobi_H_matrix(l.get_odom_coordinates(), x_tt1)
-		self.set_R(depth_value)
+		self.set_R(depth_value, x_tt1)
 		K = self.computeKalmanGain(P_tt1)
 
 		z_tt1 = self.predictMeasurement(l.get_odom_coordinates(), x_tt1)
