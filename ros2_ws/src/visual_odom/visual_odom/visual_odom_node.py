@@ -7,6 +7,8 @@ from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
 from rclpy.time import Time
 from scipy.spatial import KDTree
+from scipy.spatial.transform import Rotation as R
+
 from visualization_msgs.msg import Marker
 
 from math import pi
@@ -43,11 +45,15 @@ import shutil
 
 from nav_msgs.msg import Odometry
 
+from rcl_interfaces.msg import SetParametersResult
+
+
 class VisualOdom(Node):
     def __init__(self):
         super().__init__('visual_odom')
 
         constants.parameters = self.parameter_initialization()
+        self.add_on_set_parameters_callback(self.parameter_callback)
         
         self.bridge = CvBridge()
         self.orb = cv2.ORB_create(
@@ -60,13 +66,15 @@ class VisualOdom(Node):
         #create BFMatcher object
         self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
-        self.subscription_rgb = self.create_subscription(Image,'/serf01/nav_rgbd_1/rgb/image_raw', self.listener_rgb_callback, 10)
-        self.subscription_depth = self.create_subscription(Image,'/serf01/nav_rgbd_1/depth/image_raw', self.listener_depth_callback, 10)
+        self.subscription_rgb = self.create_subscription(Image, RGB_IMAGE_TOPIC, self.listener_rgb_callback, 10)
+        self.subscription_depth = self.create_subscription(Image, DEPTH_IMAGE_TOPIC, self.listener_depth_callback, 10)
+        self.subscription_wheel_odom = self.create_subscription(Odometry, WHEEL_ODOMETRY_TOPIC, self.listener_wheel_odom_callback, 10)
+
 
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
-        self.publisher_cone = self.create_publisher(Marker, "vision_cone", 10)
+        self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
@@ -80,6 +88,8 @@ class VisualOdom(Node):
         self.pos_baselink = Coordinate(0.0, 0.0, 0.0) #Position in odom frame
 
         self.first_iteration = True
+        self.position_initialized = False
+       
 
 		# self.P = self.Q:
         sigma_x0   = 0.1   # 10cm Anfangsunsicherheit in x
@@ -95,10 +105,27 @@ class VisualOdom(Node):
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
         self.frame_stamp = builtin_interfaces.msg.Time()
 
+    def listener_wheel_odom_callback(self, msg: Odometry):
+        rot = Rotation.from_quat([msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w])
+        state_wheel_odom = State(msg.pose.pose.position.x, msg.pose.pose.position.y, rot.as_euler('xyz')[2])
+
+        if self.position_initialized == False:
+            self.position_initialized = True
+            self.pos_baselink = Coordinate(state_wheel_odom.x, state_wheel_odom.y, 0.0)
+            self.theta = 0.0         
+            return
+        else:
+            if self.first_iteration == False:
+                for robot in self.robots:
+                    robot.update_with_wheel_odom(state_wheel_odom)
+
         
 
     def listener_rgb_callback(self,msg):
-        if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.1:
+        if self.position_initialized == False:
+            return
+        
+        if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.02:
             self.frame_stamp = msg.header.stamp
         else:
             return
@@ -107,24 +134,23 @@ class VisualOdom(Node):
 
 
         if valid_kp is None or valid_des is None or valid_kp_depth is None:
-            return
-      
+            return 
+        
         if self.first_iteration:
+            self.first_iteration = False
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
-            self.first_iteration = False
             for _ in range(constants.parameters.n_robot_samples):
-                
                 self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,valid_kp, valid_des, valid_kp_depth, self.frame_rgb))
-            return
-        else:  
-            self.robot_iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
-          
+        else:
+        
+            self.iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
+            
             self.pos_baselink = self.best_robot.get_position()
             self.theta = self.best_robot.get_theta()
             self.covariance_P = self.best_robot.get_covariance_P()
-          
+            
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
@@ -243,7 +269,7 @@ class VisualOdom(Node):
 
         return valid_kp, valid_des, valid_kp_depth, rgb_stamp
  
-    def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time):
+    def iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time):
         log_weights = []
         for robot in self.robots:
             robot.robot_iteration(valid_kp, valid_des, valid_kp_depth, frame_rgb, frame_depth, rgb_stamp)
@@ -282,6 +308,31 @@ class VisualOdom(Node):
             topic_visual_odometry_msg = self.declare_parameter('topics.visual_odometry_msg', VISUAL_ODOM_MSG_TOPIC).value
         )
         return parameters
+
+    def parameter_callback(self, params):
+        mapping = {
+            'max_depth': ('max_depth', int),
+            'ransac.evaluation_tolerance': ('ransac_evaluation_tolerance', float),
+            'ransac.iterations': ('ransac_iteration', int),
+            'ransac.sample_size': ('ransac_sample_size', int),
+            'rgb_depth_sync_tolerance_sec': ('rgb_depth_sync_tolerance_sec', float),
+            'pixel_tolerance': ('pixel_tolerance', int),
+            'matches_for_new_landmarks': ('matches_for_new_landmarks', int),
+            'ransac.min_matches_for_ransac': ('min_matches_for_ransac', int),
+            'ransac.max_rotation_angle_deg': ('max_rotation_angle_deg', float),
+            'min_landmark_trust': ('min_landmark_trust', float),
+            'ransac.min_inlier_ratio': ('ransac_min_inlier_ratio', float),
+            'n_robot_samples': ('n_robot_samples', int),
+            'topics.visual_odometry_msg': ('topic_visual_odometry_msg', str),
+        }
+
+        for param in params:
+            if param.name in mapping:
+                attr, cast = mapping[param.name]
+                setattr(constants.parameters, attr, cast(param.value))
+                self.get_logger().info(f"{param.name} → {param.value}")
+
+        return SetParametersResult(successful=True)
 
 def calculate_tf(Position: Coordinate, theta: float, timestamp,  parent_frame_id: str, child_frame_id: str) -> Tuple[TransformStamped, NDArray]:
 

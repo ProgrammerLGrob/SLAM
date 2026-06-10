@@ -74,6 +74,9 @@ class VisualOdomMap(list[Landmark]):
             if odom_coor is None:
                 rclpy.logging.get_logger(__name__).warning("TF failed, skipping landmark")
                 continue
+            if landmark.get_descriptor().tobytes() in self.descriptors:
+                continue
+            self.descriptors[landmark.get_descriptor().tobytes()] = True
 
             landmark.set_odom_coordinates(odom_coor)
             self.add_landmark(landmark)
