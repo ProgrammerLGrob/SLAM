@@ -10,34 +10,41 @@ import os
 from visual_odom.constants import *
 
 class OdomImuCsvWriter(Node):
+    """
+    ROS 2 Node responsible for subscribing to localization data topics and 
+    logging state measurements into a unified CSV file for analysis.
+    """
 
     def __init__(self):
+        """
+        Initializes the data logging node, configures ROS parameters, files, and subscriptions.
+        """
         super().__init__('odom_imu_csv_writer')
 
-        # Parameter
+        # Parameters
         self.declare_parameter(
             'csv_path',
             os.path.expanduser('~/Projekt/SLAM/odom_imu_data.csv')
         )
-        self.csv_path = self.get_parameter('csv_path').value
+        self.csv_path = self.get_parameter('csv_path').value; """Absolute file path where the generated CSV data log will be stored."""
 
-        # Aktuelle Werte
-        self.wheel_x = 0.0
-        self.wheel_y = 0.0
-        self.imu_theta = 0.0
-        self.odom_visual_x = 0.0
-        self.odom_visual_y = 0.0
-        self.odom_visual_theta = 0.0
+        # Current state values
+        self.wheel_x = 0.0; """Latest recorded global X position from wheel odometry in meters."""
+        self.wheel_y = 0.0; """Latest recorded global Y position from wheel odometry in meters."""
+        self.imu_theta = 0.0; """Latest recorded planar yaw heading orientation from the IMU sensor in radians."""
+        self.odom_visual_x = 0.0; """Latest recorded global X position calculated by visual odometry in meters."""
+        self.odom_visual_y = 0.0; """Latest recorded global Y position calculated by visual odometry in meters."""
+        self.odom_visual_theta = 0.0; """Latest recorded planar yaw heading calculated by visual odometry in radians."""
 
-        # CSV-Datei
-        self.csv_file = open(self.csv_path, 'w', newline='')
-        self.writer = csv.writer(self.csv_file)
-        self.writer.writerow(['timestamp', 'wheel_x', 'wheel_y', 'imu_theta', 'odom_visual_x', 'odom_visual_y', 'odom_visual_theta'])  # Header
+        # CSV File Configuration
+        self.csv_file = open(self.csv_path, 'w', newline=''); """Internal file descriptor handling active stream writes to disk."""
+        self.writer = csv.writer(self.csv_file); """CSV writer interface mapping programmatic arrays to formatted textual table records."""
+        self.writer.writerow(['timestamp', 'wheel_x', 'wheel_y', 'imu_theta', 'odom_visual_x', 'odom_visual_y', 'odom_visual_theta']); """File structure line defining data labels inside column headers."""
 
-        # Subscriber
+        # Subscriptions
         self.create_subscription(
             Odometry,
-             '/serf01/odometry/wheel',
+            '/serf01/odometry/wheel',
             self.odom_callback,
             10
         )
@@ -56,9 +63,15 @@ class OdomImuCsvWriter(Node):
             10
         )
 
-        self.get_logger().info(f"Schreibe CSV nach: {self.csv_path}")
+        self.get_logger().info(f"Writing CSV data to target path: {self.csv_path}")
 
     def odom_callback(self, msg):
+        """
+        Processes standard wheel odometry data updates, calculates float timestamps, 
+        and flushes synchronized state snapshots down into the CSV table log.
+
+        @param msg: The incoming wheel odometry message package (nav_msgs.msg.Odometry).
+        """
         self.wheel_x = msg.pose.pose.position.x
         self.wheel_y = msg.pose.pose.position.y
 
@@ -71,33 +84,65 @@ class OdomImuCsvWriter(Node):
         self.csv_file.flush()
 
     def imu_callback(self, msg):
+        """
+        Receives structural IMU orientation frames, extracts yaw orientation data, 
+        and applies a rigid frame offset transformation to align it with reference norms.
+
+        @param msg: Incoming raw IMU reading container (sensor_msgs.msg.Imu).
+        """
         q = msg.orientation
         self.imu_theta = self.normalize_angle(self.quaternion_to_yaw(q)-(3/2)*pi)
 
     def visual_odom_callback(self, msg):
+        """
+        Processes updates published by the visual odometry algorithm pipeline, 
+        unpacking 2D translation states and rotation yaw angles.
+
+        @param msg: The incoming camera odometry message packet (nav_msgs.msg.Odometry).
+        """
         self.odom_visual_x = msg.pose.pose.position.x
         self.odom_visual_y = msg.pose.pose.position.y
         self.odom_visual_theta = self.quaternion_to_yaw(msg.pose.pose.orientation)
 
     def quaternion_to_yaw(self, q):
+        """
+        Calculates planar yaw angle heading out of 3D spatial rotation quaternion parameters.
+
+        @param q: Input object storing spatial orientation data (geometry_msgs.msg.Quaternion).
+        @return: Planar heading representation mapped in radians (float).
+        """
         siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
         cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
         return atan2(siny_cosp, cosy_cosp)
 
     def destroy_node(self):
+        """
+        Safely terminates subscription ties and guarantees that data buffers flush completely before closing the file streams.
+        """
         self.csv_file.close()
         super().destroy_node()
 
-    def normalize_angle(self,angle: float) -> float:
+    def normalize_angle(self, angle: float) -> float:
+        """
+        Wraps an input angle parameter into standard bounded circle space [-pi, pi].
+
+        @param angle: Arbitrary orientation scale input in radians.
+        @return: Wrapped equivalent within circular system boundaries (float).
+        """
         if angle > pi:
             angle -= 2*pi
         elif angle < -pi:
             angle += 2*pi
 
-        return angle    
+        normalized_angle = angle
+
+        return normalized_angle    
 
 
 def main():
+    """
+    Starts the infrastructure runtime framework layer, instantiates OdomImuCsvWriter execution loops, and ensures safe process cleanups.
+    """
     rclpy.init()
     node = OdomImuCsvWriter()
     rclpy.spin(node)

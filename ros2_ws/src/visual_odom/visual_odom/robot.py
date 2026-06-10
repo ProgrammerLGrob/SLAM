@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
+import math
+
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import TransformStamped, Point
 from scipy.spatial.transform import Rotation
+from visualization_msgs.msg import Marker
 
 from numpy.typing import NDArray
 from rclpy.time import Time
 from scipy.spatial import KDTree
 
-from math import pi, tan, radians, cos, sin
+from math import pi, sin, cos, tan
 import random
 from typing import List, Tuple
 
@@ -27,13 +30,14 @@ from visual_odom.visual_odom_map import *
 from visual_odom.tf_methods import *
 from visual_odom.constants import *
 from visual_odom.ekf_robot import *
+import visual_odom.constants as constants
 
 
 from nav_msgs.msg import Odometry
 from visualization_msgs.msg import Marker
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, parameters: Parameters, visual_odom_map: VisualOdomMap = VisualOdomMap()):
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, visual_odom_map: VisualOdomMap = VisualOdomMap()):        
         self.theta = theta 
         self.pos_baselink = pos
 
@@ -47,19 +51,16 @@ class VisualRobotSample():
         self.odometry_msg_publisher = odom_publisher
         self.map_publisher = map_publisher
         self.cone_publisher = cone_publisher
-        self.logger = get_logger("vision_cone")
-
         self.covariance_P = covariance_P
         self.noise_Q = np.eye(3) * 1e-6
         self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
-        self.parameters = parameters
+        self.log_weight = 0.0
+        self.ransac_draw_keypoints = []
 
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
-        #Debug vision cone for best robot only!
-        self.publish_vision_cone(rgb_stamp)
-        
+        self.publish_vision_cone(self.cone_publisher, rgb_stamp)
 
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
         self.frame_rgb = frame_rgb
@@ -72,16 +73,17 @@ class VisualRobotSample():
         else:            
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
 
-            visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+            self.visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+            #self.visible_landmarks = self.visual_odom_map
 
             # Match descriptors.
-            matches = self.bf.match(visible_landmarks.get_descriptors(), valid_des)
+            matches = self.bf.match(self.visible_landmarks.get_descriptors(), valid_des)
 
-            if len(matches) < self.parameters.min_matches_for_ransac:
+            if len(matches) < constants.parameters.min_matches_for_ransac:
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 return
             
-            ransac_result = self.ransac(self.parameters.ransac_evaluation_tolerance, self.parameters.ransac_iteration, self.parameters.ransac_sample_size, matches, visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
+            ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
             ransac_delta_p = ransac_result[0]
             ransac_delta_theta = ransac_result[1]
             ransac_landmark_indices = ransac_result[2]
@@ -90,8 +92,9 @@ class VisualRobotSample():
             ransac_not_matched_kp_indices = ransac_result[5]
             ransac_inlier_count = ransac_result[6]
 
-            if float(ransac_inlier_count)/len(matches) < self.parameters.ransac_min_inlier_ratio:  # Weniger als 10% Inlier nach RANSAC
+            if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
                 return
 
             z_dict = {}
@@ -105,16 +108,17 @@ class VisualRobotSample():
 
                 kp_pos.append(PixelCoordinate(u, v, depth_value))
 
-            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, visible_landmarks)
+            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, self.visible_landmarks)
             self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
             self.theta = kalman_iteration_result[0].theta
             self.covariance_P = kalman_iteration_result[1]
             
-            #visible_landmarks.kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+            self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+            self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
 
-            self.visual_odom_map.cleanup_old_landmarks(visible_landmarks,ransac_landmark_indices,self.parameters.min_landmark_trust,)
+            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices)
 
-            if len(matches) < self.parameters.matches_for_new_landmarks:
+            if len(matches) < constants.parameters.matches_for_new_landmarks:
                 not_matched_kp = []
                 not_matched_des = []
                 not_matched_kp_depth = []
@@ -128,7 +132,7 @@ class VisualRobotSample():
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
 
 
-    def ransac(self, tolerance: float, iteration: int, n_samples: int, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
+    def ransac(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
         #Abbruchbedingung
         
         P = []
@@ -160,10 +164,6 @@ class VisualRobotSample():
 
             landmark_index.append(matches[m].queryIdx)
 
-
-        if len(P) < n_samples:
-            return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
-
         P_array = np.array(P)
         Q_array = np.array(Q)
 
@@ -175,24 +175,31 @@ class VisualRobotSample():
         best_landmark_index = []
         mean_last_e = 10000.0
 
-        iteration = int(self.parameters.ransac_iteration)
+        iteration = int(constants.parameters.ransac_iteration)
 
-        for iter in range(iteration):
+        #p = 0.99          # gewünschte Erfolgswahrscheinlichkeit
+        #w = 0.7           # geschätzter Inlier-Anteil
+        #s = 3             # Anzahl Samples pro RANSAC-Hypothese
+
+        #k = int(math.log(1 - p) / math.log(1 - w**s))+1
+
+        for iter in range(iteration): # k statt iteration
             P_samples = []
             Q_samples = []
 
-            samples = random.sample(range(len(P)), n_samples)
+            samples = random.sample(range(len(P)), constants.parameters.ransac_sample_size)
             P_samples = [P[i] for i in samples]
             Q_samples = [Q[i] for i in samples]
 
-            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), self.parameters.max_rotation_angle_deg)
+            R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
             if R is None:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC at iteration {iter} failed to compute transformation")
                 continue
    
             e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
             mean_e = np.mean(e)
 
-            inlier_count = np.sum(e < tolerance)
+            inlier_count = np.sum(e < constants.parameters.ransac_evaluation_tolerance)
 
             if inlier_count > best_inlier_count or (inlier_count == best_inlier_count and mean_e < mean_last_e):
                 best_inlier_count = inlier_count
@@ -205,17 +212,26 @@ class VisualRobotSample():
                 best_landmark_index = []
                 
                 for i in range(len(e)):
-                    if e[i] < tolerance:
+                    if e[i] < constants.parameters.ransac_evaluation_tolerance:
                         best_P_inlier.append(P_array[i])
                         best_Q_inlier.append(Q_array[i])
                         best_valid_kp_index.append(matches[i].trainIdx)
                         best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
                         best_landmark_index.append(matches[i].queryIdx) 
 
-        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
-        R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), self.parameters.max_rotation_angle_deg)
-        if R is None:
+            if (best_inlier_count/ len(matches)) > 0.80:
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
+                break
+
+            if(iter == iteration-1):
+                rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
+
+        if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
+            rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")
             return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
+        
+        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
+        R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
             
         best_t = Coordinate(float(t[0]), float(t[1]), 0.0)
         best_theta = theta
@@ -256,22 +272,14 @@ class VisualRobotSample():
             covariance[2, 0],    covariance[2, 1],      0.0,    0.0,    0.0,    covariance[2, 2]
         ]
         #msg.pose.covariance *= 10.0  # Skalierung der Kovarianz für bessere Visualisierung in RViz
-
-
         publisher.publish(msg)
 
-    def publish_vision_cone(self, rgb_stamp):
-        
-        cone_msg = self.init_camera_cone(rgb_stamp);
-        
-        self.cone_publisher.publish(cone_msg)
-        self.logger.info(f"Vision_Cone published!")
+    def publish_vision_cone(self, cone_publisher:Publisher, rgb_stamp:Time):
+        cone_msg = self.init_camera_cone(rgb_stamp)
+        cone_publisher.publish(cone_msg)
 
-    
-    
     def init_camera_cone(self, rgb_stamp):
         cone_msg = Marker()
-        #TODO: Initialisierung ersetzen mit Marker_setup Funktion!
         cone_msg.header.frame_id = "kinect_depth"
         cone_msg.header.stamp = rgb_stamp
         cone_msg.ns = "vision_cone"
@@ -287,38 +295,36 @@ class VisualRobotSample():
         cone_msg.color.g = 1.0
         cone_msg.color.b = 0.0
         cone_msg.color.a = 0.3      #transparency
-        """
-        fov_h = radians(43)      #height degrees
-        fov_w = radians(57)      #width degrees
+              
+        h = tan(CAMERA_ANGLE_VER_RAD / 2)               #half for angle calcualtion
+        w = tan(CAMERA_ANGLE_HOR_RAD / 2)               #half for angle calculation
+        d = constants.parameters.max_depth/1000          #depth in meters for ros
         
-        h = tan(fov_h / 2)               #half for angle calcualtion
-        w = tan(fov_w / 2)               #half for angle calculation
-        d = MAX_DEPTH/1000          #depth in meters for ros
-        
-        #base point
+        #center point of the cone
         p0 = Point()
         p0.x = 0.0 
         p0.y = 0.0
         p0.z = 0.0
-        #upper left
+
+        #lower right
         p1 = Point()
         p1.z = d 
         p1.x = d * w
         p1.y = d * h
 
-        #upper right
+        #lower left
         p2 = Point()
         p2.z = d 
         p2.x = -d * w 
         p2.y = d * h
 
-        #lower left
+        #upper right
         p3 = Point()
         p3.z = d
         p3.x = d * w
         p3.y = -d * h
 
-        #lower right
+        #upper left
         p4 = Point()
         p4.z = d
         p4.x = -d * w
@@ -327,84 +333,19 @@ class VisualRobotSample():
 
         cone_msg.points = []
         cone_msg.points.extend([p0, p1, p3, 
-                                p0, p2, p4,
-                                p0, p1, p2,
-                                p0, p3, p4])        
-        """
-        steps_v = RESOLUTION_CONE_V
-        steps_h = RESOLUTION_CONE_H
-        fov_v = radians(CAMERA_ANGLE_V_DEG)
-        fov_h = radians(CAMERA_ANGLE_H_DEG)
-        r = MAX_DEPTH/1000
-
-        points = []
-        cone_msg.points = []
-
-        p0 = Point()
-        p0.x = 0.0 
-        p0.y = 0.0
-        p0.z = 0.0
-
-        def idx(i, j):
-            return i * (steps_h + 1) + j
-        
-        for i in range(steps_v + 1):
-            pitch = -fov_v/2 + i * (fov_v / steps_v)
-
-            for j in range(steps_h + 1):
-                yaw = -fov_h/2 + j * (fov_h / steps_h)
-
-                p = Point()
-                p.z = r * cos(pitch) * cos(yaw)
-                p.x = r * cos(pitch) * sin(yaw)
-                p.y = r * sin(pitch)
-
-                points.append(p)
-        
-        # Fläche unten
-        for i in range(steps_v):
-            for j in range(steps_h):
-
-                p1 = points[idx(i, j)]
-                p2 = points[idx(i, j+1)]
-                p3 = points[idx(i+1, j)]
-                p4 = points[idx(i+1, j+1)]
-
-                cone_msg.points += [p1, p2, p3]
-                cone_msg.points += [p2, p4, p3]
-        
-        #Wand links
-        for i in range(steps_v):
-            p1 = points[idx(i, 0)]
-            p2 = points[idx(i + 1, 0)]
-
-            cone_msg.points.extend([p0, p1, p2])
-        #Wand rechts
-        for i in range(steps_v):
-            p1 = points[idx(i, steps_h)]
-            p2 = points[idx(i + 1, steps_h)]
-
-            cone_msg.points.extend([p0, p1, p2])
-        #Wand oben
-        for j in range(steps_h):
-            p1 = points[idx(0, j)]
-            p2 = points[idx(0, j + 1)]
-
-            cone_msg.points.extend([p0, p1, p2])
-        #Wand unten
-        for j in range(steps_h):
-            p1 = points[idx(steps_v, j)]
-            p2 = points[idx(steps_v, j + 1)]
-
-            cone_msg.points.extend([p0, p1, p2])
-        
+                                p0, p4, p2,
+                                p0, p2, p1,
+                                p0, p3, p4,
+                                p1, p2, p4,
+                                p4, p3, p1])        
+    
         return cone_msg
-
+    
     def publish_pointcloud_map(self, publisher: Publisher, time: Time):
         self.visual_odom_map.publish_pointcloud_map(publisher, time)
 
-    def get_drawn_keypoints(self):
 
+    def get_drawn_keypoints(self):
         return self.ransac_draw_keypoints
         
     def get_position(self) -> Coordinate:
@@ -415,3 +356,6 @@ class VisualRobotSample():
     
     def get_covariance_P(self) -> NDArray:
         return self.covariance_P
+    
+    def get_log_weight(self) -> float:
+        return self.log_weight

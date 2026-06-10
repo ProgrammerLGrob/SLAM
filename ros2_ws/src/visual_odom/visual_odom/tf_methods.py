@@ -29,10 +29,10 @@ def kinect_depth_to_baselink(kinect_point: Coordinate) -> Coordinate:
     Ignores timestamp and uses the most recent transformation to avoid extrapolation errors.
     """
 
-    pos_baselink = ROT_KB@np.array([kinect_point.x, kinect_point.y, kinect_point.z])
-    pos = CAMERA_POS_IN_BASELINK + Coordinate(float(pos_baselink[0]), float(pos_baselink[1]), float(pos_baselink[2]))
+    pos = ROT_BK@np.array([kinect_point.x, kinect_point.y, kinect_point.z])
+    pos_baselink = CAMERA_POS_IN_BASELINK + Coordinate(float(pos[0]), float(pos[1]), float(pos[2]))
     
-    return pos
+    return pos_baselink
 
 def odom_to_baselink(odom_point: Coordinate, theta: float, pos_baselink: Coordinate) -> Coordinate:
     """
