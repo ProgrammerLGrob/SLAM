@@ -1,10 +1,10 @@
 visual_odom_node:
   ros__parameters:
     # Depth filtering parameters
-    max_depth: 6800       # Maximum depth in mm
+    max_depth: 7500       # Maximum depth in mm
     rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
     pixel_tolerance: 4          # Tolerance in pixels for checking neighboring keypoints
-    matches_for_new_landmarks: 100 # kann man noch rumspielen, macht schon einen unterschied
+    matches_for_new_landmarks: 80000000 # kann man noch rumspielen, macht schon einen unterschied
     min_landmark_trust: 15.0
 
     # RANSAC parameters
@@ -12,7 +12,7 @@ visual_odom_node:
       evaluation_tolerance: 0.05 # Tolerance for inlier evaluation in m
       iterations: 100             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
-      min_matches_for_ransac: 5  # Minimum number of matches required for RANSAC
+      min_matches_for_ransac: 10  # Minimum number of matches required for RANSAC
       max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
       min_inlier_ratio: 0.19        # Minimum inlier ratio for RANSAC to be considered valid
 

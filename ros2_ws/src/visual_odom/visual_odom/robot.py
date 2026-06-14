@@ -45,6 +45,8 @@ class VisualRobotSample():
         self.bf = matcher
 
         self.first_iteration = True
+        self.ransac_delta_p = None
+        self.ransac_inlier_ratio = 0.0
         self.visual_odom_map = visual_odom_map
         self.visual_odom_map.add_landmarks_from_kps(covariance_P, valid_kp, valid_des, frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
     
@@ -61,6 +63,23 @@ class VisualRobotSample():
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
         self.publish_vision_cone(self.cone_publisher, rgb_stamp)
+
+    def update_with_wheel_odom(self, state_wheel_odom: State):
+        if self.ransac_delta_p is not None:
+            delta_ransac = State(self.ransac_delta_p.x, self.ransac_delta_p.y, self.ransac_delta_theta) 
+        else:
+            delta_ransac = None
+
+        state, self.covariance_P = self.extended_kalman_filter.kalman_iteration(state_wheel_odom, delta_ransac, self.ransac_inlier_ratio)
+        self.pos_baselink = Coordinate(state.x, state.y, 0.0)
+        self.theta = state.theta
+
+        if self.ransac_delta_p is not None:
+            self.ransac_delta_p = None
+            self.ransac_delta_theta = None
+            self.ransac_inlier_ratio = 0.0
+
+
 
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
         self.frame_rgb = frame_rgb
@@ -84,20 +103,29 @@ class VisualRobotSample():
                 return
             
             ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
-            ransac_delta_p = ransac_result[0]
-            ransac_delta_theta = ransac_result[1]
+            self.ransac_delta_p = ransac_result[0]
+            self.ransac_delta_theta = ransac_result[1]
+
+            c = cos(self.theta)
+            s = sin(self.theta)
+
+            R = np.array([[c, -s],
+                           [s,  c]])
+            delta = R @ np.array([self.ransac_delta_p.x, self.ransac_delta_p.y])
+            self.ransac_delta_p = Coordinate(delta[0], delta[1], 0.0)
+
             ransac_landmark_indices = ransac_result[2]
             self.ransac_draw_keypoints = ransac_result[3]
             ransac_kp_indices = ransac_result[4]
             ransac_not_matched_kp_indices = ransac_result[5]
             ransac_inlier_count = ransac_result[6]
+            self.ransac_inlier_ratio = float(ransac_inlier_count)/len(matches) if len(matches) > 0 else 0.0
 
             if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
                 return
-
-            z_dict = {}
+#
             kp_pos = []
             for i in ransac_kp_indices:
                 u, v = valid_kp[i].pt
@@ -107,11 +135,6 @@ class VisualRobotSample():
                 depth_value = self.frame_depth[v, u]
 
                 kp_pos.append(PixelCoordinate(u, v, depth_value))
-
-            kalman_iteration_result = self.extended_kalman_filter.kalman_iteration(ransac_delta_p, ransac_delta_theta, z_dict, self.visible_landmarks)
-            self.pos_baselink = Coordinate(kalman_iteration_result[0].x, kalman_iteration_result[0].y, 0.0)
-            self.theta = kalman_iteration_result[0].theta
-            self.covariance_P = kalman_iteration_result[1]
             
             self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
             self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
@@ -219,12 +242,12 @@ class VisualRobotSample():
                         best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
                         best_landmark_index.append(matches[i].queryIdx) 
 
-            if (best_inlier_count/ len(matches)) > 0.80:
-                rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
+            if (best_inlier_count/ len(matches)) > 0.80 or mean_e < constants.parameters.ransac_evaluation_tolerance*4:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
                 break
 
-            if(iter == iteration-1):
-                rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
+            #if(iter == iteration-1):
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
 
         if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
             rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")

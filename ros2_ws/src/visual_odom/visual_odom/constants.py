@@ -153,7 +153,17 @@ def normalize_angle(angle: float) -> float:
     Returns:
         float: Normalized angle in radians.
     """
-    return (angle + pi) % (2 * pi) - pi    
+    return (angle + pi) % (2 * pi) - pi  
+
+
+
+RGB_IMAGE_TOPIC = "/serf01/nav_rgbd_1/rgb/image_raw"
+DEPTH_IMAGE_TOPIC = "/serf01/nav_rgbd_1/depth/image_raw"
+WHEEL_ODOMETRY_TOPIC = "/serf01/odometry/wheel"
+FILTERED_ODOMETRY_TOPIC = "/serf01/odometry/filtered"
+IMU_ODOMETRY_TOPIC = "/serf01/odometry/imu"
+TF_STATIC_TOPIC = "/tf_static"
+VISION_CONE_TOPIC = "/vision_cone"
 
 
 KINECT_FRAME_ID = "kinect_depth"

@@ -4,6 +4,7 @@ from launch.actions import ExecuteProcess
 from ament_index_python.packages import get_package_share_directory
 import os
 import yaml
+from visual_odom.constants import RGB_IMAGE_TOPIC, DEPTH_IMAGE_TOPIC, WHEEL_ODOMETRY_TOPIC, FILTERED_ODOMETRY_TOPIC, IMU_ODOMETRY_TOPIC, TF_STATIC_TOPIC
 
 
 def generate_launch_description():
@@ -24,12 +25,12 @@ def generate_launch_description():
     
     rosbag_play_normal = ExecuteProcess(
         cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics',
-             '/serf01/nav_rgbd_1/rgb/image_raw',
-             '/serf01/nav_rgbd_1/depth/image_raw',
-             '/serf01/odometry/wheel',
-             '/serf01/odometry/filtered',
-             '/serf01/odometry/imu',
-             '/tf_static'],
+             RGB_IMAGE_TOPIC,
+             DEPTH_IMAGE_TOPIC,
+             WHEEL_ODOMETRY_TOPIC,
+             FILTERED_ODOMETRY_TOPIC,
+             IMU_ODOMETRY_TOPIC,
+             TF_STATIC_TOPIC],
         output='screen'
     )
 
