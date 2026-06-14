@@ -13,7 +13,8 @@ class ExtendedKalmanFilterRobot:
 	def __init__(self, x: State, P: NDArray, Q: NDArray):
 		self.x = x
 		self.P = P
-		self.Q = Q
+		#self.Q = Q -> Hier auskommentiert, weil im predict eh immer setQ drin stand!
+		self.Q = self.set_Q()
 		self.F = np.array([[1.0, 0.0, 0.0], 
 					 		[0.0, 1.0, 0.0], 
 							[0.0, 0.0, 1.0]])
@@ -22,7 +23,7 @@ class ExtendedKalmanFilterRobot:
 					 		[0.0, 1.0, 0.0], 
 							[0.0, 0.0, 1.0]])
 		self.last_ransac_pose  = x
-		self.last_u = State(0.0, 0.0, 0.0)
+		self.last_wheel_odom = State(0.0, 0.0, 0.0)
 	
 	def kalman_iteration(self, state_wheel_odom: State, delta_ransac: State | None, inlier_ratio: float) -> Tuple[State, NDArray]:
 		x_tt1, P_tt1 = self.prediction(self.x, state_wheel_odom)
@@ -33,32 +34,19 @@ class ExtendedKalmanFilterRobot:
 		else:
 			return x_tt1, P_tt1
 
-	def prediction(self, x: State, state_wheel_odom: State) -> Tuple[State, NDArray]:
-		delta_p = state_wheel_odom - self.last_u
+	def prediction(self, state_wheel_odom: State): #keine Rückgabe, weil P und x im EKF gepsiehcert werden; x Rückgabe im Update mit oder ohne RANSAC Update
 		
-		c_last_odom = cos(self.last_u.theta)
-		s_last_odom = sin(self.last_u.theta)
-		R_last_odom = np.array([[c_last_odom, -s_last_odom],
-							[s_last_odom,  c_last_odom]])
+		delta_pos = state_wheel_odom - self.last_wheel_odom
+		self.last_wheel_odom = state_wheel_odom
 
-		c_odom = cos(x.theta)
-		s_odom = sin(x.theta)
-		R_odom = np.array([[c_odom, -s_odom],
-							[s_odom,  c_odom]])
+		delta_pos = np.array([delta_pos.x, delta_pos.y])
+		x_tt1 = self.x + State(delta_pos[0], delta_pos[1], delta_pos.theta)
 		
-		self.last_u = state_wheel_odom
-
-		delta_pos = np.array([delta_p.x, delta_p.y])
-		delta_pos = R_odom@R_last_odom.T@delta_pos
-		x_tt1 = x + State(delta_pos[0], delta_pos[1], delta_p.theta)
-		self.set_Q()
-
 		P_tt1 = self.F@self.P@self.F.T + self.Q
 		
 		self.x = x_tt1
 		self.P = P_tt1
 
-		return x_tt1, P_tt1
 	
 	def computeKalmanGain(self, P_tt1: NDArray) -> NDArray:
 		PHT = P_tt1@self.H.T         # PH^\top

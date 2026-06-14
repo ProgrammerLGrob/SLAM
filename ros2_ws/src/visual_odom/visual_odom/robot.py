@@ -63,7 +63,10 @@ class VisualRobotSample():
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
         self.publish_vision_cone(self.cone_publisher, rgb_stamp)
 
+    """
     def update_with_wheel_odom(self, state_wheel_odom: State):
+        
+        
         if self.ransac_delta_p is not None:
             delta_ransac = State(self.ransac_delta_p.x, self.ransac_delta_p.y, self.ransac_delta_theta) 
         else:
@@ -77,7 +80,7 @@ class VisualRobotSample():
             self.ransac_delta_p = None
             self.ransac_delta_theta = None
             self.ransac_inlier_ratio = 0.0
-
+    """
 
 
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
