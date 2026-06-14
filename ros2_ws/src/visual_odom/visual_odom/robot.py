@@ -13,6 +13,7 @@ from scipy.spatial import KDTree
 from math import pi, sin, cos, tan
 import random
 from typing import List, Tuple
+import copy
 
 import rclpy
 from rclpy.logging import get_logger
@@ -49,6 +50,8 @@ class VisualRobotSample():
         self.ransac_inlier_ratio = 0.0
         self.visual_odom_map = visual_odom_map
         self.visual_odom_map.add_landmarks_from_kps(covariance_P, valid_kp, valid_des, frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+        self.keyframe_map = copy.deepcopy(self.visual_odom_map)
+
         self.odometry_msg_publisher = odom_publisher
         self.map_publisher = map_publisher
         self.cone_publisher = cone_publisher
@@ -57,6 +60,7 @@ class VisualRobotSample():
         self.extended_kalman_filter = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
         self.log_weight = 0.0
         self.ransac_draw_keypoints = []
+
 
     def publish_yourself(self, rgb_stamp):
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -86,75 +90,68 @@ class VisualRobotSample():
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp):
         self.frame_rgb = frame_rgb
         self.frame_depth = depth_frame
+           
+        pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
+        self.visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
+        
+        # Match descriptors.
+        matches = self.bf.match(self.visible_landmarks.get_descriptors(), valid_des)
 
-        if self.first_iteration and len(self.visual_odom_map) < 50:
-            self.first_iteration = False
+        if len(matches) < constants.parameters.min_matches_for_ransac:
             self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
             return
-        else:            
-            pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), self.theta,self.pos_baselink)
+        
+        ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
+        self.ransac_delta_p = ransac_result[0]
+        self.ransac_delta_theta = ransac_result[1]
 
-            self.visible_landmarks = self.visual_odom_map.get_visible_landmarks(pos_camera, self.theta)
-            #self.visible_landmarks = self.visual_odom_map
+        c = cos(self.theta)
+        s = sin(self.theta)
 
-            # Match descriptors.
-            matches = self.bf.match(self.visible_landmarks.get_descriptors(), valid_des)
+        R = np.array([[c, -s],
+                        [s,  c]])
+        delta = R @ np.array([self.ransac_delta_p.x, self.ransac_delta_p.y])
+        self.ransac_delta_p = Coordinate(delta[0], delta[1], 0.0)
 
-            if len(matches) < constants.parameters.min_matches_for_ransac:
-                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-                return
+        ransac_landmark_indices = ransac_result[2]
+        self.ransac_draw_keypoints = ransac_result[3]
+        ransac_kp_indices = ransac_result[4]
+        ransac_not_matched_kp_indices = ransac_result[5]
+        ransac_inlier_count = ransac_result[6]
+        self.ransac_inlier_ratio = float(ransac_inlier_count)/len(matches) if len(matches) > 0 else 0.0
+
+        if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
+            self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+            rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
+            return
+        
+        kp_pos = []
+        for i in ransac_kp_indices:
+            u, v = valid_kp[i].pt
+            u = int(round(u))
+            v = int(round(v))
+
+            depth_value = self.frame_depth[v, u]
+
+            kp_pos.append(PixelCoordinate(u, v, depth_value))
+        
+        self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+        self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
+
+        self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices)
+
+        if len(matches) < constants.parameters.matches_for_new_landmarks:
+            not_matched_kp = []
+            not_matched_des = []
+            not_matched_kp_depth = []
+            for idx in ransac_not_matched_kp_indices:
+                not_matched_kp.append(valid_kp[idx])
+                not_matched_des.append(valid_des[idx])
+                not_matched_kp_depth.append(valid_kp_depth[idx])
+
             
-            ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), valid_kp, valid_kp_depth)
-            self.ransac_delta_p = ransac_result[0]
-            self.ransac_delta_theta = ransac_result[1]
-
-            c = cos(self.theta)
-            s = sin(self.theta)
-
-            R = np.array([[c, -s],
-                           [s,  c]])
-            delta = R @ np.array([self.ransac_delta_p.x, self.ransac_delta_p.y])
-            self.ransac_delta_p = Coordinate(delta[0], delta[1], 0.0)
-
-            ransac_landmark_indices = ransac_result[2]
-            self.ransac_draw_keypoints = ransac_result[3]
-            ransac_kp_indices = ransac_result[4]
-            ransac_not_matched_kp_indices = ransac_result[5]
-            ransac_inlier_count = ransac_result[6]
-            self.ransac_inlier_ratio = float(ransac_inlier_count)/len(matches) if len(matches) > 0 else 0.0
-
-            if float(ransac_inlier_count)/len(matches) < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
-                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-                rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
-                return
-#
-            kp_pos = []
-            for i in ransac_kp_indices:
-                u, v = valid_kp[i].pt
-                u = int(round(u))
-                v = int(round(v))
-
-                depth_value = self.frame_depth[v, u]
-
-                kp_pos.append(PixelCoordinate(u, v, depth_value))
-            
-            self.log_weight = self.visible_landmarks.calculate_log_weight(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
-            self.visible_landmarks.landmark_kalman_iteration(self.pos_baselink, self.theta, ransac_landmark_indices, kp_pos)
-
-            self.visual_odom_map.cleanup_old_landmarks(self.visible_landmarks,ransac_landmark_indices)
-
-            if len(matches) < constants.parameters.matches_for_new_landmarks:
-                not_matched_kp = []
-                not_matched_des = []
-                not_matched_kp_depth = []
-                for idx in ransac_not_matched_kp_indices:
-                    not_matched_kp.append(valid_kp[idx])
-                    not_matched_des.append(valid_des[idx])
-                    not_matched_kp_depth.append(valid_kp_depth[idx])
-
-                
-                #self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-                self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
+            #self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
+            self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
 
 
     def ransac(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:

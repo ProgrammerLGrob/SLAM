@@ -109,10 +109,7 @@ class VisualOdom(Node):
 
     def listener_wheel_odom_callback(self, msg: Odometry):
         self.odometry_buffer.add_odom_message(msg)
-        print("header:", msg.header.frame_id)
-        print("child:", msg.child_frame_id)
-        print("x,y:", msg.pose.pose.position.x,
-      msg.pose.pose.position.y)
+        
         state_wheel_odom = self.odometry_buffer.get_latest().pose
         if self.position_initialized == False:
             self.position_initialized = True

@@ -26,13 +26,13 @@ class ExtendedKalmanFilterRobot:
 		self.last_wheel_odom = State(0.0, 0.0, 0.0)
 	
 	def kalman_iteration(self, state_wheel_odom: State, delta_ransac: State | None, inlier_ratio: float) -> Tuple[State, NDArray]:
-		x_tt1, P_tt1 = self.prediction(self.x, state_wheel_odom)
+		
 
 		if inlier_ratio > 0.05 and delta_ransac is not None:
-			x_t1t1, P_t1t1 = self.update(x_tt1, P_tt1, delta_ransac, inlier_ratio)
+			x_t1t1, P_t1t1 = self.update(self.x, self.P, delta_ransac, inlier_ratio)
 			return x_t1t1, P_t1t1
 		else:
-			return x_tt1, P_tt1
+			return self.x, self.P
 
 	def prediction(self, state_wheel_odom: State): #keine Rückgabe, weil P und x im EKF gepsiehcert werden; x Rückgabe im Update mit oder ohne RANSAC Update
 		
@@ -56,27 +56,29 @@ class ExtendedKalmanFilterRobot:
 		return K
 
 	# Update self.x and self.P, return tuple (x_{t|t}, P_{t_t})
-	def update(self, x_tt1: State, P_tt1: NDArray, delta_ransac: State, inlier_ratio: float) -> Tuple[State, NDArray]:
-		z = self.last_ransac_pose  + delta_ransac
+	def update(self, x_tt1: State, P_tt1: NDArray, delta_ransac: State, keyframe_pos: State, keyframe_stamp: Time, inlier_ratio: float):
+		#Last keyframe pos
+		visual_pos = keyframe_pos.add(delta_ransac)
+		z = visual_pos
+		#self.set_R(inlier_ratio) not implemented yet, only constants
+		K = self.computeKalmanGain(self.P)
 
-		self.set_R(inlier_ratio)
-		K = self.computeKalmanGain(P_tt1)
-
-		z_tt1 = x_tt1
+		wheel_odom_prediction = self.x
+		z_tt1 = wheel_odom_prediction
 		
 		delta_z = np.array([z.x - z_tt1.x, z.y - z_tt1.y, z.theta - z_tt1.theta])
 		
 		delta = K@delta_z
 		
-		x_t1t1 = x_tt1 + State(delta[0], delta[1], delta[2])
+		pos_predict_with_update = self.x.add(State(delta[0], delta[1], delta[2]))
+		x_t1t1 = pos_predict_with_update
 		I_KH = np.eye(3) - K @ self.H
-		P_t1t1 = I_KH @ P_tt1 @ I_KH.T + K @ self.R @ K.T
-
-		self.last_ransac_pose  = x_t1t1
-
+		
+		covariance_predict_with_update = I_KH @ P_tt1 @ I_KH.T + K @ self.R @ K.T
+		P_t1t1 = covariance_predict_with_update
+		
 		self.x = x_t1t1
 		self.P = P_t1t1
-		return x_t1t1, P_t1t1
 	
 	def set_R(self, inlier_ratio: float):
 		sigma = constants.parameters.ransac_evaluation_tolerance
@@ -89,3 +91,9 @@ class ExtendedKalmanFilterRobot:
 		self.Q = np.array([[sigma**2, 0.0, 0.0], 
 						   [0.0, sigma**2, 0.0], 
 						   [0.0, 0.0, sigma**2]])
+
+	def get_current_State(self) -> State:
+		return self.x
+	
+	def get_current_P(self) -> NDArray:
+		return self.P
