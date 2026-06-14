@@ -2,6 +2,7 @@
 import numpy as np
 from math import pi, atan2
 from dataclasses import dataclass
+from nav_msgs.msg import Odometry
 
 @dataclass
 class Coordinate:
@@ -141,7 +142,7 @@ class Parameters:
     """Number of particles/samples generated within the localization filter."""
     topic_visual_odometry_msg: str
     """ROS 2 topic name where the calculated odometry path is published."""
-    
+
 
 def normalize_angle(angle: float) -> float:
     """

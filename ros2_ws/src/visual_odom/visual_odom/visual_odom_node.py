@@ -34,11 +34,12 @@ from visual_odom.tf_methods import *
 from visual_odom.constants import *
 from visual_odom.ekf_robot import *
 from visual_odom.robot import *
+from visual_odom.odom_buffer import OdomBuffer
 import visual_odom.constants as constants
 
 from std_msgs.msg import Header
 
-import cProfile
+#import cProfile
 import pstats
 import io
 import shutil
@@ -70,7 +71,7 @@ class VisualOdom(Node):
         self.subscription_rgb = self.create_subscription(Image, RGB_IMAGE_TOPIC, self.listener_rgb_callback, 10)
         self.subscription_depth = self.create_subscription(Image, DEPTH_IMAGE_TOPIC, self.listener_depth_callback, 10)
         self.subscription_wheel_odom = self.create_subscription(Odometry, WHEEL_ODOMETRY_TOPIC, self.listener_wheel_odom_callback, 10)
-
+        self.odometry_buffer = OdomBuffer(maxlen=2000)
 
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
@@ -107,9 +108,8 @@ class VisualOdom(Node):
         self.frame_stamp = builtin_interfaces.msg.Time()
 
     def listener_wheel_odom_callback(self, msg: Odometry):
-        rot = Rotation.from_quat([msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w])
-        state_wheel_odom = State(msg.pose.pose.position.x, msg.pose.pose.position.y, rot.as_euler('xyz')[2])
-
+        self.odometry_buffer.add_odom_message(msg)
+        state_wheel_odom = self.odometry_buffer.get_latest().pose
         if self.position_initialized == False:
             self.position_initialized = True
             self.pos_baselink = Coordinate(state_wheel_odom.x, state_wheel_odom.y, 0.0)
@@ -358,17 +358,19 @@ def calculate_tf(Position: Coordinate, theta: float, timestamp,  parent_frame_id
 
 
 def main():
+    
     rclpy.init()
     node = VisualOdom()
-    
+    """
     profiler = cProfile.Profile()
     profiler.enable()
-    
+    """
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     finally:
+        """
         profiler.disable()
         
         # Als Text ausgeben
@@ -382,6 +384,6 @@ def main():
         profiler.dump_stats('/tmp/profile.prof')
         shutil.copy('/tmp/profile.prof', '/mnt/c/Users/lukas/Desktop/profile.prof')
         print("Profiling-Daten gespeichert: /mnt/c/Users/lukas/Desktop/profile.prof")
-        
+        """
         node.destroy_node()
         rclpy.shutdown()

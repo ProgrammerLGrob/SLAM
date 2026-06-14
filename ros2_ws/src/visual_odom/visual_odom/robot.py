@@ -49,7 +49,6 @@ class VisualRobotSample():
         self.ransac_inlier_ratio = 0.0
         self.visual_odom_map = visual_odom_map
         self.visual_odom_map.add_landmarks_from_kps(covariance_P, valid_kp, valid_des, frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-    
         self.odometry_msg_publisher = odom_publisher
         self.map_publisher = map_publisher
         self.cone_publisher = cone_publisher
