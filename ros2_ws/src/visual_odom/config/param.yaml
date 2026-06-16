@@ -10,14 +10,14 @@ visual_odom_node:
     # RANSAC parameters
     ransac:
       evaluation_tolerance: 0.05 # Tolerance for inlier evaluation in m
-      iterations: 4             # Number of RANSAC iterations
+      iterations: 2             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
       min_matches_for_ransac: 10  # Minimum number of matches required for RANSAC
       max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
       min_inlier_ratio: 0.15        # Minimum inlier ratio for RANSAC to be considered valid
 
 
-    n_robot_samples: 1                   # Number of samples for robot pose estimation in RANSAC      
+    n_robot_samples: 5                   # Number of samples for robot pose estimation in RANSAC      
 
 
     # Rosbag configuration
