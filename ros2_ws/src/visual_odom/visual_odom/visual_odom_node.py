@@ -75,6 +75,7 @@ class VisualOdom(Node):
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
+        self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
@@ -112,12 +113,12 @@ class VisualOdom(Node):
         if self.position_initialized == False:
             self.position_initialized = True
             self.pos_baselink = Coordinate(state_wheel_odom.x, state_wheel_odom.y, 0.0)
-            self.theta = 0.0         
+            self.theta = state_wheel_odom.theta         
             return
         else:
             if self.first_iteration == False:
                 for robot in self.robots:
-                    robot.update_with_wheel_odom(state_wheel_odom)
+                    robot.predict_with_wheel_odom(state_wheel_odom)
 
         
 
@@ -156,10 +157,14 @@ class VisualOdom(Node):
 
 
             self.best_robot.publish_yourself(rgb_stamp)           
-
+        
             frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, self.best_robot.get_drawn_keypoints(), None, color=(0,255,0), flags=0)
-            cv2.imshow("second RGB Image", frame_rgb_drawn)
-            cv2.waitKey(1)
+            
+            msg = self.bridge.cv2_to_imgmsg(frame_rgb_drawn, encoding='bgr8')
+            self.publisher_image.publish(msg)
+
+            #cv2.imshow("second RGB Image", frame_rgb_drawn)
+            #cv2.waitKey(1)
                 
 
     def listener_depth_callback(self,msg):
@@ -278,8 +283,6 @@ class VisualOdom(Node):
         
         log_weights -= np.max(log_weights)
         weights = np.exp(log_weights)
-
-        weights /= np.sum(weights)
 
         sum = np.sum(weights)
         

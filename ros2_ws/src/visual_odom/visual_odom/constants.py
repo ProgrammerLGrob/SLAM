@@ -157,13 +157,19 @@ def normalize_angle(angle: float) -> float:
 
 
 
+
+VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
+"""Primary ROS 2 publisher output path for navigation odometry."""
+
+
 RGB_IMAGE_TOPIC = "/serf01/nav_rgbd_1/rgb/image_raw"
 DEPTH_IMAGE_TOPIC = "/serf01/nav_rgbd_1/depth/image_raw"
 WHEEL_ODOMETRY_TOPIC = "/serf01/odometry/wheel"
 FILTERED_ODOMETRY_TOPIC = "/serf01/odometry/filtered"
 IMU_ODOMETRY_TOPIC = "/serf01/odometry/imu"
 TF_STATIC_TOPIC = "/tf_static"
-VISION_CONE_TOPIC = "/vision_cone"
+VISION_CONE_TOPIC = "/serf01/camera/vision_cone"
+KP_IMAGE_TOPIC = "/serf01/camera/keypoint_image"
 
 
 KINECT_FRAME_ID = "kinect_depth"
@@ -181,9 +187,6 @@ POINTCLOUD_FRAME_ID = "points_3d"
 
 KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
 """Topic/Frame ID isolating the tracked ORB descriptor 3D keypoints."""
-
-VISUAL_ODOM_MSG_TOPIC = "/serf01/odometry/project_slam"
-"""Primary ROS 2 publisher output path for navigation odometry."""
 
 N_ROBOT_SAMPLES = 1000
 """Default sample size/particle count allocated for the localization state space."""
@@ -209,6 +212,18 @@ MAX_ROTATION_ANGLE_DEG = 15.0
 MIN_LANDMARK_TRUST = 20.0
 
 INCREASE_TRUST_VALUE = 10.0
+
+NOISE_INCREMENT_RANSAC_FAILURE = 0.002
+
+MAX_ADDITIONAL_NOISE_RANSAC_FAILURE = 0.22
+
+INITIAL_LANDMARK_COUNT = 260
+
+SIGMA_X_ODOM_WHEEL_Q = 0.02
+
+SIGMA_Y_ODOM_WHEEL_Q = 0.02
+
+SIGMA_THETA_ODOM_WHEEL_Q = 0.01
 
 RANSAC_MIN_INLIER_RATIO = 0.3
 """Filter constraint requiring at least 30% of matched pairs to fit the final consensus."""

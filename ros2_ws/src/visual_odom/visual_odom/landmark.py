@@ -149,7 +149,7 @@ class Landmark:
         """
         Calculate the likelihood of the landmark. Must be after the kalman iteration
         """
-        R_noice = self.landmark_ekf.get_R()
+        R_noise = self.landmark_ekf.get_R()
         c = cos(theta)
         s = sin(theta)
 
@@ -158,7 +158,7 @@ class Landmark:
             [s,  c, 0.0],
             [0.0, 0.0, 1.0]
         ])
-        s_matrix = self.P + R_ob @ R_noice @ R_ob.T
+        s_matrix = self.P + R_ob @ R_noise @ R_ob.T
 
         det_s = np.linalg.det(s_matrix)
 
