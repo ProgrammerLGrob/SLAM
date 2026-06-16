@@ -4,24 +4,26 @@ visual_odom_node:
     max_depth: 7500       # Maximum depth in mm
     rgb_depth_sync_tolerance_sec: 0.1  # Tolerance for synchronizing RGB and depth frames in seconds
     pixel_tolerance: 4          # Tolerance in pixels for checking neighboring keypoints
-    matches_for_new_landmarks: 80000000 # kann man noch rumspielen, macht schon einen unterschied
+    matches_for_new_landmarks: 500 # kann man noch rumspielen, macht schon einen unterschied
     min_landmark_trust: 15.0
 
     # RANSAC parameters
     ransac:
       evaluation_tolerance: 0.05 # Tolerance for inlier evaluation in m
-      iterations: 2             # Number of RANSAC iterations
+      iterations: 10             # Number of RANSAC iterations
       sample_size: 3              # Minimum number of samples for robust estimation
       min_matches_for_ransac: 10  # Minimum number of matches required for RANSAC
       max_rotation_angle_deg: 15.0 # Maximum allowed rotation angle in degrees per frame
-      min_inlier_ratio: 0.15        # Minimum inlier ratio for RANSAC to be considered valid
+      min_inlier_ratio: 0.2        # Minimum inlier ratio for RANSAC to be considered valid
 
 
-    n_robot_samples: 5                   # Number of samples for robot pose estimation in RANSAC      
+    n_robot_samples: 20                   # Number of samples for robot pose estimation in RANSAC      
 
 
     # Rosbag configuration
-    rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260519_TransXY_bag/rosbag2_2026_05_19-16_13_19_0.mcap"
+    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260519_TransXY_bag/rosbag2_2026_05_19-16_13_19_0.mcap"
+    rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260616_Around_The_Desks_bag/rosbag2_2026_06_16-13_12_13_0.mcap"
+
 
     #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
     #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/20260421_pure_translation/20260421_pure_translation/rosbag2_2026_04_21-13_47_13_0.mcap"

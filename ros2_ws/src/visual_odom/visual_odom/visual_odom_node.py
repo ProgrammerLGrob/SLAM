@@ -57,9 +57,9 @@ class VisualOdom(Node):
         
         self.bridge = CvBridge()
         self.orb = cv2.ORB_create(
-            nfeatures=2000,        # maximale Anzahl an zu detektierenden Keypoints
-            edgeThreshold=40,      # Mindestabstand eines Keypoints vom Bildrand
-            patchSize=40,          # Größe des Bereichs zur Descriptor-Berechnung
+            nfeatures=1500,        # maximale Anzahl an zu detektierenden Keypoints
+            edgeThreshold=30,      # Mindestabstand eines Keypoints vom Bildrand
+            patchSize=30,          # Größe des Bereichs zur Descriptor-Berechnung
             fastThreshold=5,      # Schwellwert für FAST-Feature-Erkennung (Empfindlichkeit)
             scoreType=cv2.ORB_HARRIS_SCORE  # Methode zur Bewertung der Keypoint-Qualität
         )
@@ -103,6 +103,12 @@ class VisualOdom(Node):
         self.best_robot_idx = 0
         self.best_weight = 0.0
 
+        self.valid_kp_last = None
+        self.valid_des_last = None
+        self.valid_kp_depth_last = None
+        self.valid_kp = None
+        self.valid_des = None
+
         self.get_logger().info("Visual Odometry Node gestartet und bereit für die Verarbeitung von RGB-D Daten.")
         self.frame_stamp = builtin_interfaces.msg.Time()
 
@@ -123,30 +129,39 @@ class VisualOdom(Node):
         
 
     def listener_rgb_callback(self,msg):
+        
+
         if self.position_initialized == False:
             return
         
-        if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.02:
+        if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.000:
             self.frame_stamp = msg.header.stamp
         else:
             return
         
-        valid_kp, valid_des, valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
-
-
-        if valid_kp is None or valid_des is None or valid_kp_depth is None:
+        self.valid_kp, self.valid_des, self.valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
+        if self.valid_kp is None or self.valid_des is None or self.valid_kp_depth is None:
             return 
-        
+
+        if self.valid_kp_last is None and self.valid_des_last is None:
+            self.valid_kp_last = self.valid_kp
+            self.valid_des_last = self.valid_des
+            self.valid_kp_depth_last = self.valid_kp_depth
+            return
+
         if self.first_iteration:
             self.first_iteration = False
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp,  VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
             for _ in range(constants.parameters.n_robot_samples):
-                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,valid_kp, valid_des, valid_kp_depth, self.frame_rgb))
+                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d,self.publisher_cone,self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb))
         else:
-        
-            self.iteration(valid_kp, valid_des, valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp)  
+            #rclpy.logging.get_logger("VisualOdom").info(f"Starting RANSAC with {len(self.bf.match(self.valid_des, self.valid_des_last))} matches between current and last frame.")
+            matches = self.bf.match(self.valid_des_last,self.valid_des)
+            ransac_result = self.ransac(matches, self.valid_kp, self.valid_kp_depth, self.valid_kp_last, self.valid_kp_depth_last)
+
+            self.iteration(self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp, ransac_result)  
             
             self.pos_baselink = self.best_robot.get_position()
             self.theta = self.best_robot.get_theta()
@@ -165,6 +180,133 @@ class VisualOdom(Node):
 
             #cv2.imshow("second RGB Image", frame_rgb_drawn)
             #cv2.waitKey(1)
+            self.valid_kp_last = self.valid_kp
+            self.valid_des_last = self.valid_des
+            self.valid_kp_depth_last = self.valid_kp_depth
+
+    def ransac(self, matches: List[cv2.DMatch],  valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray , valid_kp_last: List[cv2.KeyPoint], valid_kp_depth_last: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
+        #Abbruchbedingung
+        #t0 = time.perf_counter()
+        P = []
+        Q = []
+
+        best_inlier_count = 0
+        inlier_count = 0
+        best_t = Coordinate(0.0, 0.0, 0.0)
+        best_theta = 0.0
+
+        landmark_index = [] 
+
+
+        for m in range(len(matches)): 
+            #t1 = time.perf_counter()           
+            #Matrix mit Koordinaten im kinect frame
+            keypoint = valid_kp[matches[m].trainIdx].pt
+            keypoint_last = valid_kp_last[matches[m].queryIdx].pt
+            #t2 = time.perf_counter()
+            #time1 = 1000000*(t2-t1)
+
+            
+            u, v = keypoint_last
+            u = round(u)
+            v = round(v)
+            z = valid_kp_depth_last[matches[m].queryIdx]
+
+            coor = pixel_to_kinect_(u, v, z)
+            coor = Coordinate(coor[0], coor[1], coor[2])
+            coor_base_link = kinect_depth_to_baselink(coor)
+           
+            P.append([coor_base_link.x, coor_base_link.y])
+            #t6 = time.perf_counter()
+            #time5 = 1000000*(t6-t5)
+
+            u, v = keypoint
+            u = round(u)
+            v = round(v)
+            z = valid_kp_depth[matches[m].trainIdx]
+
+            coor = pixel_to_kinect_(u, v, z)
+            coor = Coordinate(coor[0], coor[1], coor[2])
+            #time6 = 1000000*(t7-t6)
+            coor_base_link = kinect_depth_to_baselink(coor)
+
+            Q.append([coor_base_link.x, coor_base_link.y])
+            landmark_index.append(matches[m].queryIdx)
+           
+        P_array = np.array(P)
+        Q_array = np.array(Q)
+        best_P_inlier = []
+        best_Q_inlier = []
+        best_valid_kp_index = []
+        best_draw_Q_inlier = []
+        best_landmark_index = []
+        mean_last_e = 10000.0
+
+        iteration = int(constants.parameters.ransac_iteration)
+
+        #p = 0.99          # gewünschte Erfolgswahrscheinlichkeit
+        #w = 0.7           # geschätzter Inlier-Anteil
+        #s = 3             # Anzahl Samples pro RANSAC-Hypothese
+
+        #k = int(math.log(1 - p) / math.log(1 - w**s))+1
+
+        for iter in range(iteration): # k statt iteration
+            P_samples = []
+            Q_samples = []
+
+            samples = random.sample(range(len(P)), constants.parameters.ransac_sample_size)
+            P_samples = [P[i] for i in samples]
+            Q_samples = [Q[i] for i in samples]
+
+            R, delta_t, delta_theta  = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
+            if R is None:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC at iteration {iter} failed to compute transformation")
+                continue
+   
+            e = np.linalg.norm(P_array - ((R @ Q_array.T).T + delta_t.T), axis=1)
+            mean_e = np.mean(e)
+
+            inlier_count = np.sum(e < constants.parameters.ransac_evaluation_tolerance)
+
+            if inlier_count > best_inlier_count or (inlier_count == best_inlier_count and mean_e < mean_last_e):
+                best_inlier_count = inlier_count
+                mean_last_e = mean_e
+
+                best_P_inlier = []
+                best_Q_inlier = []
+                best_valid_kp_index = []
+                best_draw_Q_inlier = []
+                best_landmark_index = []
+                
+                for i in range(len(e)):
+                    if e[i] < constants.parameters.ransac_evaluation_tolerance:
+                        best_P_inlier.append(P_array[i])
+                        best_Q_inlier.append(Q_array[i])
+                        best_valid_kp_index.append(matches[i].trainIdx)
+                        best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
+                        best_landmark_index.append(matches[i].queryIdx) 
+
+            if (best_inlier_count/ len(matches)) > constants.parameters.ransac_min_inlier_ratio or mean_e < constants.parameters.ransac_evaluation_tolerance*4:
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
+                break
+
+            #if(iter == iteration-1):
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
+
+        if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
+            #rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")
+            return Coordinate(0.0, 0.0, 0.0), 0.0, [], 0.0
+        
+        # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
+        R, delta_t, delta_theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
+            
+        best_theta = delta_theta
+
+        best_t = Coordinate(float(delta_t[0]), float(delta_t[1]), 0.0)
+
+        
+        # Gebe nun exakt die synchronisierten "best_"-Listen zurück
+        return best_t, best_theta, best_draw_Q_inlier, best_inlier_count
                 
 
     def listener_depth_callback(self,msg):
@@ -233,6 +375,7 @@ class VisualOdom(Node):
         occupied_pixels = {} 
         all_kp = []
         valid_kp = []
+        all_kp_depth = []
         valid_kp_depth = []
 
         for p in kp:
@@ -249,7 +392,8 @@ class VisualOdom(Node):
             # Tiefenwert prüfen
             if MIN_DEPTH < depth_value < constants.parameters.max_depth:
                 all_kp.append(p)
-                
+                all_kp_depth.append(depth_value)
+
                 is_too_close = False
                 
                 # Super-schneller Lookup im Dictionary
@@ -274,13 +418,13 @@ class VisualOdom(Node):
 
         return valid_kp, valid_des, valid_kp_depth, rgb_stamp
  
-    def iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time):
+    def iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time, ransac_result):
         log_weights = []
         for robot in self.robots:
-            robot.robot_iteration(valid_kp, valid_des, valid_kp_depth, frame_rgb, frame_depth, rgb_stamp)
+            robot.robot_iteration(valid_kp, valid_des, valid_kp_depth, frame_rgb, frame_depth, rgb_stamp, ransac_result)
             log_weights.append(robot.get_log_weight())
 
-        
+        log_weights = np.array(log_weights)
         log_weights -= np.max(log_weights)
         weights = np.exp(log_weights)
 
@@ -289,6 +433,7 @@ class VisualOdom(Node):
         normalized_weights = weights/sum
     
         self.best_robot_idx = np.argmax(normalized_weights)
+        #rclpy.logging.get_logger("VisualOdom").info(f"Best robot index: {self.best_robot_idx} with weight {normalized_weights[self.best_robot_idx]:.4f}")
         self.best_weight = normalized_weights[self.best_robot_idx]
         self.best_robot = self.robots[self.best_robot_idx]
 

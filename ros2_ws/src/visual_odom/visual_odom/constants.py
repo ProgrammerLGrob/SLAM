@@ -3,7 +3,7 @@ import numpy as np
 from math import pi, atan2
 from dataclasses import dataclass
 
-@dataclass
+@dataclass(slots=True)
 class Coordinate:
     """
     A 3D spatial coordinate container.
@@ -41,7 +41,7 @@ class Coordinate:
         return Coordinate(self.x / factor, self.y / factor, self.z / factor)
     
 
-@dataclass
+@dataclass(slots=True)
 class PixelCoordinate:
     """
     Container for a 2D image pixel combined with its registered depth value.
@@ -58,7 +58,7 @@ class PixelCoordinate:
     z: float
     """Raw depth value from the sensor corresponding to this pixel."""
 
-@dataclass 
+@dataclass(slots=True)
 class State:
     """
     2D Robot pose representation containing planar translation and heading.
@@ -94,7 +94,7 @@ class State:
         return State(self.x / factor, self.y / factor, self.theta / factor)
     
 
-@dataclass
+@dataclass(slots=True)
 class Parameters:
     """
     Runtime configuration and threshold parameter package for the SLAM node.

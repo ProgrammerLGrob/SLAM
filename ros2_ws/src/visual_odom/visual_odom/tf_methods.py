@@ -3,6 +3,7 @@ from math import sin,cos
 from visual_odom.constants import *
 
 import numpy as np
+from numpy.typing import NDArray
 
 
 def kinect_depth_to_odom(kinect_point: Coordinate, theta: float, pos_baselink: Coordinate) -> Coordinate:
@@ -58,3 +59,12 @@ def pixel_to_kinect(kp: PixelCoordinate) -> Coordinate:
     y = kp.z * (kp.v - CV) / F
     x = kp.z * (kp.u - CU) / F
     return Coordinate(x, y, kp.z)/1000.0 # Convert from mm to m
+
+def pixel_to_kinect_(u: int, v: int, z: float) -> NDArray:
+    """
+    Calculate 3D coordinates from pixel and depth values.
+    """
+    z = z/1000.0 # Convert from mm to m
+    y = z * (v - CV) / F
+    x = z * (u - CU) / F
+    return np.array([x, y, z]) # Convert from mm to m

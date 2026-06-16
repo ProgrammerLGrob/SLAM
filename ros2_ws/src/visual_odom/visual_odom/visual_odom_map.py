@@ -198,6 +198,6 @@ class VisualOdomMap(list[Landmark]):
             if likelihood > 0:
                 log_weight += np.log(likelihood)
             else:
-                log_weight += np.log(1e-300)  # sicherer Minimalwert
+                log_weight += np.log(1e-10)  # sicherer Minimalwert
 
         return log_weight

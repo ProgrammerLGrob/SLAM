@@ -20,7 +20,7 @@ class Landmark:
         self.des = des
         self.trust = trust
         self.color = color
-        self.kinect_coordinates  = pixel_to_kinect(self.pixel_coor)
+        self.kinect_coordinates = pixel_to_kinect(self.pixel_coor)
         self.odom_coordinates = odom_coordinates
         self.P = P_init
         self.landmark_ekf = ExtendedKalmanFilterLandmark(self.odom_coordinates, self.P, pix_coor=self.pixel_coor)
