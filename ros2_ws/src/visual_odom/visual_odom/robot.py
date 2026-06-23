@@ -146,8 +146,8 @@ class VisualRobotSample():
             
             if math.sqrt(self.acc_ransac_noise_delta.x**2 + self.acc_ransac_noise_delta.y**2) > 0.10 or abs(self.acc_ransac_noise_delta.theta) > 0.06:
 
-                noise_x = np.random.normal(0.0, 0.005)
-                noise_y = np.random.normal(0.0, 0.005)
+                noise_x = np.random.normal(0.0, 0.003)
+                noise_y = np.random.normal(0.0, 0.003)
                 noise_theta = np.random.normal(0.0, 0.003)
                 self.delta_ransac_state.x += noise_x
                 self.delta_ransac_state.y += noise_y
