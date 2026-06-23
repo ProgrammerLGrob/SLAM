@@ -134,17 +134,7 @@ class VisualOdomMap(list[Landmark]):
         @return 2D descriptor matrix matching active landmarks.
         """
         return np.array([l.get_descriptor() for l in self])
-    
-    def get_kps(self) -> list[cv2.KeyPoint]:
-        """!
-        @brief Gets a list of all active OpenCV KeyPoints tracked by the map.
 
-        @return KeyPoints list.
-        """
-        kps = []
-        for l in self:
-            kps.append(l.get_kp())
-        return kps
     
     def get_depth(self) -> list[int]:
         """!

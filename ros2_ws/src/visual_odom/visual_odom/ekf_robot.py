@@ -12,8 +12,9 @@ from typing import Tuple
 
 from visual_odom.constants import (
     State, SIGMA_X_ODOM_WHEEL_Q, SIGMA_Y_ODOM_WHEEL_Q, SIGMA_THETA_ODOM_WHEEL_Q,
-    NOISE_INCREMENT_RANSAC_FAILURE, MAX_ADDITIONAL_NOISE_RANSAC_FAILURE, parameters
+    NOISE_INCREMENT_RANSAC_FAILURE, MAX_ADDITIONAL_NOISE_RANSAC_FAILURE
 )
+import visual_odom.constants as constants
 
 
 class ExtendedKalmanFilterRobot:
@@ -103,7 +104,7 @@ class ExtendedKalmanFilterRobot:
 
         @param inlier_ratio Ratio of inliers used during standard visual processing loops.
         """
-        sigma = parameters.ransac_evaluation_tolerance + self.additional_noise
+        sigma =  constants.parameters.ransac_evaluation_tolerance + self.additional_noise
         self.R = np.array([[sigma**2, 0.0, 0.0], 
                            [0.0, sigma**2, 0.0], 
                            [0.0, 0.0, sigma**2]])

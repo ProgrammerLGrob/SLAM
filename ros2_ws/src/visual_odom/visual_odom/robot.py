@@ -37,10 +37,13 @@ import visual_odom.constants as constants
 from nav_msgs.msg import Odometry
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, index:int):        
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, index:int, map = None):        
         self.theta = theta 
         self.pos_baselink = pos
         self.index = index
+        if map is None:
+            map = VisualOdomMap()
+        self.visual_odom_map = map
 
         #create BFMatcher object
         self.bf = matcher
@@ -48,7 +51,6 @@ class VisualRobotSample():
         self.first_iteration = True
         self.ransac_delta_p = None
         self.ransac_inlier_ratio = 0.0
-        self.visual_odom_map = VisualOdomMap()
         self.visual_odom_map.add_landmarks_from_kps(covariance_P, valid_kp, valid_des, frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
     
         self.odometry_msg_publisher = odom_publisher
@@ -166,36 +168,36 @@ class VisualRobotSample():
 
             self.acc_ransac_noise_delta =  self.acc_ransac_noise_delta + self.delta_ransac_state  
             
-            if math.sqrt(self.acc_ransac_noise_delta.x**2 + self.acc_ransac_noise_delta.y**2) > 0.10 or abs(self.acc_ransac_noise_delta.theta) > 0.06:
+            if math.sqrt(self.acc_ransac_noise_delta.x**2 + self.acc_ransac_noise_delta.y**2) > 0.10:
 
-                noise_x = np.random.normal(0.0, 0.003)
-                noise_y = np.random.normal(0.0, 0.003)
-                noise_theta = np.random.normal(0.0, 0.003)
+                noise_x = np.random.normal(0.0, GAUSS_NOISE_X_SIGMA)
+                noise_y = np.random.normal(0.0, GAUSS_NOISE_Y_SIGMA)
                 self.delta_ransac_state.x += noise_x
                 self.delta_ransac_state.y += noise_y
-                self.delta_ransac_state.theta += noise_theta
-
 
                 self.acc_ransac_noise_delta.x = 0.0
                 self.acc_ransac_noise_delta.y = 0.0
+
+            if abs(self.acc_ransac_noise_delta.theta) > 0.06:
+                noise_theta = np.random.normal(0.0, GAUSS_NOISE_THETA_SIGMA)
+                self.delta_ransac_state.theta += noise_theta
                 self.acc_ransac_noise_delta.theta = 0.0
 
-            self.pos_visual_odom = self.pos_visual_odom + self.delta_ransac_state
+            new_state = self.pos_visual_odom + self.delta_ransac_state
+            new_state.theta = normalize_angle(new_state.theta)
+            self.pos_visual_odom = new_state
 
-
-
-
-            #self.ekf.update(self.pos_visual_odom, self.ransac_inlier_ratio)
+            self.ekf.update(self.pos_visual_odom, self.ransac_inlier_ratio)
             self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
 
-            #state = self.ekf.get_state()
-            #self.pos_baselink = Coordinate(state.x, state.y, 0.0)
-            #self.theta = state.theta
-           # self.covariance_P = self.ekf.get_covariance_p()
+            state = self.ekf.get_state()
+            self.pos_baselink = Coordinate(state.x, state.y, 0.0)
+            self.theta = state.theta
+            self.covariance_P = self.ekf.get_covariance_p()
 
             #state = self.ekf.get_state()
-            self.pos_baselink = Coordinate(self.pos_visual_odom.x, self.pos_visual_odom.y, 0.0)
-            self.theta = self.pos_visual_odom.theta
+            #self.pos_baselink = Coordinate(self.pos_visual_odom.x, self.pos_visual_odom.y, 0.0)
+            #self.theta = self.pos_visual_odom.theta
             #self.covariance_P = self.ekf.get_covariance_p()
 
 
@@ -235,25 +237,23 @@ class VisualRobotSample():
 
 
     def ransac_failed(self):
-       
-        self.pos_visual_odom = self.pos_visual_odom + self.delta_wheel_odom_ransac
+        new_state = self.pos_visual_odom + self.delta_wheel_odom_ransac
+        new_state.theta = normalize_angle(new_state.theta)
+        self.pos_visual_odom = new_state
+
         self.ekf.add_noise_to_R()
-        #self.ekf.update(self.pos_visual_odom, self.ransac_inlier_ratio)
-        #state = self.ekf.get_state()
-        #covariance_P = self.ekf.get_covariance_p()
-        #self.pos_baselink = Coordinate(state.x, state.y, 0.0)
-        #self.theta = state.theta
+        self.ekf.update(self.pos_visual_odom, self.ransac_inlier_ratio)
+        state = self.ekf.get_state()
+        self.covariance_P = self.ekf.get_covariance_p()
+        self.pos_baselink = Coordinate(state.x, state.y, 0.0)
+        self.theta = state.theta
         
         self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
 
         #state = self.ekf.get_state()
-        self.pos_baselink = Coordinate(self.pos_visual_odom.x, self.pos_visual_odom.y, 0.0)
-        self.theta = self.pos_visual_odom.theta
-
-
-
-
-        self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
+        #self.pos_baselink = Coordinate(self.pos_visual_odom.x, self.pos_visual_odom.y, 0.0)
+        #self.theta = self.pos_visual_odom.theta
+        #self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
 
 
    
@@ -375,3 +375,15 @@ class VisualRobotSample():
     
     def get_log_weight(self) -> float:
         return self.log_weight
+    
+    def set_log_weight(self, log_weight: float) -> None:
+        self.log_weight = log_weight
+
+    def get_weight(self) -> float:
+        try:
+            return math.exp(self.log_weight)
+        except OverflowError:
+            return None
+    
+    def set_weight(self, weight: float) -> None:
+        self.log_weight = math.log(weight)

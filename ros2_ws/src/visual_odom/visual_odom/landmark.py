@@ -41,7 +41,6 @@ class Landmark:
         @param odom_coordinates Initial transformed Coordinate frame estimation.
         """
         self.pixel_coor = pixel_coor
-        self.kp = kp
         self.des = des
         self.trust = trust
         self.color = color
@@ -58,13 +57,7 @@ class Landmark:
         """
         return self.des
     
-    def get_kp(self) -> cv2.KeyPoint:
-        """!
-        @brief Gets the corresponding OpenCV KeyPoint.
-
-        @return KeyPoint metadata.
-        """
-        return self.kp
+    
     
     def get_depth(self) -> float:
         """!

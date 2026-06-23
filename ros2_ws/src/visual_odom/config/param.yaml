@@ -20,7 +20,7 @@ visual_odom_node:
     rgb_depth_sync_tolerance_sec: 0.1
 
     ## @brief Pixel tolerance range in image space for spatial deduplication of neighboring keypoints.
-    pixel_tolerance: 5
+    pixel_tolerance: 4
 
     ## @brief Match threshold below which new landmarks are added to the map.
     matches_for_new_landmarks: 500
@@ -58,7 +58,7 @@ visual_odom_node:
     # ==========================================================================
 
     ## @brief Number of active robot particle samples within the Rao-Blackwellized particle filter.
-    n_robot_samples: 50
+    n_robot_samples: 40
 
 
     # ==========================================================================

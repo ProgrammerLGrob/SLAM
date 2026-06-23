@@ -361,13 +361,13 @@ DECREASE_TRUST_FACTOR = 0.95
 # ==============================================================================
 
 ## @brief Wheel odometry process noise standard deviation in x-direction.
-SIGMA_X_ODOM_WHEEL_Q = 0.02
+SIGMA_X_ODOM_WHEEL_Q = 0.05
 
 ## @brief Wheel odometry process noise standard deviation in y-direction.
-SIGMA_Y_ODOM_WHEEL_Q = 0.02
+SIGMA_Y_ODOM_WHEEL_Q = 0.05
 
 ## @brief Wheel odometry process noise standard deviation for heading angle.
-SIGMA_THETA_ODOM_WHEEL_Q = 0.01
+SIGMA_THETA_ODOM_WHEEL_Q = 0.03
 
 ## @brief Pixel projection noise coefficient for image-plane coordinates.
 SIGMA_PIXEL = 0.8 / 3
@@ -380,6 +380,14 @@ ERROR_QUADRATIC_DEPTH = 0.002294
 
 ## @brief Small epsilon cutoff used to avoid determinant singularities.
 MIN_DET_VALUE = 1e-12
+
+
+GAUSS_NOISE_X_SIGMA = 0.006
+
+GAUSS_NOISE_Y_SIGMA = 0.006
+
+GAUSS_NOISE_THETA_SIGMA = 0.003
+
 
 
 # ==============================================================================
