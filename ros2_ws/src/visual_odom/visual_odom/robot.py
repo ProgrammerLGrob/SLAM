@@ -2,7 +2,7 @@
 import math
 
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
-from geometry_msgs.msg import TransformStamped, Point
+from geometry_msgs.msg import Pose2D, TransformStamped, Point
 from scipy.spatial.transform import Rotation
 from visualization_msgs.msg import Marker
 
@@ -37,9 +37,10 @@ import visual_odom.constants as constants
 from nav_msgs.msg import Odometry
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray):        
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, index:int):        
         self.theta = theta 
         self.pos_baselink = pos
+        self.index = index
 
         #create BFMatcher object
         self.bf = matcher
@@ -62,6 +63,27 @@ class VisualRobotSample():
         self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
         self.acc_ransac_noise_delta = State(0.0, 0.0, 0.0)
         self.pos_visual_odom = State(self.pos_baselink.x, self.pos_baselink.y, self.theta)
+
+        self.path = []  
+        
+        marker = Marker()
+        # Zufällige Farbe, aber nicht rot
+        marker.color.r = random.uniform(0.0, 0.8)
+        marker.color.g = random.uniform(0.0, 1.0)
+        marker.color.b = random.uniform(0.0, 1.0)
+
+        # Falls die Farbe zu rot-lastig wird, neu würfeln
+        while (
+            marker.color.r > 0.8 and
+            marker.color.g < 0.3 and
+            marker.color.b < 0.3
+        ):
+            marker.color.r = random.uniform(0.0, 0.8)
+            marker.color.g = random.uniform(0.0, 1.0)
+            marker.color.b = random.uniform(0.0, 1.0)
+
+        marker.color.a = 1.0
+        self.path_color = marker.color
 
 
     def publish_yourself(self, rgb_stamp):
@@ -128,7 +150,7 @@ class VisualRobotSample():
 
             if self.ransac_inlier_ratio < constants.parameters.ransac_min_inlier_ratio:  # Weniger als x% Inlier nach RANSAC
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-                rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
+                #rclpy.logging.get_logger("RANSAC").info(f"RANSAC result rejected due to low inlier ratio: {float(ransac_inlier_count)/len(matches):.2f} with {ransac_inlier_count} inliers out of {len(matches)} matches.")
                 self.ransac_failed()
                 return
             
@@ -205,6 +227,12 @@ class VisualRobotSample():
                 
                 #self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, valid_kp, valid_des, self.frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
                 self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
+
+            self.path.append(Pose2D(x=self.pos_baselink.x, y=self.pos_baselink.y))
+
+
+
+
 
     def ransac_failed(self):
        

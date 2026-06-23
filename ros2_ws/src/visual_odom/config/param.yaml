@@ -58,7 +58,7 @@ visual_odom_node:
     # ==========================================================================
 
     ## @brief Number of active robot particle samples within the Rao-Blackwellized particle filter.
-    n_robot_samples: 2
+    n_robot_samples: 50
 
 
     # ==========================================================================

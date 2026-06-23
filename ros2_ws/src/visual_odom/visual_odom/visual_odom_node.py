@@ -8,11 +8,11 @@
 
 import builtin_interfaces.msg
 from tf2_ros import Buffer, TransformBroadcaster, TransformListener
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import Point
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
 from rclpy.time import Time
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 from math import pi
 import random
 from typing import List, Tuple
@@ -26,10 +26,10 @@ import numpy as np
 
 from visual_odom.landmark import kabsch
 from visual_odom.visual_odom_map import VisualOdomMap
-from visual_odom.tf_methods import pixel_to_kinect, pixel_to_kinect_, kinect_depth_to_baselink
+from visual_odom.tf_methods import pixel_to_kinect, pixel_to_kinect_, kinect_depth_to_baselink, calculate_tf
 from visual_odom.constants import (
     Coordinate, PixelCoordinate, State, Parameters,
-    RGB_IMAGE_TOPIC, DEPTH_IMAGE_TOPIC, WHEEL_ODOMETRY_TOPIC,
+    RGB_IMAGE_TOPIC, DEPTH_IMAGE_TOPIC, WHEEL_ODOMETRY_TOPIC, VISUAL_ODOM_PATH_TOPIC,
     KEYPOINT_POINTCLOUD_FRAME_ID, POINTCLOUD_FRAME_ID,
     VISION_CONE_TOPIC, KP_IMAGE_TOPIC, VISUAL_ODOM_FRAME_ID,
     BASE_LINK_FRAME_ID, MIN_DEPTH, MAX_DEPTH, RANSAC_EVALUATION_TOLERANCE,
@@ -83,6 +83,7 @@ class VisualOdom(Node):
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
         self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
+        self.visual_odom_path = self.create_publisher(MarkerArray, VISUAL_ODOM_PATH_TOPIC, 10)
 
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
@@ -163,8 +164,8 @@ class VisualOdom(Node):
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
-            for _ in range(constants.parameters.n_robot_samples):
-                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb))
+            for i in range(constants.parameters.n_robot_samples):
+                self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, i))
         else:
             matches = self.bf.match(self.valid_des_last, self.valid_des)
             ransac_result = self.ransac(matches, self.valid_kp, self.valid_kp_depth, self.valid_kp_last, self.valid_kp_depth_last)
@@ -188,6 +189,8 @@ class VisualOdom(Node):
             self.valid_kp_last = self.valid_kp
             self.valid_des_last = self.valid_des
             self.valid_kp_depth_last = self.valid_kp_depth
+
+            self.visual_odom_path.publish(create_particle_path_markers(self, self.robots, self.best_robot_idx))
 
     def ransac(self, matches: List[cv2.DMatch], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray, valid_kp_last: List[cv2.KeyPoint], valid_kp_depth_last: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint], int]:
         """!
@@ -484,34 +487,50 @@ class VisualOdom(Node):
         return SetParametersResult(successful=True)
 
 
-def calculate_tf(Position: Coordinate, theta: float, timestamp: Time, parent_frame_id: str, child_frame_id: str) -> TransformStamped:
-    """!
-    @brief Formats a ROS 2 coordinate transform stamped message.
+def create_particle_path_markers(self, particles:List[VisualRobotSample], best_particle_idx:int):
+    marker_array = MarkerArray()
 
-    @param Position Position translation Coordinate offset.
-    @param theta 2D planar rotation heading yaw in radians.
-    @param timestamp Synchronized timeline timestamp.
-    @param parent_frame_id Frame ID of the static coordinate origin ("odom").
-    @param child_frame_id Link ID of the robot footprint frame base ("base_link").
-    @return Formatted transform frame ready for tf_broadcaster.
-    """
-    t = TransformStamped()
-    t.header.stamp = timestamp
-    t.header.frame_id = parent_frame_id
-    t.child_frame_id = child_frame_id
+    for particle in particles:
+        marker = Marker()
 
-    t.transform.translation.x = Position.x
-    t.transform.translation.y = Position.y
-    t.transform.translation.z = Position.z
+        marker.header.frame_id = "odom"
+        marker.header.stamp = self.get_clock().now().to_msg()
 
-    euler = Rotation.from_euler('z', float(theta))
-    quat = euler.as_quat(canonical=True)
-    t.transform.rotation.x = quat[0]
-    t.transform.rotation.y = quat[1]
-    t.transform.rotation.z = quat[2]
-    t.transform.rotation.w = quat[3]
+        marker.ns = "particle_paths"
+        marker.id = particle.index
 
-    return t  
+        marker.type = Marker.LINE_STRIP
+        marker.action = Marker.ADD
+
+        # Linienbreite
+        marker.scale.x = 0.002
+
+        # Bester Partikel rot und dicker
+        if particle.index == best_particle_idx:
+            marker.color.r = 1.0    
+            marker.color.g = 0.0
+            marker.color.b = 0.0
+            marker.color.a = 1.0
+            marker.scale.x = 0.005
+        else:
+            marker.color.r = particle.path_color.r     
+            marker.color.g = particle.path_color.g
+            marker.color.b = particle.path_color.b
+            marker.color.a = particle.path_color.a
+
+
+        # Verlauf des Partikels
+        for pose in particle.path:
+            p = Point()
+            p.x = pose.x
+            p.y = pose.y
+            p.z = 0.0
+            marker.points.append(p)
+
+        marker_array.markers.append(marker)
+
+    return marker_array
+
 
 
 def main():

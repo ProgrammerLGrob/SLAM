@@ -209,6 +209,8 @@ VISION_CONE_TOPIC = "/serf01/camera/vision_cone"
 ## @brief ROS 2 topic for publishing images with visualized keypoints.
 KP_IMAGE_TOPIC = "/serf01/camera/keypoint_image"
 
+VISUAL_ODOM_PATH_TOPIC = "/visual_odom_path"
+
 
 # ==============================================================================
 # TF Frame IDs

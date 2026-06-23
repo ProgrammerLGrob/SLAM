@@ -12,6 +12,9 @@ from visual_odom.constants import (
 )
 import numpy as np
 from numpy.typing import NDArray
+from geometry_msgs.msg import TransformStamped
+from rclpy.time import Time
+from scipy.spatial.transform import Rotation
 
 
 def kinect_depth_to_odom(kinect_point: Coordinate, theta: float, pos_baselink: Coordinate) -> Coordinate:
@@ -104,3 +107,32 @@ def pixel_to_kinect_(u: int, v: int, z: float) -> NDArray:
     y = z_m * (v - CV) / F
     x = z_m * (u - CU) / F
     return np.array([x, y, z_m])
+
+def calculate_tf(Position: Coordinate, theta: float, timestamp: Time, parent_frame_id: str, child_frame_id: str) -> TransformStamped:
+    """!
+    @brief Formats a ROS 2 coordinate transform stamped message.
+
+    @param Position Position translation Coordinate offset.
+    @param theta 2D planar rotation heading yaw in radians.
+    @param timestamp Synchronized timeline timestamp.
+    @param parent_frame_id Frame ID of the static coordinate origin ("odom").
+    @param child_frame_id Link ID of the robot footprint frame base ("base_link").
+    @return Formatted transform frame ready for tf_broadcaster.
+    """
+    t = TransformStamped()
+    t.header.stamp = timestamp
+    t.header.frame_id = parent_frame_id
+    t.child_frame_id = child_frame_id
+
+    t.transform.translation.x = Position.x
+    t.transform.translation.y = Position.y
+    t.transform.translation.z = Position.z
+
+    euler = Rotation.from_euler('z', float(theta))
+    quat = euler.as_quat(canonical=True)
+    t.transform.rotation.x = quat[0]
+    t.transform.rotation.y = quat[1]
+    t.transform.rotation.z = quat[2]
+    t.transform.rotation.w = quat[3]
+
+    return t  

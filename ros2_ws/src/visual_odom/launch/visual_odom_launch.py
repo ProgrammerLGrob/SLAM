@@ -24,7 +24,7 @@ def generate_launch_description():
     )
     
     rosbag_play_normal = ExecuteProcess(
-        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics',
+        cmd=['ros2', 'bag', 'play', rosbag_path, '--clock', '--topics', '-r', '0.1',
              RGB_IMAGE_TOPIC,
              DEPTH_IMAGE_TOPIC,
              WHEEL_ODOMETRY_TOPIC,
