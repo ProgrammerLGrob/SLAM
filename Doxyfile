@@ -1,0 +1,44 @@
+# Projekt
+PROJECT_NAME           = "visual_odom"
+OUTPUT_DIRECTORY       = docs
+
+# Eingabe
+INPUT                  = .
+FILE_PATTERNS          = *.py *.yaml *.yml *.md
+RECURSIVE              = YES
+
+# Exclude test dirs, cache, build artifacts, and boilerplate files
+
+EXCLUDE = ros2_ws/src/imglistener \
+            ros2_ws/src/camera \
+            ros2_ws/src/imgmatcher \
+
+
+
+EXCLUDE_PATTERNS       = */__pycache__/* \
+                         */.pytest_cache/* \
+                         */build/* \
+                         */install/* \
+                         */log/* \
+                         */__init__.py/* \
+                         */setup.cfg/* \
+                         */test/* \
+                         */docs/*
+
+# Python-Unterstützung
+EXTENSION_MAPPING      = py=Python yaml=Python yml=Python
+
+# Dokumentation
+EXTRACT_ALL            = YES
+OPTIMIZE_OUTPUT_JAVA   = YES
+
+# README als Startseite
+USE_MDFILE_AS_MAINPAGE = README.md
+
+# Ausgabe
+GENERATE_HTML          = YES
+GENERATE_LATEX         = YES
+
+# Diagramme 
+HAVE_DOT               = YES
+CLASS_DIAGRAMS         = YES
