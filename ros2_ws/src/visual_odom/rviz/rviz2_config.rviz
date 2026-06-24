@@ -11,9 +11,11 @@ Panels:
         - /Odometry1/Covariance1
         - /Odometry1/Covariance1/Position1
         - /Odometry1/Covariance1/Orientation1
+        - /Odometry2
         - /Odometry2/Shape1
         - /Odometry2/Covariance1
         - /Odometry2/Covariance1/Position1
+        - /PointCloud21
         - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 503
@@ -141,7 +143,7 @@ Visualization Manager:
           Scale: 1
           Value: true
         Value: false
-      Enabled: true
+      Enabled: false
       Keep: 2000
       Name: Odometry
       Position Tolerance: 0.019999999552965164
@@ -162,7 +164,7 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /serf01/odometry/wheel
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -281,7 +283,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 4.425756931304932
+      Distance: 5.744081497192383
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -296,10 +298,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.009795904159546
+      Pitch: 1.2947965860366821
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.3935832977294922
+      Yaw: 1.2935833930969238
     Saved: ~
 Window Geometry:
   Displays:
@@ -319,5 +321,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 948
-  X: 3245
-  Y: 333
+  X: 211
+  Y: -32

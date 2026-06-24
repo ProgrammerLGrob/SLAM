@@ -202,14 +202,15 @@ class VisualOdom(Node):
             self.valid_des_last = self.valid_des
             self.valid_kp_depth_last = self.valid_kp_depth
 
+            self.possible_resample(self.robots, self.best_robot_idx, self.first_frame_stamp)
             self.visual_odom_path.publish(create_particle_path_markers(self, self.robots, self.best_robot_idx))
 
-            self.possible_resample(self.robots, self.best_robot_idx, self.first_frame_stamp)
+            
 
     def possible_resample(self, robots: List[VisualRobotSample], best_robot_idx: int, first_frame_stamp: float) -> None:
         best_robot = robots[best_robot_idx]
         rclpy.logging.get_logger("VisualOdom").info(f"abs(best_robot.theta-self.first_theta) = {abs(best_robot.theta-self.first_theta)} and time since first frame: {self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp)}")
-        if abs(best_robot.theta-self.first_theta) < 15*pi/180.0 and self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp) > 40.0:
+        if abs(best_robot.theta-self.first_theta) < 5.0*pi/180.0 and self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp) > 40.0:
             
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), best_robot.theta, best_robot.pos_baselink)
 
@@ -218,6 +219,11 @@ class VisualOdom(Node):
             matches = self.bf.match(self.visible_landmarks.get_descriptors(), self.first_des)
 
             ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), self.first_kp, self.first_kp_depth)
+            best_inlier_count = ransac_result[6]
+
+            if (best_inlier_count/ len(matches)) < constants.parameters.ransac_min_inlier_ratio:
+                return
+
             ransac_delta_p = ransac_result[0]
             
             c = cos(best_robot.theta)
@@ -232,15 +238,17 @@ class VisualOdom(Node):
             best_robot.theta += ransac_result[1]
             best_robot.theta = normalize_angle(best_robot.theta)
 
-            self.robots = []
-            for i in range(constants.parameters.n_robot_samples):
-                map = copy.deepcopy(best_robot.visual_odom_map)
-                self.robots.append(VisualRobotSample(best_robot.pos_baselink, best_robot.theta, best_robot.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, i, map))
+            best_robot.publish_yourself(self.frame_stamp)
 
-            self.first_kp = self.valid_kp
-            self.first_des = self.valid_des
-            self.first_kp_depth = self.valid_kp_depth
-            self.first_frame_stamp = self.frame_stamp
+            #self.robots = []
+            #for i in range(constants.parameters.n_robot_samples):
+            #    map = copy.deepcopy(best_robot.visual_odom_map)
+            #    self.robots.append(VisualRobotSample(best_robot.pos_baselink, best_robot.theta, best_robot.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, i, map))
+
+            #self.first_kp = self.valid_kp
+            #self.first_des = self.valid_des
+            #self.first_kp_depth = self.valid_kp_depth
+            #self.first_frame_stamp = self.frame_stamp
             rclpy.logging.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
 
 
@@ -674,7 +682,7 @@ def create_particle_path_markers(self, particles:List[VisualRobotSample], best_p
             marker.color.b = 0.0
             marker.color.a = 1.0
             marker.scale.x = 0.005
-            particle.path_color.a += 0.02
+            particle.path_color.a += 0.05
         else:
             marker.color.r = particle.path_color.r     
             marker.color.g = particle.path_color.g
