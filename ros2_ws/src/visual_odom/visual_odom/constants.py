@@ -209,7 +209,15 @@ VISION_CONE_TOPIC = "/serf01/camera/vision_cone"
 ## @brief ROS 2 topic for publishing images with visualized keypoints.
 KP_IMAGE_TOPIC = "/serf01/camera/keypoint_image"
 
-VISUAL_ODOM_PATH_TOPIC = "/visual_odom_path"
+## @brief ROS 2 topic for publishing paths of the particles
+VISUAL_ODOM_PATH_TOPIC = "/serf01/visual_odom_path"
+
+## @brief Frame/topic identifier for the structural environment point cloud.
+POINTCLOUD_FRAME_TOPIC = "/serf01/pointcloud/points_3d"
+
+## @brief Frame/topic identifier for tracked ORB descriptor 3D keypoints.
+KEYPOINT_POINTCLOUD_FRAME_TOPIC = "/serf01/pointcloud/keypoint_3d"
+
 
 
 # ==============================================================================
@@ -224,13 +232,6 @@ BASE_LINK_FRAME_ID = "base_link"
 
 ## @brief TF frame identifier for the fixed global odometry origin.
 VISUAL_ODOM_FRAME_ID = "odom"
-
-## @brief Frame/topic identifier for the structural environment point cloud.
-POINTCLOUD_FRAME_ID = "points_3d"
-
-## @brief Frame/topic identifier for tracked ORB descriptor 3D keypoints.
-KEYPOINT_POINTCLOUD_FRAME_ID = "keypoint_3d"
-
 
 # ==============================================================================
 # Camera Model
