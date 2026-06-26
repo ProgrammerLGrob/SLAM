@@ -105,13 +105,6 @@ visual_odom/
 
 ### Module Descriptions
 
-#### constants.py
-
-@ref Coordinate
-
-Central configuration module. Provides all shared dataclasses, tunable thresholds,
-camera intrinsics, ROS topic names, and TF frame identifiers used across the package.
-
 **Dataclasses**
 
 | Class | Purpose |
@@ -142,8 +135,6 @@ camera intrinsics, ROS topic names, and TF frame identifiers used across the pac
 ---
 
 #### landmark.py
-
-@ref Landmark
 
 Defines the `Landmark` class representing a single tracked 3D map feature. Each
 landmark owns an `ExtendedKalmanFilterLandmark` instance that refines its odom-frame
@@ -182,8 +173,6 @@ in a least-squares sense. Mean-centers both sets; theta is derived analytically 
 
 #### ekf_landmark.py
 
-@ref ExtendedKalmanFilterLandmark
-
 Implements the Extended Kalman Filter for tracking an individual landmark position
 in the odom frame. The state vector is a 3D Coordinate `(x, y, z)`.
 
@@ -218,8 +207,6 @@ where the depth error grows quadratically: `s_z = ERROR_MIN_DEPTH + ERROR_QUADRA
 
 #### ekf_robot.py
 
-@ref ExtendedKalmanFilterRobot
-
 Implements the Extended Kalman Filter for the robot pose `(x, y, theta)` using
 wheel odometry as the prediction input and RANSAC visual odometry as the measurement.
 
@@ -236,8 +223,6 @@ accumulated additional noise from repeated RANSAC failures.
 ---
 
 #### robot.py
-
-@ref VisualRobotSample
 
 Represents a single particle in the Rao-Blackwellized particle filter. Each particle
 maintains its own `VisualOdomMap`, `ExtendedKalmanFilterRobot`, and accumulated pose.
@@ -273,8 +258,6 @@ the robot EKF via `add_noise_to_R()`.
 
 #### visual_odom_map.py
 
-@ref VisualOdomMap
-
 Implements `VisualOdomMap`, a `list` subclass holding all `Landmark` objects for
 one particle. Provides spatial queries, batch EKF updates, log-weight calculation,
 and PointCloud2 publishing.
@@ -294,8 +277,6 @@ and PointCloud2 publishing.
 
 #### tf_methods.py
 
-@ref kinect_depth_to_odom
-
 Stateless coordinate frame transformation utilities. All transforms are computed
 analytically using the calibrated rotation matrix `ROT_BK` and the fixed camera
 offset `CAMERA_POS_IN_BASELINK`. No tf2_ros buffer lookups are performed.
@@ -311,8 +292,6 @@ offset `CAMERA_POS_IN_BASELINK`. No tf2_ros buffer lookups are performed.
 ---
 
 #### visual_odom_node.py
-
-@ref VisualOdom
 
 Main ROS 2 node (`VisualOdom`). Orchestrates the particle filter, runs RANSAC
 between consecutive frames, and broadcasts the pose of the best particle as TF.
