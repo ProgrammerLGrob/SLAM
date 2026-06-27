@@ -32,7 +32,7 @@ from visual_odom.tf_methods import pixel_to_kinect, pixel_to_kinect_, kinect_dep
 from visual_odom.constants import (
     Coordinate, PixelCoordinate, State, Parameters,
     RGB_IMAGE_TOPIC, DEPTH_IMAGE_TOPIC, WHEEL_ODOMETRY_TOPIC, VISUAL_ODOM_PATH_TOPIC,
-    KEYPOINT_POINTCLOUD_FRAME_ID, POINTCLOUD_FRAME_ID,
+    KEYPOINT_POINTCLOUD_FRAME_TOPIC, POINTCLOUD_FRAME_TOPIC,
     VISION_CONE_TOPIC, KP_IMAGE_TOPIC, VISUAL_ODOM_FRAME_ID,
     BASE_LINK_FRAME_ID, MIN_DEPTH, MAX_DEPTH, RANSAC_EVALUATION_TOLERANCE,
     RANSAC_ITERATION, RANSAC_SAMPLE_SIZE, RGB_DEPTH_SYNC_TOLERANCE_SEC,
@@ -80,8 +80,8 @@ class VisualOdom(Node):
         self.subscription_depth = self.create_subscription(Image, DEPTH_IMAGE_TOPIC, self.listener_depth_callback, 10)
         self.subscription_wheel_odom = self.create_subscription(Odometry, WHEEL_ODOMETRY_TOPIC, self.listener_wheel_odom_callback, 10)
 
-        self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_ID, 10)
-        self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_ID, 10)
+        self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_TOPIC, 10)
+        self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_TOPIC, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
         self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)

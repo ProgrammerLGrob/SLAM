@@ -5,7 +5,7 @@
 A ROS 2 package implementing a visual odometry pipeline for a mobile robot equipped
 with a Kinect RGB-D camera. The system detects ORB keypoints in incoming RGB frames,
 lifts them into 3D using registered depth data, and estimates frame-to-frame motion
-via RANSAC-accelerated Kabsch alignment. Pose estimation is embedded in a
+via RANSAC Kabsch alignment. Pose estimation is embedded in a
 Rao-Blackwellized particle filter: each particle maintains its own landmark map and
 an EKF per tracked landmark. The best particle is selected by log-likelihood weight.
 The resulting pose is broadcast as a TF transform and published as a
@@ -28,10 +28,11 @@ Frame-to-frame RANSAC + Kabsch  -->  delta pose (translation + rotation)
       |
       v
 Per-particle update  (N = n_robot_samples particles)
-  |-- Wheel odometry EKF prediction
+  |-- Wheel odometry EKF prediction (parralel to that)
   |-- Visible landmark query (FOV check)
-  |-- BFMatcher: current frame vs visible landmarks
+  |-- BFMatcher: current frame vs last frame
   |-- Apply delta pose to particle position
+  |-- BFMatcher: current frame vs visible landmarks
   |-- Landmark EKF update for matched landmarks
   |-- Log-weight calculation
   |
@@ -57,14 +58,15 @@ The `base_link -> kinect_depth` static transform is provided by the rosbag.
 
 | Topic | Type | Direction |
 |-------|------|-----------|
-| `/serf01/nav_rgbd_1/rgb/image_raw` | `sensor_msgs/Image` | Subscribed |
-| `/serf01/nav_rgbd_1/depth/image_raw` | `sensor_msgs/Image` | Subscribed |
-| `/serf01/odometry/wheel` | `nav_msgs/Odometry` | Subscribed |
-| `/serf01/odometry/project_slam` | `nav_msgs/Odometry` | Published |
-| `keypoint_3d` | `sensor_msgs/PointCloud2` | Published -- landmark map |
-| `points_3d` | `sensor_msgs/PointCloud2` | Published -- full depth frame |
-| `/serf01/camera/vision_cone` | `visualization_msgs/Marker` | Published |
-| `/serf01/camera/keypoint_image` | `sensor_msgs/Image` | Published |
+| RGB_IMAGE_TOPIC | `sensor_msgs/Image` | Subscribed |
+| DEPTH_IMAGE_TOPIC | `sensor_msgs/Image` | Subscribed |
+| WHEEL_ODOMETRY_TOPIC | `nav_msgs/Odometry` | Subscribed |
+| VISUAL_ODOM_MSG_TOPIC | `nav_msgs/Odometry` | Published |
+| KEYPOINT_POINTCLOUD_FRAME_TOPIC | `sensor_msgs/PointCloud2` | Published -- landmark map |
+| POINTCLOUD_FRAME_TOPIC | `sensor_msgs/PointCloud2` | Published -- full depth frame (not used for the main time) |
+| VISION_CONE_TOPIC | `visualization_msgs/Marker` | Published |
+| KP_IMAGE_TOPIC | `sensor_msgs/Image` | Published |
+| VISUAL_ODOM_PATH_TOPIC | `visualization_msgs/MarkerArray` | Published |
 
 ### Dependencies
 
@@ -97,16 +99,11 @@ visual_odom/
 |     +-- visual_odom_launch.py # Launch file: node + rosbag playback + RViz2
 +-- config/
       +-- param.yaml            # Runtime parameter configuration
++-- rviz/
+      +-- rviz2_config.rviz     # Rviz2 configuration for Autostart
 ```
 
 ### Module Descriptions
-
-#### constants.py
-
-@ref Coordinate
-
-Central configuration module. Provides all shared dataclasses, tunable thresholds,
-camera intrinsics, ROS topic names, and TF frame identifiers used across the package.
 
 **Dataclasses**
 
@@ -124,7 +121,7 @@ camera intrinsics, ROS topic names, and TF frame identifiers used across the pac
 | ROS Topics | `RGB_IMAGE_TOPIC`, `DEPTH_IMAGE_TOPIC`, `WHEEL_ODOMETRY_TOPIC` |
 | TF Frame IDs | `KINECT_FRAME_ID`, `BASE_LINK_FRAME_ID`, `VISUAL_ODOM_FRAME_ID` |
 | Camera Model | `F`, `CU`, `CV`, `MAX_AZIMUTH`, `MAX_ALTITUDE`, `ROT_BK` |
-| Depth Filter | `MIN_DEPTH` (400 mm), `MAX_DEPTH` (7000 mm) |
+| Depth Filter | `MIN_DEPTH`, `MAX_DEPTH` |
 | RANSAC | `RANSAC_EVALUATION_TOLERANCE`, `RANSAC_ITERATION`, `RANSAC_MIN_INLIER_RATIO` |
 | Particle Filter | `N_ROBOT_SAMPLES`, `NOISE_INCREMENT_RANSAC_FAILURE` |
 | Landmark Management | `MIN_LANDMARK_TRUST`, `INCREASE_TRUST_VALUE`, `DECREASE_TRUST_FACTOR` |
@@ -138,8 +135,6 @@ camera intrinsics, ROS topic names, and TF frame identifiers used across the pac
 ---
 
 #### landmark.py
-
-@ref Landmark
 
 Defines the `Landmark` class representing a single tracked 3D map feature. Each
 landmark owns an `ExtendedKalmanFilterLandmark` instance that refines its odom-frame
@@ -163,7 +158,7 @@ the coordinate frame transform is applied.
 |--------|-------------|
 | `is_visible(pos_camera_odom, theta_robot)` | Checks azimuth, altitude, and depth constraints against the camera FOV. |
 | `landmark_kalman_iteration(pos, theta, pixel_coor)` | Delegates one EKF predict+update cycle to the embedded `ExtendedKalmanFilterLandmark`. |
-| `calculate_likelihood(z_pos_odom, theta)` | Computes the Gaussian likelihood of a measurement given the current landmark state and covariance. Used for particle weight calculation. |
+| `calculate_likelihood(z_pos_odom, theta)` | Computes the likelihood of a measurement given the current landmark state and covariance. Used for particle weight calculation. |
 | `increase_trust()` / `decrease_trust()` | Trust management: additive increment on observation, multiplicative decay when not seen. |
 | `get_odom_coordinates()` / `set_odom_coordinates(c)` | Accessors for the odom-frame position. |
 | `get_descriptor()` / `get_kp()` | Accessors for the ORB descriptor and keypoint. |
@@ -177,8 +172,6 @@ in a least-squares sense. Mean-centers both sets; theta is derived analytically 
 ---
 
 #### ekf_landmark.py
-
-@ref ExtendedKalmanFilterLandmark
 
 Implements the Extended Kalman Filter for tracking an individual landmark position
 in the odom frame. The state vector is a 3D Coordinate `(x, y, z)`.
@@ -195,7 +188,7 @@ h(x) = R(theta).T * (x_landmark - x_robot)
 **Noise model**
 
 The measurement covariance R is depth-dependent, propagated from pixel-space noise
-through the pinhole Jacobian and the Kinect-to-base_link rotation:
+to baselink:
 
 ```
 R_baselink = ROT_BK * J_kinect * R_pixel * J_kinect.T * ROT_BK.T
@@ -214,8 +207,6 @@ where the depth error grows quadratically: `s_z = ERROR_MIN_DEPTH + ERROR_QUADRA
 
 #### ekf_robot.py
 
-@ref ExtendedKalmanFilterRobot
-
 Implements the Extended Kalman Filter for the robot pose `(x, y, theta)` using
 wheel odometry as the prediction input and RANSAC visual odometry as the measurement.
 
@@ -233,8 +224,6 @@ accumulated additional noise from repeated RANSAC failures.
 
 #### robot.py
 
-@ref VisualRobotSample
-
 Represents a single particle in the Rao-Blackwellized particle filter. Each particle
 maintains its own `VisualOdomMap`, `ExtendedKalmanFilterRobot`, and accumulated pose.
 All particles receive the same RANSAC result computed centrally by `VisualOdom` and
@@ -245,9 +234,9 @@ apply it independently.
 The per-frame update sequence for one particle:
 
 1. On first iteration: seed the landmark map until `INITIAL_LANDMARK_COUNT` is reached.
-2. Query `get_visible_landmarks()` for landmarks in the current camera FOV.
-3. Match visible landmark descriptors against current frame descriptors via BFMatcher.
-4. Apply the RANSAC delta pose to the particle position with optional Gaussian noise.
+2. Apply the RANSAC delta pose to the particle position with optional Gaussian noise.
+3. Query `get_visible_landmarks()` for landmarks in the current camera FOV.
+4. Match visible landmark descriptors against current frame descriptors via BFMatcher.
 5. Run `landmark_kalman_iteration()` on all matched landmarks.
 6. Compute `log_weight` via `calculate_log_weight()`.
 7. Run `cleanup_old_landmarks()`: increase trust for matched landmarks, decay others,
@@ -269,8 +258,6 @@ the robot EKF via `add_noise_to_R()`.
 
 #### visual_odom_map.py
 
-@ref VisualOdomMap
-
 Implements `VisualOdomMap`, a `list` subclass holding all `Landmark` objects for
 one particle. Provides spatial queries, batch EKF updates, log-weight calculation,
 and PointCloud2 publishing.
@@ -278,7 +265,7 @@ and PointCloud2 publishing.
 | Method | Description |
 |--------|-------------|
 | `add_landmark(landmark)` | Appends a single landmark. |
-| `add_landmarks_from_kps(P_init, kps, des, frame_rgb, kp_depth, theta, pos_baselink)` | Creates landmarks from ORB keypoints, computes odom-frame coordinates, and deduplicates by descriptor bytes. |
+| `add_landmarks_from_kps(P_init, kps, des, frame_rgb, kp_depth, theta, pos_baselink)` | Creates landmarks from ORB keypoints, computes odom-frame coordinates, and add the keypoints as landmarks to the map. |
 | `get_visible_landmarks(camera_pos, theta)` | Returns a new `VisualOdomMap` containing only landmarks passing the `is_visible()` FOV check. |
 | `get_descriptors()` | Returns all descriptors stacked as a NumPy array for batch BFMatcher input. |
 | `landmark_kalman_iteration(pos, theta, indices, kp_pos)` | Runs one EKF iteration on each indexed landmark with its matched pixel coordinate. |
@@ -289,8 +276,6 @@ and PointCloud2 publishing.
 ---
 
 #### tf_methods.py
-
-@ref kinect_depth_to_odom
 
 Stateless coordinate frame transformation utilities. All transforms are computed
 analytically using the calibrated rotation matrix `ROT_BK` and the fixed camera
@@ -307,8 +292,6 @@ offset `CAMERA_POS_IN_BASELINK`. No tf2_ros buffer lookups are performed.
 ---
 
 #### visual_odom_node.py
-
-@ref VisualOdom
 
 Main ROS 2 node (`VisualOdom`). Orchestrates the particle filter, runs RANSAC
 between consecutive frames, and broadcasts the pose of the best particle as TF.
@@ -357,19 +340,19 @@ All parameters are declared under the `visual_odom/ros__parameters` namespace.
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `ransac.evaluation_tolerance` | 0.045 m | Inlier distance threshold |
-| `ransac.iterations` | 100 | Maximum RANSAC loop count |
-| `ransac.sample_size` | 3 | Minimum point pairs per hypothesis |
-| `ransac.min_inlier_ratio` | 0.3 | Minimum inlier fraction to accept RANSAC result |
-| `ransac.min_matches_for_ransac` | 15 | Minimum matches required to start RANSAC |
-| `ransac.max_rotation_angle_deg` | 15.0 | Maximum plausible rotation per frame in degrees |
-| `rgb_depth_sync_tolerance_sec` | 0.05 s | Max allowed RGB/depth timestamp delta |
-| `pixel_tolerance` | 8 px | Pixel-space exclusion radius for keypoint deduplication |
-| `matches_for_new_landmarks` | 50 | Match count threshold below which new landmarks are added |
-| `min_landmark_trust` | 20.0 | Trust value below which a landmark is pruned |
-| `max_depth` | 7000 mm | Maximum usable sensor depth |
-| `n_robot_samples` | 1000 | Number of particles in the particle filter |
-| `rosbag_path` | (path) | Absolute path to the `.mcap` rosbag file |
+| `ransac.evaluation_tolerance` | Inlier distance threshold |
+| `ransac.iterations` | Maximum RANSAC loop count |
+| `ransac.sample_size` | Minimum point pairs per hypothesis |
+| `ransac.min_inlier_ratio` | Minimum inlier fraction to accept RANSAC result |
+| `ransac.min_matches_for_ransac` | Minimum matches required to start RANSAC |
+| `ransac.max_rotation_angle_deg` | Maximum plausible rotation per frame in degrees |
+| `rgb_depth_sync_tolerance_sec` | Max allowed RGB/depth timestamp delta |
+| `pixel_tolerance` | Pixel-space exclusion radius for keypoint deduplication |
+| `matches_for_new_landmarks` | Match count threshold below which new landmarks are added |
+| `min_landmark_trust` | Trust value below which a landmark is pruned |
+| `max_depth` | Maximum usable sensor depth |
+| `n_robot_samples` | Number of particles in the particle filter |
+| `rosbag_path` | Absolute path to the `.mcap` rosbag file |
 
 ---
 
@@ -389,8 +372,9 @@ source install/setup.bash
 ros2 launch visual_odom visual_odom_launch.py
 ```
 
-Starts the node, rosbag playback, and RViz2 simultaneously. The rosbag path is
-read automatically from `param.yaml`.
+Starts the node, rosbag playback, and RViz2 simultaneously.
+- The rosbag path is read automatically from `param.yaml`.
+- The rviz2 config in /rviz will automatically be loaded
 
 ### Node only (without launch file)
 
@@ -403,7 +387,6 @@ ros2 run visual_odom visual_odom_node --ros-args --params-file path/to/param.yam
 ## 4. Documentation
 
 The package uses [Doxygen](https://www.doxygen.nl) with Python docstring support.
-Docstrings use the `"""! ... """` prefix convention for Doxygen-compatible parsing.
 
 ### Generate HTML docs
 
