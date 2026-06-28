@@ -67,15 +67,12 @@ visual_odom_node:
 
     ## @brief Absolute path to the MCAP rosbag file to be recorded or played back.
     #  The path for the "Around The Desks" scenario is currently active.
-    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260519_TransXY_bag/rosbag2_2026_05_19-16_13_19_0.mcap"
-    rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260616_Around_The_Desks_bag/rosbag2_2026_06_16-13_12_13_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/trans_rot_2_bag/rosbag2_2026_03_24-10_48_57_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
+    #rosbag_path: "/media/sf_VM_Exchange/Rosbags/pure_translation_2_bag/rosbag2_2026_03_24-10_47_45_0.mcap"
+    #rosbag_path:  "/media/sf_VM_Exchange/Rosbags/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
+    #rosbag_path:  "/mnt/c/Users/pauls/Desktop/Studium/5.Sem/Projekt/VM_Exchange/Rosbags/trans_rot_trans/trans_rot_trans.mcap"
+    #rosbag_path:  "/media/sf_VM_Exchange/Rosbags/trans_rot_trans/trans_rot_trans.mcap"
+    rosbag_path:  "/mnt/c/Users/pauls/Desktop/Studium/5.Sem/Projekt/VM_Exchange/Rosbags/20260616_Around_The_Desks_bag/20260616_Around_The_Desks_bag/rosbag2_2026_06_16-13_12_13_0.mcap"
 
-
-    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260428_Bag_Without_TF/rosbag2_2026_04_27-19_59_23_0.mcap"
-    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/20260421_pure_translation/20260421_pure_translation/rosbag2_2026_04_21-13_47_13_0.mcap"
-    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
-
-    
-    #rosbag_path: "/mnt/c/Users/lukas/Documents/Dateien/Studium/Dateien/Sechstes Semester/Projekt/20260324_Project_Bags/20260324_Project_Bags/20260421_pure_translation/20260421_pure_translation/rosbag2_2026_04_21-13_47_13_0.mcap"
-    #rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_2_bag/rosbag2_2026_03_24-10_48_19_0.mcap"
-    #rosbag_path: "/media/sf_Projekt/20260324_Project_Bags/20260324_Project_Bags/pure_rotation_bag/rosbag2_2026_03_24-10_43_33_0.mcap"

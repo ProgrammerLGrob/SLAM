@@ -9,18 +9,19 @@
 from math import atan2, pi, cos, sin
 import numpy as np
 import cv2
+import rclpy
 from numpy.typing import NDArray
 from typing import Iterable, Optional, List, Tuple
 
-
+import visual_odom.constants as constants
+from visual_odom.tf_methods import pixel_to_kinect
+from visual_odom.ekf_landmark import ExtendedKalmanFilterLandmark
 from visual_odom.constants import (
     Coordinate, PixelCoordinate, MIN_DEPTH, CAMERA_ANGLE_HOR_RAD,
     CAMERA_ANGLE_VER_RAD, INCREASE_TRUST_VALUE, DECREASE_TRUST_FACTOR,
     MIN_DET_VALUE
 )
-import visual_odom.constants as constants
-from visual_odom.tf_methods import pixel_to_kinect
-from visual_odom.ekf_landmark import ExtendedKalmanFilterLandmark
+
 
 
 class Landmark:
@@ -150,14 +151,17 @@ class Landmark:
         delta_base_link.y = -s * delta_odom.x + c * delta_odom.y
         delta_base_link.z = delta_odom.z  
 
+        # Check absolute depth value
         if delta_base_link.x < MIN_DEPTH / 1000.0 or delta_base_link.x > constants.parameters.max_depth / 1000.0:
             return False
         
+        # Check horizontal FOV
         azimuth = atan2(delta_base_link.y, delta_base_link.x)
         max_azimuth = CAMERA_ANGLE_HOR_RAD / 2.0
         if abs(azimuth) > max_azimuth:
             return False
 
+        # Check vertical FOV
         altitude = atan2(delta_base_link.z, delta_base_link.x)
         max_alt = CAMERA_ANGLE_VER_RAD / 2.0
         if abs(altitude) > max_alt:
@@ -239,8 +243,7 @@ def kabsch(P_i: np.ndarray, Q_i: np.ndarray, max_rotation_angle_deg: float = 15.
             - t: Optimal 2D translation offset vector, or None if degenerate.
             - theta: Rotational heading orientation change in radians, or None if degenerate.
     """
-    import rclpy
-    
+
     if P_i.shape[0] > 1 and Q_i.shape[0] > 1:
         m_P = np.mean(P_i, axis=0)
         m_Q = np.mean(Q_i, axis=0)
