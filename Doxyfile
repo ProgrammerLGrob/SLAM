@@ -42,3 +42,5 @@ GENERATE_LATEX         = YES
 # Diagramme 
 HAVE_DOT               = YES
 CLASS_DIAGRAMS         = YES
+
+IMAGE_PATH = .

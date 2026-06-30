@@ -15,6 +15,10 @@ The resulting pose is broadcast as a TF transform and published as a
 
 ## 1. Overview
 
+### UML Diagram
+\image html UML_for_ReadMe.svg
+
+
 ### System Pipeline
 
 ```
@@ -72,13 +76,20 @@ The `base_link -> kinect_depth` static transform is provided by the rosbag.
 
 | Package | Purpose |
 |---------|---------|
-| `rclpy` | ROS 2 Python client library |
-| `cv2` | ORB detection, descriptor computation, BFMatcher |
-| `numpy` | Numerical arrays and linear algebra |
-| `scipy` | Quaternion/rotation conversions, KDTree |
-| `cv_bridge` | ROS Image to/from OpenCV conversion |
-| `sensor_msgs_py` | PointCloud2 creation utilities |
-| `tf2_ros` | TF broadcaster and listener |
+| `rclpy` | ROS 2 Python client library – node lifecycle, publishers, subscriptions, parameters |
+| `rcl_interfaces` | `SetParametersResult` for dynamic parameter callbacks |
+| `builtin_interfaces` | ROS 2 built-in message types (timestamps, duration) |
+| `std_msgs` | `Header` for PointCloud2 and TF stamped messages |
+| `sensor_msgs` | `Image`, `PointCloud2`, `PointField`, `Imu` |
+| `sensor_msgs_py` | PointCloud2 creation utilities (`point_cloud2.create_cloud`) |
+| `nav_msgs` | `Odometry` – wheel, IMU and visual odometry messages |
+| `geometry_msgs` | `TransformStamped`, `Point`, `Pose2D`, `Quaternion` |
+| `visualization_msgs` | `Marker`, `MarkerArray` – particle path and vision cone visualisation |
+| `tf2_ros` | TF broadcaster, listener and buffer for coordinate frame transforms |
+| `cv_bridge` | ROS `Image` ↔ OpenCV `Mat` conversion |
+| `python3-opencv` | ORB detection, descriptor computation, BFMatcher, image I/O |
+| `python3-numpy` | Numerical arrays, linear algebra (EKF matrices, RANSAC, Kabsch) |
+| `python3-scipy` | Quaternion/rotation conversions (`scipy.spatial.transform.Rotation`), KDTree |
 
 ---
 
