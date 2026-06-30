@@ -255,7 +255,7 @@ class VisualOdom(Node):
             best_robot.set_state(best_robot.pos_baselink, best_robot.theta)
             best_robot.publish_yourself(self.frame_stamp)
             best_robot.publish_accumulated_pixels(self.publisher_accumulated_pixels, self.frame_stamp)
-            rclpy.logging.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. delta position: {ransac_delta_p}, delta theta: {ransac_result[1]}, New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
+            self.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. delta position: {ransac_delta_p}, delta theta: {ransac_result[1]}, New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
 
             self.first_frame_stamp = self.frame_stamp
 
