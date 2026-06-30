@@ -2,29 +2,20 @@
 import copy
 import math
 import random
-import rclpy
-import time
 import cv2
 
 import numpy as np
 
-from math import pi, sin, cos, tan
-from tf2_ros import Buffer, TransformBroadcaster, TransformListener
-from geometry_msgs.msg import Pose2D, TransformStamped, Point
+from math import sin, cos, tan
+from geometry_msgs.msg import Pose2D,  Point
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import Image, PointCloud2, PointField
 from visualization_msgs.msg import Marker
-from sensor_msgs_py import point_cloud2
-from rclpy.logging import get_logger
-from rclpy.node import Node, Publisher
+from rclpy.node import Publisher
 from rclpy.time import Time
 
 from scipy.spatial.transform import Rotation
 from numpy.typing import NDArray
-from scipy.spatial import KDTree
-from typing import List, Tuple
-
-from cv_bridge import CvBridge
+from typing import List
 
 from visual_odom.landmark import *
 from visual_odom.visual_odom_map import *
@@ -105,7 +96,6 @@ class VisualRobotSample():
         self.delta_wheel_odom_ransac += delta_wheel_odom
 
 
-
     def robot_iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb, depth_frame, rgb_stamp, ransac_result):
         """
         @brief Executes one visual odometry iteration including feature matching, RANSAC validation, EKF fusion, and landmark map updates.
@@ -171,7 +161,7 @@ class VisualRobotSample():
             self.acc_ransac_noise_delta =  self.acc_ransac_noise_delta + self.delta_ransac_state  
             
             # Add noise offset to x-y-state after certain translation 
-            if math.sqrt(self.acc_ransac_noise_delta.x**2 + self.acc_ransac_noise_delta.y**2) > 0.10:
+            if math.sqrt(self.acc_ransac_noise_delta.x**2 + self.acc_ransac_noise_delta.y**2) > NOISE_TRANSLATION_THRESHOLD:
                 noise_x = np.random.normal(0.0, GAUSS_NOISE_X_SIGMA)
                 noise_y = np.random.normal(0.0, GAUSS_NOISE_Y_SIGMA)
                 self.delta_ransac_state.x += noise_x
@@ -181,7 +171,7 @@ class VisualRobotSample():
                 self.acc_ransac_noise_delta.y = 0.0
             
             # Add noise offset to x-y-state after certain rotation 
-            if abs(self.acc_ransac_noise_delta.theta) > 0.06:
+            if abs(self.acc_ransac_noise_delta.theta) > NOISE_ROTATION_THRESHOLD:
                 noise_theta = np.random.normal(0.0, GAUSS_NOISE_THETA_SIGMA)
                 self.delta_ransac_state.theta += noise_theta
                 self.acc_ransac_noise_delta.theta = 0.0
@@ -441,3 +431,15 @@ class VisualRobotSample():
         @return None.
         """
         self.log_weight = math.log(weight)
+
+    def set_state(self, pos: Coordinate, theta: float) -> None:
+        """!
+        @brief Sets the current robot base tracking pose.
+
+        @param pos New estimated position of the robot base.
+        @param theta New estimated heading of the robot base.
+        """
+        self.pos_baselink = State(pos.x, pos.y, theta)
+        self.pos_baselink.z = 0.0
+        self.theta = theta
+        self.ekf.set_state(State(pos.x, pos.y, theta))

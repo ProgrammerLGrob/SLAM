@@ -1,5 +1,22 @@
 @mainpage Visual Odometry SLAM Package
 
+@mainpage Visual Odometry SLAM Package
+
+# visual_odom
+
+## Authors
+
+**Lukas Grob**  
+**Paul Schellenberg**
+
+This project was developed by the authors listed above as part of a visual odometry and SLAM research/development project.
+
+---
+
+A ROS 2 package implementing a visual odometry pipeline for a mobile robot equipped
+with a Kinect RGB-D camera.
+...
+
 # visual_odom
 
 A ROS 2 package implementing a visual odometry pipeline for a mobile robot equipped
@@ -385,6 +402,7 @@ ros2 launch visual_odom visual_odom_launch.py
 
 Starts the node, rosbag playback, and RViz2 simultaneously.
 - The rosbag path is read automatically from `param.yaml`.
+- bagfiles are saved in SLAM/bagfiles
 - The rviz2 config in /rviz will automatically be loaded
 
 ### Node only (without launch file)

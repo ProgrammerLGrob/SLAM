@@ -23,6 +23,7 @@ def generate_launch_description():
         config = yaml.safe_load(f)
 
     rosbag_path = config.get('visual_odom_node', {}).get('ros__parameters', {}).get('rosbag_path', '')
+    rosbag_path = os.path.join(visual_odom_share, '../../../../../' + rosbag_path)
     rviz_config = os.path.join(visual_odom_share, '../../../../src/visual_odom/rviz', 'rviz2_config.rviz')
     
     visual_odom_node = Node(

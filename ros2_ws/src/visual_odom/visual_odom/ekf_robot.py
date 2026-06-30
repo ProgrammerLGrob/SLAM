@@ -146,3 +146,11 @@ class ExtendedKalmanFilterRobot:
             self.additional_noise + NOISE_INCREMENT_RANSAC_FAILURE,
             MAX_ADDITIONAL_NOISE_RANSAC_FAILURE
         )
+
+    def set_state(self, x: State) -> None:
+        """!
+        @brief Directly sets the robot pose state.
+
+        @param x New robot pose state to set.
+        """
+        self.x = x

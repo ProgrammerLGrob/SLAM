@@ -382,12 +382,35 @@ ERROR_QUADRATIC_DEPTH = 0.002294
 ## @brief Small epsilon cutoff used to avoid determinant singularities.
 MIN_DET_VALUE = 1e-12
 
-
+## @brief Gaussian noise x-coordinate in meters.
 GAUSS_NOISE_X_SIGMA = 0.006
 
+## @brief Gaussian noise y-coordinate in meters.
 GAUSS_NOISE_Y_SIGMA = 0.006
 
+## @brief Gaussian noise heading angle in radians.
 GAUSS_NOISE_THETA_SIGMA = 0.003
+
+## @brief Threshold for accumulated translation noise before adding random perturbation to the robot state in meters.
+NOISE_TRANSLATION_THRESHOLD = 0.10
+
+## @brief Threshold for accumulated rotation noise before adding random perturbation to the robot state in radians.
+NOISE_ROTATION_THRESHOLD = 0.06
+
+
+
+# ==============================================================================
+# RESAMPLE PARAMETERS
+# ==============================================================================
+
+## @brief Tolerance for resampling based on heading angle difference in degrees.
+RESAMPLE_THETA_TOLERANCE = 4.0
+
+## @brief Time tolerance for resampling based on elapsed time since the first frame in seconds.
+RESAMPLE_TIME_TOLERANCE = 40.0
+
+## @brief Position tolerance for resampling based on Euclidean distance in meters.
+RESAMPLE_POS_TOLERANCE = 0.35
 
 
 

@@ -6,6 +6,8 @@
 @brief Main ROS 2 execution node managing the particle filter localization and visual odometry loop.
 """
 
+import math
+
 import builtin_interfaces.msg
 from tf2_ros import Buffer, Header, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import Point
@@ -35,7 +37,7 @@ from visual_odom.constants import (
     RANSAC_ITERATION, RANSAC_SAMPLE_SIZE, RGB_DEPTH_SYNC_TOLERANCE_SEC,
     PIXEL_TOLERANCE, MATCHES_FOR_NEW_LANDMARKS, MIN_MATCHES_FOR_RANSAC,
     MAX_ROTATION_ANGLE_DEG, MIN_LANDMARK_TRUST, RANSAC_MIN_INLIER_RATIO,
-    N_ROBOT_SAMPLES, VISUAL_ODOM_MSG_TOPIC, normalize_angle
+    N_ROBOT_SAMPLES, VISUAL_ODOM_MSG_TOPIC, RESAMPLE_THETA_TOLERANCE, RESAMPLE_TIME_TOLERANCE, RESAMPLE_POS_TOLERANCE, normalize_angle
 )
 from visual_odom.robot import VisualRobotSample
 import visual_odom.constants as constants
@@ -181,6 +183,7 @@ class VisualOdom(Node):
             self.tf_broadcaster.sendTransform(odom_to_base_footprint)
 
             self.first_theta = self.theta
+            self.first_pos = self.pos_baselink
 
             for i in range(constants.parameters.n_robot_samples):
                 self.robots.append(VisualRobotSample(self.pos_baselink, self.theta, self.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, i))
@@ -225,9 +228,9 @@ class VisualOdom(Node):
         """
         # Get best robot and check for resampling criteria
         best_robot = robots[best_robot_idx]
-        rclpy.logging.get_logger("VisualOdom").info(f"abs(best_robot.theta-self.first_theta) = {abs(best_robot.theta-self.first_theta)} and time since first frame: {self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp)}")
+        #rclpy.logging.get_logger("VisualOdom").info(f"abs(best_robot.theta-self.first_theta) = {abs(best_robot.theta-self.first_theta)} and time since first frame: {self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp)}")
         
-        if abs(best_robot.theta-self.first_theta) < 5.0*pi/180.0 and self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp) > 40.0:
+        if abs(best_robot.theta-self.first_theta) < RESAMPLE_THETA_TOLERANCE*pi/180.0 and self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp) > RESAMPLE_TIME_TOLERANCE and math.sqrt((best_robot.pos_baselink.x-self.first_pos.x)**2 + (best_robot.pos_baselink.y-self.first_pos.y)**2) > RESAMPLE_POS_TOLERANCE:
             # Compare visible landmarks from map to current frame
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), best_robot.theta, best_robot.pos_baselink)
             self.visible_landmarks = best_robot.visual_odom_map.get_visible_landmarks(pos_camera, best_robot.theta)
@@ -247,11 +250,13 @@ class VisualOdom(Node):
             best_robot.pos_baselink += ransac_delta_p
             best_robot.theta += ransac_result[1]
             best_robot.theta = normalize_angle(best_robot.theta)
-
+            
+            best_robot.set_state(best_robot.pos_baselink, best_robot.theta)
             best_robot.publish_yourself(self.frame_stamp)
 
-            rclpy.logging.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
+            rclpy.logging.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. delta position: {ransac_delta_p}, delta theta: {ransac_result[1]}, New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
 
+            self.first_frame_stamp = self.frame_stamp
 
     def ransac_frame_to_map(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], int]:
         """!
