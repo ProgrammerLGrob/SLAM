@@ -215,7 +215,7 @@ class VisualRobotSample():
                     not_matched_kp_depth.append(valid_kp_depth[idx])
             
             # Fill map with landmarks and add path marker
-            #self.accumulate_pixels(self.frame_depth, self.frame_rgb)
+            self.accumulate_pixels(self.frame_depth, self.frame_rgb)
             self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
             self.path.append(Pose2D(x=self.pos_baselink.x, y=self.pos_baselink.y))
 

@@ -37,7 +37,7 @@ from visual_odom.constants import (
     RANSAC_ITERATION, RANSAC_SAMPLE_SIZE, RGB_DEPTH_SYNC_TOLERANCE_SEC,
     PIXEL_TOLERANCE, MATCHES_FOR_NEW_LANDMARKS, MIN_MATCHES_FOR_RANSAC,
     MAX_ROTATION_ANGLE_DEG, MIN_LANDMARK_TRUST, RANSAC_MIN_INLIER_RATIO,
-    N_ROBOT_SAMPLES, VISUAL_ODOM_MSG_TOPIC, RESAMPLE_THETA_TOLERANCE, RESAMPLE_TIME_TOLERANCE, RESAMPLE_POS_TOLERANCE, normalize_angle
+    N_ROBOT_SAMPLES, VISUAL_ODOM_MSG_TOPIC, RESAMPLE_THETA_TOLERANCE, RESAMPLE_TIME_TOLERANCE, RESAMPLE_POS_TOLERANCE, ACCUMULATED_POINTCLOUD_FRAME_TOPIC, normalize_angle
 )
 from visual_odom.robot import VisualRobotSample
 import visual_odom.constants as constants
@@ -85,7 +85,7 @@ class VisualOdom(Node):
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
         self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
-        self.publisher_accumulated_pixels = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
+        self.publisher_accumulated_pixels = self.create_publisher(Image, ACCUMULATED_POINTCLOUD_FRAME_TOPIC, 10)
         self.visual_odom_path = self.create_publisher(MarkerArray, VISUAL_ODOM_PATH_TOPIC, 10)
 
         # Initialize transform parameters

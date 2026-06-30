@@ -20,6 +20,7 @@ Panels:
         - /MarkerArray1
         - /MarkerArray1/Topic1
         - /PointCloud22
+        - /PointCloud23
       Splitter Ratio: 0.5
     Tree Height: 494
   - Class: rviz_common/Selection
@@ -252,7 +253,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 100000
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -270,6 +271,39 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /serf01/pointcloud/points_3d
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: false
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /serf01/pointcloud/accumulated_points_3d
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -319,7 +353,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 4.839554309844971
+      Distance: 7.162540435791016
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -334,10 +368,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.62979656457901
+      Pitch: 0.6697962284088135
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.208583950996399
+      Yaw: 1.3485838174819946
     Saved: ~
 Window Geometry:
   Displays:
@@ -357,5 +391,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1908
-  X: 0
-  Y: 0
+  X: 2528
+  Y: 333

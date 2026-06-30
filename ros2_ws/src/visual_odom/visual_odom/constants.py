@@ -215,6 +215,9 @@ VISUAL_ODOM_PATH_TOPIC = "/serf01/visual_odom_path"
 ## @brief Frame/topic identifier for the structural environment point cloud.
 POINTCLOUD_FRAME_TOPIC = "/serf01/pointcloud/points_3d"
 
+## @brief Frame/topic identifier for the accumulated environment point cloud.
+ACCUMULATED_POINTCLOUD_FRAME_TOPIC = "/serf01/pointcloud/accumulated_points_3d"
+
 ## @brief Frame/topic identifier for tracked ORB descriptor 3D keypoints.
 KEYPOINT_POINTCLOUD_FRAME_TOPIC = "/serf01/pointcloud/keypoint_3d"
 
