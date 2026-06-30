@@ -85,7 +85,7 @@ class VisualOdom(Node):
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
         self.publisher_cone = self.create_publisher(Marker, VISION_CONE_TOPIC, 10)
         self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
-        self.publisher_accumulated_pixels = self.create_publisher(Image, ACCUMULATED_POINTCLOUD_FRAME_TOPIC, 10)
+        self.publisher_accumulated_pixels = self.create_publisher(PointCloud2, ACCUMULATED_POINTCLOUD_FRAME_TOPIC, 10)
         self.visual_odom_path = self.create_publisher(MarkerArray, VISUAL_ODOM_PATH_TOPIC, 10)
 
         # Initialize transform parameters

@@ -1,7 +1,5 @@
 @mainpage Visual Odometry SLAM Package
 
-@mainpage Visual Odometry SLAM Package
-
 # visual_odom
 
 ## Authors
