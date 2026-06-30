@@ -6,8 +6,6 @@
 @brief Main ROS 2 execution node managing the particle filter localization and visual odometry loop.
 """
 
-import copy
-
 import builtin_interfaces.msg
 from tf2_ros import Buffer, Header, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import Point
@@ -27,7 +25,6 @@ from cv_bridge import CvBridge
 import numpy as np
 
 from visual_odom.landmark import kabsch
-from visual_odom.visual_odom_map import VisualOdomMap
 from visual_odom.tf_methods import pixel_to_kinect, pixel_to_kinect_, kinect_depth_to_baselink, calculate_tf, kinect_depth_to_odom, odom_to_baselink
 from visual_odom.constants import (
     Coordinate, PixelCoordinate, State, Parameters,
@@ -43,10 +40,6 @@ from visual_odom.constants import (
 from visual_odom.robot import VisualRobotSample
 import visual_odom.constants as constants
 
-import cProfile
-import pstats
-import io
-import shutil
 from nav_msgs.msg import Odometry
 from rcl_interfaces.msg import SetParametersResult
 
@@ -62,9 +55,11 @@ class VisualOdom(Node):
         """
         super().__init__('visual_odom')
 
+        # Load parameters from parameter file
         constants.parameters = self.parameter_initialization()
         self.add_on_set_parameters_callback(self.parameter_callback)
         
+        # Initilize ORB feature detector
         self.bridge = CvBridge()
         self.orb = cv2.ORB_create(
             nfeatures=1500,        # Maximum number of keypoints to detect
@@ -73,13 +68,16 @@ class VisualOdom(Node):
             fastThreshold=5,       # FAST detector sensitivity
             scoreType=cv2.ORB_HARRIS_SCORE
         )
+        
         # Create BFMatcher object
         self.bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
+        # Initialize subscribers
         self.subscription_rgb = self.create_subscription(Image, RGB_IMAGE_TOPIC, self.listener_rgb_callback, 10)
         self.subscription_depth = self.create_subscription(Image, DEPTH_IMAGE_TOPIC, self.listener_depth_callback, 10)
         self.subscription_wheel_odom = self.create_subscription(Odometry, WHEEL_ODOMETRY_TOPIC, self.listener_wheel_odom_callback, 10)
 
+        # Initialize publishers for ROS topics
         self.publisher_keypoints_3d = self.create_publisher(PointCloud2, KEYPOINT_POINTCLOUD_FRAME_TOPIC, 10)
         self.publisher_3d = self.create_publisher(PointCloud2, POINTCLOUD_FRAME_TOPIC, 10)
         self.publisher_visual_odometry_msg = self.create_publisher(Odometry, constants.parameters.topic_visual_odometry_msg, 10)
@@ -87,37 +85,37 @@ class VisualOdom(Node):
         self.publisher_image = self.create_publisher(Image, KP_IMAGE_TOPIC, 10)
         self.visual_odom_path = self.create_publisher(MarkerArray, VISUAL_ODOM_PATH_TOPIC, 10)
 
+        # Initialize transform parameters
         self.tf_broadcaster = TransformBroadcaster(self)
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
+        # Initialize global parameters
         self.frame_depth = None
         self.frame_depth_stamp = None
         self.frame_rgb = None
         self.theta = 0.0 
-        self.pos_baselink = Coordinate(0.0, 0.0, 0.0) # Robot position in odom frame
-
-        self.first_iteration = True
-        self.position_initialized = False
-       
-        sigma_x0 = 0.1   # X translation initial uncertainty in meters
-        sigma_y0 = 0.1   # Y translation initial uncertainty in meters
-        sigma_th0 = 0.05  # Yaw rotation initial uncertainty in radians (~3 deg)
-        self.covariance_P = np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
-
-        self.robots: List[VisualRobotSample] = []
-        self.best_robot_idx = 0
-        self.best_weight = 0.0
-
         self.valid_kp_last = None
         self.valid_des_last = None
         self.valid_kp_depth_last = None
         self.valid_kp = None
         self.valid_des = None
-
         self.first_kp = None
         self.first_des = None
+        self.pos_baselink = Coordinate(0.0, 0.0, 0.0) # Robot position in odom frame
+        self.robots: List[VisualRobotSample] = []
+        self.best_robot_idx = 0
+        self.best_weight = 0.0
 
+        # Initial value allocation
+        self.first_iteration = True
+        self.position_initialized = False
+        sigma_x0 = 0.1   # X translation initial uncertainty in meters
+        sigma_y0 = 0.1   # Y translation initial uncertainty in meters
+        sigma_th0 = 0.05  # Yaw rotation initial uncertainty in radians (~3 deg)
+        self.covariance_P = np.diag([sigma_x0**2, sigma_y0**2, sigma_th0**2])
+        
+        # Completion of node init
         self.get_logger().info("Visual Odometry Node initialized and ready to receive RGB-D camera frames.")
         self.frame_stamp = builtin_interfaces.msg.Time()
 
@@ -127,9 +125,12 @@ class VisualOdom(Node):
 
         @param msg Incoming wheel odometry message.
         """
+
+        # Extract orientation and pose from wheel_msg 
         rot = Rotation.from_quat([msg.pose.pose.orientation.x, msg.pose.pose.orientation.y, msg.pose.pose.orientation.z, msg.pose.pose.orientation.w])
         state_wheel_odom = State(msg.pose.pose.position.x, msg.pose.pose.position.y, rot.as_euler('xyz')[2])
-
+        
+        # Set state on frist iteration, else predict next state
         if not self.position_initialized:
             self.position_initialized = True
             self.pos_baselink = Coordinate(state_wheel_odom.x, state_wheel_odom.y, 0.0)
@@ -146,18 +147,22 @@ class VisualOdom(Node):
 
         @param msg Incoming RGB reference image.
         """
+        # Ignore update with RGB until state is initialized in listener_wheel_odom_callback
         if not self.position_initialized:
             return
         
+        # Return if messages are out of sync
         if self._stamp_to_sec(msg.header.stamp) - self._stamp_to_sec(self.frame_stamp) > 0.000:
             self.frame_stamp = msg.header.stamp
         else:
             return
         
+        # Extract image data from RGB image
         self.valid_kp, self.valid_des, self.valid_kp_depth, rgb_stamp = self.img_to_kp_des_filtered(msg)
         if self.valid_kp is None or self.valid_des is None or self.valid_kp_depth is None:
             return 
 
+        # If no data to compare to, save current values for next frame and skip further steps
         if self.valid_kp_last is None and self.valid_des_last is None:
             self.valid_kp_last = self.valid_kp
             self.valid_des_last = self.valid_des
@@ -169,6 +174,7 @@ class VisualOdom(Node):
             self.first_frame_stamp = rgb_stamp
             return
 
+        #On first iteration, initialize robot particles in starting coordinates
         if self.first_iteration:
             self.first_iteration = False
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
@@ -184,183 +190,111 @@ class VisualOdom(Node):
 
             self.iteration(self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, self.frame_depth, rgb_stamp, ransac_result)  
             
+            # Get best position data, format to messages and publish to RViz
             self.pos_baselink = self.best_robot.get_position()
             self.theta = self.best_robot.get_theta()
             self.covariance_P = self.best_robot.get_covariance_P()
             
             odom_to_base_footprint = calculate_tf(self.pos_baselink, self.theta, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
-            self.tf_broadcaster.sendTransform(odom_to_base_footprint)
-
-            self.best_robot.publish_yourself(rgb_stamp)           
-        
+            self.tf_broadcaster.sendTransform(odom_to_base_footprint)          
             frame_rgb_drawn = cv2.drawKeypoints(self.frame_rgb, self.best_robot.get_drawn_keypoints(), None, color=(0, 255, 0), flags=0)
-            
             msg_out = self.bridge.cv2_to_imgmsg(frame_rgb_drawn, encoding='bgr8')
+            
+            self.best_robot.publish_yourself(rgb_stamp) 
             self.publisher_image.publish(msg_out)
-
+            self.visual_odom_path.publish(create_particle_path_markers(self, self.robots, self.best_robot_idx))
+            
+            # Preparations for next iteration
             self.valid_kp_last = self.valid_kp
             self.valid_des_last = self.valid_des
             self.valid_kp_depth_last = self.valid_kp_depth
 
             self.possible_resample(self.robots, self.best_robot_idx, self.first_frame_stamp)
-            self.visual_odom_path.publish(create_particle_path_markers(self, self.robots, self.best_robot_idx))
+            
 
             
 
     def possible_resample(self, robots: List[VisualRobotSample], best_robot_idx: int, first_frame_stamp: float) -> None:
+        """!
+        @brief Performs resampling by matching visible landmarks to the first frame.
+
+        @param robots List of active robot particles.
+        @param best_robot_idx Index of the best particle hypothesis.
+        @param first_frame_stamp Timestamp of the first recorded frame.
+        @return None
+        """
+        # Get best robot and check for resampling criteria
         best_robot = robots[best_robot_idx]
         rclpy.logging.get_logger("VisualOdom").info(f"abs(best_robot.theta-self.first_theta) = {abs(best_robot.theta-self.first_theta)} and time since first frame: {self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp)}")
+        
         if abs(best_robot.theta-self.first_theta) < 5.0*pi/180.0 and self._stamp_to_sec(self.frame_stamp) - self._stamp_to_sec(first_frame_stamp) > 40.0:
-            
+            # Compare visible landmarks from map to current frame
             pos_camera = kinect_depth_to_odom(Coordinate(0.0, 0.0, 0.0), best_robot.theta, best_robot.pos_baselink)
-
             self.visible_landmarks = best_robot.visual_odom_map.get_visible_landmarks(pos_camera, best_robot.theta)
-
             matches = self.bf.match(self.visible_landmarks.get_descriptors(), self.first_des)
+            ransac_result = self.ransac_frame_to_map(matches, self.visible_landmarks.get_odom_coordinates(), self.first_kp, self.first_kp_depth)
 
-            ransac_result = self.ransac(matches, self.visible_landmarks.get_odom_coordinates(), self.first_kp, self.first_kp_depth)
-            best_inlier_count = ransac_result[6]
-
-            if (best_inlier_count/ len(matches)) < constants.parameters.ransac_min_inlier_ratio:
-                return
-
+            # Calculate delta values
             ransac_delta_p = ransac_result[0]
-            
             c = cos(best_robot.theta)
             s = sin(best_robot.theta)
-
             R = np.array([[c, -s],
                            [s,  c]])
             delta = R @ np.array([ransac_delta_p.x, ransac_delta_p.y])
             ransac_delta_p = Coordinate(delta[0], delta[1], 0.0)
 
+            # Calculate new best robot pose and publish
             best_robot.pos_baselink += ransac_delta_p
             best_robot.theta += ransac_result[1]
             best_robot.theta = normalize_angle(best_robot.theta)
 
             best_robot.publish_yourself(self.frame_stamp)
 
-            #self.robots = []
-            #for i in range(constants.parameters.n_robot_samples):
-            #    map = copy.deepcopy(best_robot.visual_odom_map)
-            #    self.robots.append(VisualRobotSample(best_robot.pos_baselink, best_robot.theta, best_robot.covariance_P, self.bf, self.publisher_visual_odometry_msg, self.publisher_keypoints_3d, self.publisher_cone, self.valid_kp, self.valid_des, self.valid_kp_depth, self.frame_rgb, i, map))
-
-            #self.first_kp = self.valid_kp
-            #self.first_des = self.valid_des
-            #self.first_kp_depth = self.valid_kp_depth
-            #self.first_frame_stamp = self.frame_stamp
             rclpy.logging.get_logger("VisualOdom").info(f"Resampling robot particles based on RANSAC alignment with first frame. New position: {best_robot.pos_baselink}, New theta: {best_robot.theta}")
 
 
-    def ransac(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], List[int], List[int], List[int], int]:
-            #Abbruchbedingung
+    def ransac_frame_to_map(self, matches: List[cv2.DMatch], landmarks_odom_pos: List[Coordinate], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray) -> Tuple[Coordinate, float, List[int], int]:
+        """!
+        @brief Estimates the transformation between map landmarks and the current frame using RANSAC.
 
-            P = []
-            Q = []
+        @param matches Descriptor matches between map landmarks and current frame features.
+        @param landmarks_odom_pos Landmark positions in odom frame.
+        @param valid_kp Valid keypoints from current frame.
+        @param valid_kp_depth Depth values of current frame keypoints.
+        @return Estimated translation, rotation, inlier keypoints, and number of inliers.
+        """
+            # Variable Initialization
+        P = []
+        Q = []
+        landmark_index = []
 
-            best_inlier_count = 0
-            inlier_count = 0
-            best_t = Coordinate(0.0, 0.0, 0.0)
-            best_theta = 0.0
+        best_inlier_count = 0
+        best_t = Coordinate(0.0, 0.0, 0.0)
+        best_theta = 0.0 
 
-            landmark_index = [] 
+        # Calculate P and Q values for every match
+        for m in range(len(matches)):            
 
-            for m in range(len(matches)):            
-                #Matrix mit Koordinaten im kinect frame
-                keypoint = valid_kp[matches[m].trainIdx].pt
+            keypoint = valid_kp[matches[m].trainIdx].pt
+            u, v = keypoint
+            u = round(u)
+            v = round(v)
+            z = valid_kp_depth[matches[m].trainIdx]
 
-                u, v = keypoint
-                u = round(u)
-                v = round(v)
-                z = valid_kp_depth[matches[m].trainIdx]
+            coor_landmark = landmarks_odom_pos[matches[m].queryIdx]
+            P.append([coor_landmark.x, coor_landmark.y])
 
-                coor_landmark = landmarks_odom_pos[matches[m].queryIdx]
-                P.append([coor_landmark.x, coor_landmark.y])
+            coor = pixel_to_kinect(PixelCoordinate(u, v, z))
+            coor_base_link = kinect_depth_to_baselink(coor)
+            Q.append([coor_base_link.x, coor_base_link.y])
 
-
-                coor = pixel_to_kinect(PixelCoordinate(u, v, z))
-                coor_base_link = kinect_depth_to_baselink(coor)
-                Q.append([coor_base_link.x, coor_base_link.y])
-
-                landmark_index.append(matches[m].queryIdx)
-
-            P_array = np.array(P)
-            Q_array = np.array(Q)
-
-
-            best_P_inlier = []
-            best_Q_inlier = []
-            best_valid_kp_index = []
-            best_draw_Q_inlier = []
-            best_landmark_index = []
-            mean_last_e = 10000.0
-
-            iteration = int(constants.parameters.ransac_iteration)
-
-            #p = 0.99          # gewünschte Erfolgswahrscheinlichkeit
-            #w = 0.7           # geschätzter Inlier-Anteil
-            #s = 3             # Anzahl Samples pro RANSAC-Hypothese
-
-            #k = int(math.log(1 - p) / math.log(1 - w**s))+1
-
-            for iter in range(iteration): # k statt iteration
-                P_samples = []
-                Q_samples = []
-
-                samples = random.sample(range(len(P)), constants.parameters.ransac_sample_size)
-                P_samples = [P[i] for i in samples]
-                Q_samples = [Q[i] for i in samples]
-
-                R, t, theta  = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
-                if R is None:
-                    #rclpy.logging.get_logger("RANSAC").info(f"RANSAC at iteration {iter} failed to compute transformation")
-                    continue
-
-                e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
-                mean_e = np.mean(e)
-
-                inlier_count = np.sum(e < constants.parameters.ransac_evaluation_tolerance)
-
-                if inlier_count > best_inlier_count or (inlier_count == best_inlier_count and mean_e < mean_last_e):
-                    best_inlier_count = inlier_count
-                    mean_last_e = mean_e
-
-                    best_P_inlier = []
-                    best_Q_inlier = []
-                    best_valid_kp_index = []
-                    best_draw_Q_inlier = []
-                    best_landmark_index = []
-
-                    for i in range(len(e)):
-                        if e[i] < constants.parameters.ransac_evaluation_tolerance:
-                            best_P_inlier.append(P_array[i])
-                            best_Q_inlier.append(Q_array[i])
-                            best_valid_kp_index.append(matches[i].trainIdx)
-                            best_draw_Q_inlier.append(valid_kp[matches[i].trainIdx])
-                            best_landmark_index.append(matches[i].queryIdx) 
-
-                    if (best_inlier_count/ len(matches)) > 0.80 or mean_e < constants.parameters.ransac_evaluation_tolerance*4:
-                        #rclpy.logging.get_logger("RANSAC").info(f"RANSAC early break at iteration {iter} with mean error {mean_e} and inlier count {inlier_count} and length matches {len(matches)}")
-                        break
-
-                if(iter == iteration-1):
-                    rclpy.logging.get_logger("RANSAC").info(f"RANSAC finished all iterations. Best mean error: {mean_last_e} with inlier count {best_inlier_count} out of {len(matches)} matches.")
-                
-            if len(best_P_inlier) <  constants.parameters.min_matches_for_ransac:
-                rclpy.logging.get_logger("RANSAC").info(f"RANSAC failed to find a valid transformation with enough inliers. Best inlier count: {best_inlier_count} out of {len(matches)} matches.")
-                return Coordinate(0.0, 0.0, 0.0), 0.0, [], [], [], [], 0
-
-            # Kabsch noch einmal mit den endgültigen besten Inliern berechnen
-            R, t, theta  = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
-
-            best_t = Coordinate(float(t[0]), float(t[1]), 0.0)
-            best_theta = theta
-
-            valid_set = set(best_valid_kp_index)
-            not_matched_kp = [i for i in range(len(valid_kp)) if i not in valid_set]
-
-            # Gebe nun exakt die synchronisierten "best_"-Listen zurück
-            return best_t, best_theta, best_landmark_index, best_draw_Q_inlier, best_valid_kp_index, not_matched_kp, best_inlier_count
+            landmark_index.append(matches[m].queryIdx)
+        
+        # Execute RANSAC
+        best_t, best_theta, best_draw_Q_inlier, best_inlier_count = self.ransac_calculation(P, Q, matches, valid_kp)
+        
+        # Return best values form RANSAC Calculation
+        return best_t, best_theta, best_draw_Q_inlier, best_inlier_count
 
     def ransac_frame_to_frame(self, matches: List[cv2.DMatch], valid_kp: List[cv2.KeyPoint], valid_kp_depth: np.ndarray, valid_kp_last: List[cv2.KeyPoint], valid_kp_depth_last: np.ndarray) -> Tuple[Coordinate, float, List[cv2.KeyPoint], int]:
         """!
@@ -373,14 +307,17 @@ class VisualOdom(Node):
         @param valid_kp_depth_last Pixel depth values matching last frame features.
         @return A tuple of (estimated Coordinate translation, rotation yaw, visual inlier keypoints, total inliers).
         """
+
+        # Variable Initialization
         P = []
         Q = []
+        landmark_index = [] 
 
         best_inlier_count = 0
         best_t = Coordinate(0.0, 0.0, 0.0)
         best_theta = 0.0
-        landmark_index = [] 
 
+        # Calculate P and Q values for every match
         for m in range(len(matches)): 
             keypoint = valid_kp[matches[m].trainIdx].pt
             keypoint_last = valid_kp_last[matches[m].queryIdx].pt
@@ -407,26 +344,46 @@ class VisualOdom(Node):
 
             Q.append([coor_base_link.x, coor_base_link.y])
             landmark_index.append(matches[m].queryIdx)
-           
+        
+        # Execute RANSAC
+        best_t, best_theta, best_draw_Q_inlier, best_inlier_count = self.ransac_calculation(P, Q, matches, valid_kp)
+        
+        # Return best values form RANSAC Calculation
+        return best_t, best_theta, best_draw_Q_inlier, best_inlier_count
+
+    def ransac_calculation(self, P: List, Q: List, matches: List[cv2.DMatch], valid_kp: List[cv2.KeyPoint]):
+        """!
+        @brief Executes the core RANSAC loop and computes the best transformation using Kabsch.
+
+        @param P Reference point set.
+        @param Q Observed point set.
+        @param matches Descriptor matches corresponding to P/Q pairs.
+        @param valid_kp Valid keypoints used for visualization of inliers.
+        @return Best translation, rotation, inlier keypoints, and number of inliers.
+        """
+        # Variable Initialization
+        iteration = int(constants.parameters.ransac_iteration)
+        mean_last_e = 10000.0
+        
         P_array = np.array(P)
         Q_array = np.array(Q)
+
         best_P_inlier = []
         best_Q_inlier = []
         best_draw_Q_inlier = []
-        mean_last_e = 10000.0
+        best_inlier_count = 0
 
-        iteration = int(constants.parameters.ransac_iteration)
-
+        # Calculate Kabsch for random samples (random P/Q pair) and reproject, saving best translation and rotation
         for iter in range(iteration):
             samples = random.sample(range(len(P)), constants.parameters.ransac_sample_size)
             P_samples = [P[i] for i in samples]
             Q_samples = [Q[i] for i in samples]
 
-            R, delta_t, delta_theta = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
+            R, t, theta = kabsch(np.array(P_samples), np.array(Q_samples), constants.parameters.max_rotation_angle_deg)
             if R is None:
                 continue
    
-            e = np.linalg.norm(P_array - ((R @ Q_array.T).T + delta_t.T), axis=1)
+            e = np.linalg.norm(P_array - ((R @ Q_array.T).T + t.T), axis=1)
             mean_e = np.mean(e)
             inlier_count = np.sum(e < constants.parameters.ransac_evaluation_tolerance)
 
@@ -450,14 +407,14 @@ class VisualOdom(Node):
         if len(best_P_inlier) < constants.parameters.min_matches_for_ransac:
             return Coordinate(0.0, 0.0, 0.0), 0.0, [], 0.0
         
-        # Re-compute optimal Kabsch transformation matrix parameters using the best inlier set
-        R, delta_t, delta_theta = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
+        # Re-compute optimal Kabsch transformation matrix parameters using the only the inliers from the best solution
+        R, t, theta = kabsch(np.array(best_P_inlier), np.array(best_Q_inlier), constants.parameters.max_rotation_angle_deg)
             
-        best_theta = delta_theta
-        best_t = Coordinate(float(delta_t[0]), float(delta_t[1]), 0.0)
-        
-        return best_t, best_theta, best_draw_Q_inlier, best_inlier_count
+        best_theta = theta
+        best_t = Coordinate(float(t[0]), float(t[1]), 0.0)
 
+        return best_t, best_theta, best_draw_Q_inlier, best_inlier_count
+    
     def listener_depth_callback(self, msg: Image) -> None:
         """!
         @brief Subscribes to raw depth frames and registers active depth timestamps.
@@ -487,7 +444,7 @@ class VisualOdom(Node):
         @param frame_id Relative spatial coordinate frame identifier.
         """
         calculated_point_coordinates = []
-        divisor = 15
+        divisor = 15 # Only publish every "divisor" Pixel
         
         for pix_u in range(frame_depth.shape[1] // divisor):
             for pix_v in range(frame_depth.shape[0] // divisor):
@@ -526,10 +483,12 @@ class VisualOdom(Node):
         @param msg Incoming color image message.
         @return A tuple of (valid keypoints list, descriptors, depth values, timestamp).
         """
+        # convert RGB message and feature detection
         self.frame_rgb = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
         kp = self.orb.detect(self.frame_rgb, None)
         rgb_stamp = msg.header.stamp
-
+        
+        # Skip, if values are not valid 
         if self.frame_depth is None or self.frame_depth_stamp is None:
             return None, None, None, None  
         
@@ -541,7 +500,9 @@ class VisualOdom(Node):
         occupied_pixels = {} 
         valid_kp = []
         valid_kp_depth = []
+        valid_des = []
 
+        # Save all feature attributes in arrays and filter for valid keypoints only        
         for p in kp:
             u, v = p.pt
             u = int(round(u))
@@ -570,6 +531,7 @@ class VisualOdom(Node):
 
         # Calculate descriptors only for valid keypoints
         valid_kp, valid_des = self.orb.compute(self.frame_rgb, valid_kp)
+
         return valid_kp, valid_des, np.array(valid_kp_depth), rgb_stamp
  
     def iteration(self, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, frame_depth: NDArray, rgb_stamp: Time, ransac_result: Tuple[Coordinate, float, List[cv2.KeyPoint], int]) -> None:
@@ -658,6 +620,13 @@ class VisualOdom(Node):
 
 
 def create_particle_path_markers(self, particles:List[VisualRobotSample], best_particle_idx:int):
+    """!
+    @brief Generates visualization markers for particle trajectories.
+
+    @param particles Active particle set.
+    @param best_particle_idx Best particle index.
+    @return MarkerArray for RViz visualization.
+    """
     marker_array = MarkerArray()
 
     for particle in particles:
@@ -672,10 +641,10 @@ def create_particle_path_markers(self, particles:List[VisualRobotSample], best_p
         marker.type = Marker.LINE_STRIP
         marker.action = Marker.ADD
 
-        # Linienbreite
+        # Width of markers
         marker.scale.x = 0.002
 
-        # Bester Partikel rot und dicker
+        # Best particle red and wide
         if particle.index == best_particle_idx:
             marker.color.r = 1.0    
             marker.color.g = 0.0
@@ -691,7 +660,7 @@ def create_particle_path_markers(self, particles:List[VisualRobotSample], best_p
             marker.color.a = particle.path_color.a
 
 
-        # Verlauf des Partikels
+        # Particle points
         for pose in particle.path:
             p = Point()
             p.x = pose.x

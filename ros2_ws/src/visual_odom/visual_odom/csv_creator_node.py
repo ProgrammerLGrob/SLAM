@@ -6,7 +6,6 @@
 @brief ROS 2 node that logs odometry and IMU measurements to a unified CSV file.
 """
 
-
 import rclpy
 from rclpy.node import Node
 from nav_msgs.msg import Odometry

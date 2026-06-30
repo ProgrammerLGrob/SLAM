@@ -73,14 +73,14 @@ class ExtendedKalmanFilterRobot:
         K = PHT @ HPHTpRi
         return K
 
-    def update(self, z: State, inlier_ratio: float) -> None:
+    def update(self, z: State) -> None:
         """!
         @brief Fuses a RANSAC visual odometry pose calculation into the tracking state.
 
         @param z Evaluated pose estimate from the RANSAC visual alignment pipeline.
         @param inlier_ratio Percentage of robust inliers tracked during visual alignment.
         """
-        self.set_R(inlier_ratio)
+        self.set_R()
         K = self.computeKalmanGain(self.P)
 
         z_tt1 = self.x
@@ -96,7 +96,7 @@ class ExtendedKalmanFilterRobot:
         self.x = x_t1t1
         self.P = P_t1t1
 
-    def set_R(self, inlier_ratio: float) -> None:
+    def set_R(self) -> None:
         """!
         @brief Configures the visual odometry measurement noise covariance matrix R.
 
