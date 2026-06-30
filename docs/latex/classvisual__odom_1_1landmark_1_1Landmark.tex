@@ -1,0 +1,407 @@
+\doxysection{visual\+\_\+odom.\+landmark.\+Landmark Class Reference}
+\hypertarget{classvisual__odom_1_1landmark_1_1Landmark}{}\label{classvisual__odom_1_1landmark_1_1Landmark}\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+
+
+Landmark class for storing visual features and performing spatial estimation.  
+
+
+
+
+Inheritance diagram for visual\+\_\+odom.\+landmark.\+Landmark\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=260pt]{classvisual__odom_1_1landmark_1_1Landmark__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab8a59a02945ae1bc5a4514b67d96aefb}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, NDArray P\+\_\+init, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb}{pixel\+\_\+coor}}, cv2.\+Key\+Point kp, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd}{des}}, float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab22038ae09fabe373c6ffe44e0b50502}{trust}}=30.\+0, int \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a03c2ed2c1a54f9196097f6dd23879a1b}{color}}=0, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}{odom\+\_\+coordinates}}=\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}(0.\+0, 0.\+0, 0.\+0))
+\begin{DoxyCompactList}\small\item\em Initializes a Landmark tracking instance. \end{DoxyCompactList}\item 
+np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a9f48e767a8ccef22fc31a4b61b3ff03b}{get\+\_\+descriptor}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the binary feature descriptor array. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a246aceb37564cfc25f1029d7e1ce1831}{get\+\_\+depth}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the raw depth tracking value. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a0f09a3adddc987b3dff0b0f035b34a2a}{get\+\_\+u}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the horizontal pixel coordinate. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_aeeafd5aee922efd686fec712e46d41d9}{get\+\_\+v}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the vertical pixel coordinate. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a8bb9d7677b2b7cd6c69eafdfa9c7cdd9}{get\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the current visual trust tracking parameter. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab2986a24fa414370b2c07194d1cf2a83}{get\+\_\+color}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the color property used for visual representation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a61544a8e6e9ffb456cf66c2f2b52ba67}{get\+\_\+odom\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the estimated global odom-\/frame coordinates. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a45176c6528078ca77b8f2834d47f2eca}{set\+\_\+odom\+\_\+coordinates}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}{odom\+\_\+coordinates}})
+\begin{DoxyCompactList}\small\item\em Sets the global odom-\/frame coordinates and updates the internal EKF. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_afa9fbd40191e962305940a5154b2dd96}{get\+\_\+kinect\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the local Kinect frame coordinates. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ac6d5784ba8ff2bfa7904d7c1cd683994}{get\+\_\+P}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the estimated covariance matrix. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a4f35ded7db4c202504e440b1e9825bbb}{is\+\_\+visible}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+camera\+\_\+odom, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Checks if the landmark falls within the horizontal and vertical field of view of the sensor. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_acdb8808149649edfa0863cfde446bd9a}{reset\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Resets the visual tracking trust property to its initial baseline value of 30.\+0. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_af20217b1ce80c32377f9e60447e094e9}{increase\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Increments the trust value after the landmark is successfully re-\/observed. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_adb091cf36137fe8363c2e59935e89305}{decrease\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Applies an exponential decay to the trust value when the landmark is missed. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_adbb8724ab9f717002ae8ec747beb50b3}{landmark\+\_\+kalman\+\_\+iteration}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink, float theta, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb}{pixel\+\_\+coor}})
+\begin{DoxyCompactList}\small\item\em Runs a prediction-\/update EKF cycle to refine estimated global odom coordinates. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a8c7c553388a715bb3070d960bf0f5666}{calculate\+\_\+likelihood}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} z\+\_\+pos\+\_\+odom, float theta)
+\begin{DoxyCompactList}\small\item\em Calculates the measurement likelihood of the landmark given its current state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb}{pixel\+\_\+coor}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd}{des}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab22038ae09fabe373c6ffe44e0b50502}{trust}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a03c2ed2c1a54f9196097f6dd23879a1b}{color}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_aa528bb9898f15b5030b1f57151ad652a}{kinect\+\_\+coordinates}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}{odom\+\_\+coordinates}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a305f05bc4f1ceadfd70223d1712c2df2}{P}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_acf440d3ebfa8e3410e032aa7614b24e6}{landmark\+\_\+ekf}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Landmark class for storing visual features and performing spatial estimation. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_ab8a59a02945ae1bc5a4514b67d96aefb}\label{classvisual__odom_1_1landmark_1_1Landmark_ab8a59a02945ae1bc5a4514b67d96aefb} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{NDArray}]{P\+\_\+init,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{pixel\+\_\+coor,  }\item[{cv2.\+Key\+Point}]{kp,  }\item[{np.\+ndarray}]{des,  }\item[{float }]{trust = {\ttfamily 30.0},  }\item[{int }]{color = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} }]{odom\+\_\+coordinates = {\ttfamily \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}(0.0,~0.0,~0.0)} }\end{DoxyParamCaption})}
+
+
+
+Initializes a Landmark tracking instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em P\+\_\+init} & Initial EKF error covariance matrix. \\
+\hline
+{\em pixel\+\_\+coor} & 2D pixel coordinate containing columns, rows, and raw depth values. \\
+\hline
+{\em kp} & Open\+CV Key\+Point object associated with this visual feature. \\
+\hline
+{\em des} & Binary descriptor array of the ORB keypoint. \\
+\hline
+{\em trust} & Initial confidence tracking metric assigned to this feature. \\
+\hline
+{\em color} & RGB packing integer value used to render point cloud structures. \\
+\hline
+{\em odom\+\_\+coordinates} & Initial transformed Coordinate frame estimation. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a51aa3ff2d4b43dad697029a70e4079ab}{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a8c7c553388a715bb3070d960bf0f5666}\label{classvisual__odom_1_1landmark_1_1Landmark_a8c7c553388a715bb3070d960bf0f5666} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!calculate\_likelihood@{calculate\_likelihood}}
+\index{calculate\_likelihood@{calculate\_likelihood}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{calculate\_likelihood()}{calculate\_likelihood()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+landmark.\+Landmark.\+calculate\+\_\+likelihood (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{z\+\_\+pos\+\_\+odom,  }\item[{float}]{theta }\end{DoxyParamCaption})}
+
+
+
+Calculates the measurement likelihood of the landmark given its current state. 
+
+Must be called after running the EKF tracking iteration.
+
+
+\begin{DoxyParams}{Parameters}
+{\em z\+\_\+pos\+\_\+odom} & Measured coordinate in the odom frame. \\
+\hline
+{\em theta} & Current robot heading yaw orientation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Gaussian probability density likelihood value. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_adb091cf36137fe8363c2e59935e89305}\label{classvisual__odom_1_1landmark_1_1Landmark_adb091cf36137fe8363c2e59935e89305} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!decrease\_trust@{decrease\_trust}}
+\index{decrease\_trust@{decrease\_trust}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{decrease\_trust()}{decrease\_trust()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+decrease\+\_\+trust (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Applies an exponential decay to the trust value when the landmark is missed. 
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_ab2986a24fa414370b2c07194d1cf2a83}\label{classvisual__odom_1_1landmark_1_1Landmark_ab2986a24fa414370b2c07194d1cf2a83} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_color@{get\_color}}
+\index{get\_color@{get\_color}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_color()}{get\_color()}}
+{\footnotesize\ttfamily  int visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+color (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the color property used for visual representation. 
+
+\begin{DoxyReturn}{Returns}
+Packed color integer. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a246aceb37564cfc25f1029d7e1ce1831}\label{classvisual__odom_1_1landmark_1_1Landmark_a246aceb37564cfc25f1029d7e1ce1831} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_depth@{get\_depth}}
+\index{get\_depth@{get\_depth}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_depth()}{get\_depth()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+depth (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the raw depth tracking value. 
+
+\begin{DoxyReturn}{Returns}
+Sensor depth value in millimeters. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a535654d0b85cc66ede60d6116598d1d5}{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map}}.
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a9f48e767a8ccef22fc31a4b61b3ff03b}\label{classvisual__odom_1_1landmark_1_1Landmark_a9f48e767a8ccef22fc31a4b61b3ff03b} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_descriptor@{get\_descriptor}}
+\index{get\_descriptor@{get\_descriptor}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_descriptor()}{get\_descriptor()}}
+{\footnotesize\ttfamily  np.\+ndarray visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+descriptor (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the binary feature descriptor array. 
+
+\begin{DoxyReturn}{Returns}
+1D feature descriptor. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_afa9fbd40191e962305940a5154b2dd96}\label{classvisual__odom_1_1landmark_1_1Landmark_afa9fbd40191e962305940a5154b2dd96} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_kinect\_coordinates@{get\_kinect\_coordinates}}
+\index{get\_kinect\_coordinates@{get\_kinect\_coordinates}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_kinect\_coordinates()}{get\_kinect\_coordinates()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+kinect\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the local Kinect frame coordinates. 
+
+\begin{DoxyReturn}{Returns}
+Coordinate object in meters. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a87782d26967a4528883f3a9651ee022b}{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map}}.
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a61544a8e6e9ffb456cf66c2f2b52ba67}\label{classvisual__odom_1_1landmark_1_1Landmark_a61544a8e6e9ffb456cf66c2f2b52ba67} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_odom\_coordinates@{get\_odom\_coordinates}}
+\index{get\_odom\_coordinates@{get\_odom\_coordinates}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_odom\_coordinates()}{get\_odom\_coordinates()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+odom\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the estimated global odom-\/frame coordinates. 
+
+\begin{DoxyReturn}{Returns}
+Coordinate object in meters. 
+\end{DoxyReturn}
+
+
+Reimplemented in \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a9166d54cb256b71668c2e1c38893f15b}{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map}}.
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_ac6d5784ba8ff2bfa7904d7c1cd683994}\label{classvisual__odom_1_1landmark_1_1Landmark_ac6d5784ba8ff2bfa7904d7c1cd683994} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_P@{get\_P}}
+\index{get\_P@{get\_P}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_P()}{get\_P()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+P (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the estimated covariance matrix. 
+
+\begin{DoxyReturn}{Returns}
+3x3 error covariance matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a8bb9d7677b2b7cd6c69eafdfa9c7cdd9}\label{classvisual__odom_1_1landmark_1_1Landmark_a8bb9d7677b2b7cd6c69eafdfa9c7cdd9} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_trust@{get\_trust}}
+\index{get\_trust@{get\_trust}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_trust()}{get\_trust()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+trust (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the current visual trust tracking parameter. 
+
+\begin{DoxyReturn}{Returns}
+Trust metric. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a0f09a3adddc987b3dff0b0f035b34a2a}\label{classvisual__odom_1_1landmark_1_1Landmark_a0f09a3adddc987b3dff0b0f035b34a2a} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_u@{get\_u}}
+\index{get\_u@{get\_u}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_u()}{get\_u()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+u (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the horizontal pixel coordinate. 
+
+\begin{DoxyReturn}{Returns}
+Column pixel index. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_aeeafd5aee922efd686fec712e46d41d9}\label{classvisual__odom_1_1landmark_1_1Landmark_aeeafd5aee922efd686fec712e46d41d9} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!get\_v@{get\_v}}
+\index{get\_v@{get\_v}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{get\_v()}{get\_v()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+landmark.\+Landmark.\+get\+\_\+v (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the vertical pixel coordinate. 
+
+\begin{DoxyReturn}{Returns}
+Row pixel index. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_af20217b1ce80c32377f9e60447e094e9}\label{classvisual__odom_1_1landmark_1_1Landmark_af20217b1ce80c32377f9e60447e094e9} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!increase\_trust@{increase\_trust}}
+\index{increase\_trust@{increase\_trust}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{increase\_trust()}{increase\_trust()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+increase\+\_\+trust (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Increments the trust value after the landmark is successfully re-\/observed. 
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a4f35ded7db4c202504e440b1e9825bbb}\label{classvisual__odom_1_1landmark_1_1Landmark_a4f35ded7db4c202504e440b1e9825bbb} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!is\_visible@{is\_visible}}
+\index{is\_visible@{is\_visible}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{is\_visible()}{is\_visible()}}
+{\footnotesize\ttfamily  bool visual\+\_\+odom.\+landmark.\+Landmark.\+is\+\_\+visible (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+camera\+\_\+odom,  }\item[{float}]{theta\+\_\+robot }\end{DoxyParamCaption})}
+
+
+
+Checks if the landmark falls within the horizontal and vertical field of view of the sensor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos\+\_\+camera\+\_\+odom} & Position of the camera in the global odom frame. \\
+\hline
+{\em theta\+\_\+robot} & Robot heading yaw orientation in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the landmark is within depth, azimuth, and altitude boundaries, otherwise False. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_adbb8724ab9f717002ae8ec747beb50b3}\label{classvisual__odom_1_1landmark_1_1Landmark_adbb8724ab9f717002ae8ec747beb50b3} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!landmark\_kalman\_iteration@{landmark\_kalman\_iteration}}
+\index{landmark\_kalman\_iteration@{landmark\_kalman\_iteration}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{landmark\_kalman\_iteration()}{landmark\_kalman\_iteration()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+landmark\+\_\+kalman\+\_\+iteration (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+baselink,  }\item[{float}]{theta,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{pixel\+\_\+coor }\end{DoxyParamCaption})}
+
+
+
+Runs a prediction-\/update EKF cycle to refine estimated global odom coordinates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos\+\_\+baselink} & Current position of the robot\textquotesingle{}s base\+\_\+link in the odom frame. \\
+\hline
+{\em theta} & Current yaw angle heading of the robot. \\
+\hline
+{\em pixel\+\_\+coor} & Updated raw sensor pixel observation. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a3766ef4ab0ce341b42809a888264617b}{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map}}.
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_acdb8808149649edfa0863cfde446bd9a}\label{classvisual__odom_1_1landmark_1_1Landmark_acdb8808149649edfa0863cfde446bd9a} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!reset\_trust@{reset\_trust}}
+\index{reset\_trust@{reset\_trust}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{reset\_trust()}{reset\_trust()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+reset\+\_\+trust (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Resets the visual tracking trust property to its initial baseline value of 30.\+0. 
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a45176c6528078ca77b8f2834d47f2eca}\label{classvisual__odom_1_1landmark_1_1Landmark_a45176c6528078ca77b8f2834d47f2eca} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!set\_odom\_coordinates@{set\_odom\_coordinates}}
+\index{set\_odom\_coordinates@{set\_odom\_coordinates}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{set\_odom\_coordinates()}{set\_odom\_coordinates()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+landmark.\+Landmark.\+set\+\_\+odom\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{odom\+\_\+coordinates }\end{DoxyParamCaption})}
+
+
+
+Sets the global odom-\/frame coordinates and updates the internal EKF. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em odom\+\_\+coordinates} & New Coordinate location. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a03c2ed2c1a54f9196097f6dd23879a1b}\label{classvisual__odom_1_1landmark_1_1Landmark_a03c2ed2c1a54f9196097f6dd23879a1b} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!color@{color}}
+\index{color@{color}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{color}{color}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+color}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd}\label{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!des@{des}}
+\index{des@{des}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{des}{des}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+des}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_aa528bb9898f15b5030b1f57151ad652a}\label{classvisual__odom_1_1landmark_1_1Landmark_aa528bb9898f15b5030b1f57151ad652a} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!kinect\_coordinates@{kinect\_coordinates}}
+\index{kinect\_coordinates@{kinect\_coordinates}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{kinect\_coordinates}{kinect\_coordinates}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+kinect\+\_\+coordinates}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_acf440d3ebfa8e3410e032aa7614b24e6}\label{classvisual__odom_1_1landmark_1_1Landmark_acf440d3ebfa8e3410e032aa7614b24e6} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!landmark\_ekf@{landmark\_ekf}}
+\index{landmark\_ekf@{landmark\_ekf}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{landmark\_ekf}{landmark\_ekf}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+landmark\+\_\+ekf}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}\label{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!odom\_coordinates@{odom\_coordinates}}
+\index{odom\_coordinates@{odom\_coordinates}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{odom\_coordinates}{odom\_coordinates}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+odom\+\_\+coordinates}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a305f05bc4f1ceadfd70223d1712c2df2}\label{classvisual__odom_1_1landmark_1_1Landmark_a305f05bc4f1ceadfd70223d1712c2df2} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!P@{P}}
+\index{P@{P}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{P}{P}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+P}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb}\label{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!pixel\_coor@{pixel\_coor}}
+\index{pixel\_coor@{pixel\_coor}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{pixel\_coor}{pixel\_coor}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+pixel\+\_\+coor}
+
+\Hypertarget{classvisual__odom_1_1landmark_1_1Landmark_ab22038ae09fabe373c6ffe44e0b50502}\label{classvisual__odom_1_1landmark_1_1Landmark_ab22038ae09fabe373c6ffe44e0b50502} 
+\index{visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}!trust@{trust}}
+\index{trust@{trust}!visual\_odom.landmark.Landmark@{visual\_odom.landmark.Landmark}}
+\doxysubsubsection{\texorpdfstring{trust}{trust}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+landmark.\+Landmark.\+trust}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{landmark_8py}{landmark.\+py}}\end{DoxyCompactItemize}

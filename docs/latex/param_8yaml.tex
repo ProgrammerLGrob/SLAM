@@ -1,0 +1,44 @@
+\doxysection{ros2\+\_\+ws/src/visual\+\_\+odom/config/param.yaml File Reference}
+\hypertarget{param_8yaml}{}\label{param_8yaml}\index{ros2\_ws/src/visual\_odom/config/param.yaml@{ros2\_ws/src/visual\_odom/config/param.yaml}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespaceparam}{param}}
+\item 
+namespace \mbox{\hyperlink{namespacevisual__odom_1_1config}{visual\+\_\+odom.\+config}}
+\begin{DoxyCompactList}\small\item\em Central configuration file for the runtime parameters of the visual\+\_\+odom\+\_\+node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceparam_a73d58f0ce1177e21015110962c246053}{param.\+visual\+\_\+odom\+\_\+node}} \+:
+\item 
+\mbox{\hyperlink{namespaceparam_a6d3bf6f4ea67c781ba372f197cd313cc}{param.\+ros\+\_\+\+\_\+parameters}} \+:
+\item 
+int \mbox{\hyperlink{namespaceparam_a1e62f8a9123fcde036d27a3ac44ed11c}{param.\+max\+\_\+depth}} \+: 7000
+\begin{DoxyCompactList}\small\item\em Maximum reliable sensor depth of the Kinect camera in millimeters (mm). \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_a6b6bfa856828927f8e77b552eae3a3bb}{param.\+rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec}} \+: 0.\+1
+\begin{DoxyCompactList}\small\item\em Allowed temporal deviation when synchronizing RGB and depth images (in seconds). \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a519fc81d8564192d918957918db088a4}{param.\+pixel\+\_\+tolerance}} \+: 4
+\begin{DoxyCompactList}\small\item\em Pixel tolerance range in image space for spatial deduplication of neighboring keypoints. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a8b284027210aa44dad49339dd342a1f7}{param.\+matches\+\_\+for\+\_\+new\+\_\+landmarks}} \+: 500
+\begin{DoxyCompactList}\small\item\em Match threshold below which new landmarks are added to the map. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_a7eb013231dc284234ecc58137f594c3c}{param.\+min\+\_\+landmark\+\_\+trust}} \+: 15.\+0
+\begin{DoxyCompactList}\small\item\em Minimum trust value a landmark must maintain before being removed from the map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_ac8c2225f1c94d0cf735504f9e29a4dee}{param.\+n\+\_\+robot\+\_\+samples}} \+: 40
+\begin{DoxyCompactList}\small\item\em Number of active robot particle samples within the Rao-\/\+Blackwellized particle filter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceparam_a64bb08bf41566ac6d7c062c3fbff6917}{param.\+ransac}} \+:
+\item 
+float \mbox{\hyperlink{namespaceparam_ad79804fe34e3e4521c45fac04e2b9f1f}{param.\+evaluation\+\_\+tolerance}} \+: 0.\+05
+\begin{DoxyCompactList}\small\item\em Allowed Euclidean distance deviation in meters (m) for classifying a point as an inlier. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a54b34e8dc6a1e272772d6eed44270adc}{param.\+iterations}} \+: 30
+\begin{DoxyCompactList}\small\item\em Maximum number of iterations for hypothesis evaluation in the RANSAC algorithm. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a7d5425c87e25fd75cd43b0a06dfb7499}{param.\+sample\+\_\+size}} \+: 3
+\begin{DoxyCompactList}\small\item\em Minimum sample size (point pairs) per iteration for computing a transformation hypothesis. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_aff45699b601bccc530070c715ea206e4}{param.\+min\+\_\+matches\+\_\+for\+\_\+ransac}} \+: 10
+\begin{DoxyCompactList}\small\item\em Minimum number of feature matches required before starting RANSAC optimization. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_ad17d7dc4e4ce8d8a0b13d82ac53c0b8f}{param.\+max\+\_\+rotation\+\_\+angle\+\_\+deg}} \+: 15.\+0
+\begin{DoxyCompactList}\small\item\em Maximum physically plausible robot rotation per frame in degrees (deg). \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_aac0a6f53d7c560590f4ceba7d6a3e625}{param.\+min\+\_\+inlier\+\_\+ratio}} \+: 0.\+2
+\begin{DoxyCompactList}\small\item\em Minimum required ratio of inliers to total matches for accepting a RANSAC result. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespaceparam_a178cbc519aed01220f539cbe79b062a4}{param.\+rosbag\+\_\+path}} \+: "{}bagfiles/20260616\+\_\+\+Around\+\_\+\+The\+\_\+\+Desks\+\_\+bag/rosbag2\+\_\+2026\+\_\+06\+\_\+16-\/13\+\_\+12\+\_\+13\+\_\+0.\+mcap"{}
+\begin{DoxyCompactList}\small\item\em Absolute path to the MCAP rosbag file to be recorded or played back. \end{DoxyCompactList}\end{DoxyCompactItemize}

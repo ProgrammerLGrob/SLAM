@@ -14,10 +14,13 @@ dist/
 downloads/
 eggs/
 .eggs/
+install/
 lib/
 lib64/
+log/
 parts/
 sdist/
+test/
 var/
 wheels/
 share/python-wheels/
@@ -25,6 +28,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+metadata.yaml
+*.mcap
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -205,3 +210,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Test folders
+test/
+~$deltawerte.xlsx
+deltawerte.xlsx
+Korrelation.m
+odom_imu_data.csv.xlsx
+odom_imu_data.csv

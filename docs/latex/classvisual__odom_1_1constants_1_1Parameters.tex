@@ -1,0 +1,179 @@
+\doxysection{visual\+\_\+odom.\+constants.\+Parameters Class Reference}
+\hypertarget{classvisual__odom_1_1constants_1_1Parameters}{}\label{classvisual__odom_1_1constants_1_1Parameters}\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+
+
+Runtime configuration and threshold parameter package for the SLAM node.  
+
+
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a247cbfdd37fe7c21aea9ba418d2ed842}{max\+\_\+depth}}
+\begin{DoxyCompactList}\small\item\em Maximum reliable sensor range threshold. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a78606af103903e165856e5b526cef1ab}{ransac\+\_\+evaluation\+\_\+tolerance}}
+\begin{DoxyCompactList}\small\item\em Inlier distance threshold for RANSAC outlier rejection in meters. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_aed49024456f8f405ca89c7566360cc9f}{ransac\+\_\+iteration}}
+\begin{DoxyCompactList}\small\item\em Maximum number of optimization loops for the RANSAC routine. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_ad07f61972021c07d020f9ffca1cc0481}{ransac\+\_\+sample\+\_\+size}}
+\begin{DoxyCompactList}\small\item\em Minimum data subset size used to compute a transform hypothesis. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a439843679b42cedd3aaca32f820bdc93}{rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec}}
+\begin{DoxyCompactList}\small\item\em Maximum allowed time delta between synchronized RGB and depth frames. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_ab8c2eab2cab6dd6be17779a6877099a0}{pixel\+\_\+tolerance}}
+\begin{DoxyCompactList}\small\item\em Pixel window distance threshold for visual matching checks. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a710b59a15c3bac19f1b1da762763ef5e}{matches\+\_\+for\+\_\+new\+\_\+landmarks}}
+\begin{DoxyCompactList}\small\item\em Required match counter threshold before declaring a stable new map landmark. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a4242db9118720cf718f4f7cd4b3e0256}{min\+\_\+matches\+\_\+for\+\_\+ransac}}
+\begin{DoxyCompactList}\small\item\em Minimum required feature matches to attempt a RANSAC visual odometry calculation. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a2517efabe6254afc99326fec5d004684}{max\+\_\+rotation\+\_\+angle\+\_\+deg}}
+\begin{DoxyCompactList}\small\item\em Safety constraint capping the maximum plausible robot rotation per frame step. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_accc2ad3dbf5b6b25407f27181cb2ad64}{min\+\_\+landmark\+\_\+trust}}
+\begin{DoxyCompactList}\small\item\em Minimum trust value before an unobserved landmark is pruned from map memory. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a5138093cd9f26c85503a7216589326e5}{ransac\+\_\+min\+\_\+inlier\+\_\+ratio}}
+\begin{DoxyCompactList}\small\item\em Minimum acceptable percentage of inliers needed to trust a RANSAC solution. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a5ed5b5748a00589790433caf03dc47d6}{n\+\_\+robot\+\_\+samples}}
+\begin{DoxyCompactList}\small\item\em Number of particles/samples generated within the localization filter. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters_a2026b386128741cd7785f7c03caf4957}{topic\+\_\+visual\+\_\+odometry\+\_\+msg}}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic name where the calculated odometry path is published. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Runtime configuration and threshold parameter package for the SLAM node. 
+
+Stores all relevant runtime parameters loaded from ROS 2 parameter declarations. 
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a710b59a15c3bac19f1b1da762763ef5e}\label{classvisual__odom_1_1constants_1_1Parameters_a710b59a15c3bac19f1b1da762763ef5e} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!matches\_for\_new\_landmarks@{matches\_for\_new\_landmarks}}
+\index{matches\_for\_new\_landmarks@{matches\_for\_new\_landmarks}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{matches\_for\_new\_landmarks}{matches\_for\_new\_landmarks}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+matches\+\_\+for\+\_\+new\+\_\+landmarks\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Required match counter threshold before declaring a stable new map landmark. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a247cbfdd37fe7c21aea9ba418d2ed842}\label{classvisual__odom_1_1constants_1_1Parameters_a247cbfdd37fe7c21aea9ba418d2ed842} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!max\_depth@{max\_depth}}
+\index{max\_depth@{max\_depth}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{max\_depth}{max\_depth}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+max\+\_\+depth\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Maximum reliable sensor range threshold. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a2517efabe6254afc99326fec5d004684}\label{classvisual__odom_1_1constants_1_1Parameters_a2517efabe6254afc99326fec5d004684} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!max\_rotation\_angle\_deg@{max\_rotation\_angle\_deg}}
+\index{max\_rotation\_angle\_deg@{max\_rotation\_angle\_deg}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{max\_rotation\_angle\_deg}{max\_rotation\_angle\_deg}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Parameters.\+max\+\_\+rotation\+\_\+angle\+\_\+deg\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Safety constraint capping the maximum plausible robot rotation per frame step. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_accc2ad3dbf5b6b25407f27181cb2ad64}\label{classvisual__odom_1_1constants_1_1Parameters_accc2ad3dbf5b6b25407f27181cb2ad64} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!min\_landmark\_trust@{min\_landmark\_trust}}
+\index{min\_landmark\_trust@{min\_landmark\_trust}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{min\_landmark\_trust}{min\_landmark\_trust}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Parameters.\+min\+\_\+landmark\+\_\+trust\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Minimum trust value before an unobserved landmark is pruned from map memory. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a4242db9118720cf718f4f7cd4b3e0256}\label{classvisual__odom_1_1constants_1_1Parameters_a4242db9118720cf718f4f7cd4b3e0256} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!min\_matches\_for\_ransac@{min\_matches\_for\_ransac}}
+\index{min\_matches\_for\_ransac@{min\_matches\_for\_ransac}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{min\_matches\_for\_ransac}{min\_matches\_for\_ransac}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+min\+\_\+matches\+\_\+for\+\_\+ransac\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Minimum required feature matches to attempt a RANSAC visual odometry calculation. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a5ed5b5748a00589790433caf03dc47d6}\label{classvisual__odom_1_1constants_1_1Parameters_a5ed5b5748a00589790433caf03dc47d6} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!n\_robot\_samples@{n\_robot\_samples}}
+\index{n\_robot\_samples@{n\_robot\_samples}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{n\_robot\_samples}{n\_robot\_samples}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+n\+\_\+robot\+\_\+samples\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Number of particles/samples generated within the localization filter. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_ab8c2eab2cab6dd6be17779a6877099a0}\label{classvisual__odom_1_1constants_1_1Parameters_ab8c2eab2cab6dd6be17779a6877099a0} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!pixel\_tolerance@{pixel\_tolerance}}
+\index{pixel\_tolerance@{pixel\_tolerance}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{pixel\_tolerance}{pixel\_tolerance}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+pixel\+\_\+tolerance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Pixel window distance threshold for visual matching checks. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a78606af103903e165856e5b526cef1ab}\label{classvisual__odom_1_1constants_1_1Parameters_a78606af103903e165856e5b526cef1ab} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!ransac\_evaluation\_tolerance@{ransac\_evaluation\_tolerance}}
+\index{ransac\_evaluation\_tolerance@{ransac\_evaluation\_tolerance}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{ransac\_evaluation\_tolerance}{ransac\_evaluation\_tolerance}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Parameters.\+ransac\+\_\+evaluation\+\_\+tolerance\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Inlier distance threshold for RANSAC outlier rejection in meters. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_aed49024456f8f405ca89c7566360cc9f}\label{classvisual__odom_1_1constants_1_1Parameters_aed49024456f8f405ca89c7566360cc9f} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!ransac\_iteration@{ransac\_iteration}}
+\index{ransac\_iteration@{ransac\_iteration}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{ransac\_iteration}{ransac\_iteration}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+ransac\+\_\+iteration\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Maximum number of optimization loops for the RANSAC routine. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a5138093cd9f26c85503a7216589326e5}\label{classvisual__odom_1_1constants_1_1Parameters_a5138093cd9f26c85503a7216589326e5} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!ransac\_min\_inlier\_ratio@{ransac\_min\_inlier\_ratio}}
+\index{ransac\_min\_inlier\_ratio@{ransac\_min\_inlier\_ratio}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{ransac\_min\_inlier\_ratio}{ransac\_min\_inlier\_ratio}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Parameters.\+ransac\+\_\+min\+\_\+inlier\+\_\+ratio\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Minimum acceptable percentage of inliers needed to trust a RANSAC solution. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_ad07f61972021c07d020f9ffca1cc0481}\label{classvisual__odom_1_1constants_1_1Parameters_ad07f61972021c07d020f9ffca1cc0481} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!ransac\_sample\_size@{ransac\_sample\_size}}
+\index{ransac\_sample\_size@{ransac\_sample\_size}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{ransac\_sample\_size}{ransac\_sample\_size}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+Parameters.\+ransac\+\_\+sample\+\_\+size\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Minimum data subset size used to compute a transform hypothesis. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a439843679b42cedd3aaca32f820bdc93}\label{classvisual__odom_1_1constants_1_1Parameters_a439843679b42cedd3aaca32f820bdc93} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!rgb\_depth\_sync\_tolerance\_sec@{rgb\_depth\_sync\_tolerance\_sec}}
+\index{rgb\_depth\_sync\_tolerance\_sec@{rgb\_depth\_sync\_tolerance\_sec}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{rgb\_depth\_sync\_tolerance\_sec}{rgb\_depth\_sync\_tolerance\_sec}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Parameters.\+rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Maximum allowed time delta between synchronized RGB and depth frames. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Parameters_a2026b386128741cd7785f7c03caf4957}\label{classvisual__odom_1_1constants_1_1Parameters_a2026b386128741cd7785f7c03caf4957} 
+\index{visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}!topic\_visual\_odometry\_msg@{topic\_visual\_odometry\_msg}}
+\index{topic\_visual\_odometry\_msg@{topic\_visual\_odometry\_msg}!visual\_odom.constants.Parameters@{visual\_odom.constants.Parameters}}
+\doxysubsubsection{\texorpdfstring{topic\_visual\_odometry\_msg}{topic\_visual\_odometry\_msg}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+Parameters.\+topic\+\_\+visual\+\_\+odometry\+\_\+msg\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+ROS 2 topic name where the calculated odometry path is published. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{constants_8py}{constants.\+py}}\end{DoxyCompactItemize}

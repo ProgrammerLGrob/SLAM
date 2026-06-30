@@ -1,0 +1,145 @@
+\doxysection{visual\+\_\+odom.\+constants.\+Coordinate Class Reference}
+\hypertarget{classvisual__odom_1_1constants_1_1Coordinate}{}\label{classvisual__odom_1_1constants_1_1Coordinate}\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+
+
+3D spatial coordinate container.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+"{}Coordinate"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_ae163f146e5be1cf53e93aae83f5a6e1d}{\+\_\+\+\_\+add\+\_\+\+\_\+}} (self, "{}Coordinate"{} other)
+\begin{DoxyCompactList}\small\item\em Add two Coordinate objects component-\/wise. \end{DoxyCompactList}\item 
+"{}Coordinate"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_a1a2e5689d1a468a3275ebaf5a7b0edd4}{\+\_\+\+\_\+sub\+\_\+\+\_\+}} (self, "{}Coordinate"{} other)
+\begin{DoxyCompactList}\small\item\em Subtract two Coordinate objects component-\/wise. \end{DoxyCompactList}\item 
+"{}Coordinate"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_a2a0d7b76282b9b3167ebecb18b05b738}{\+\_\+\+\_\+mul\+\_\+\+\_\+}} (self, factor)
+\begin{DoxyCompactList}\small\item\em Multiply a Coordinate object by a scalar value. \end{DoxyCompactList}\item 
+"{}Coordinate"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_a2fff28105ab8a34ba7230bf523eab078}{\+\_\+\+\_\+truediv\+\_\+\+\_\+}} (self, float factor)
+\begin{DoxyCompactList}\small\item\em Divide a Coordinate object by a scalar value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_a95311cbf8806dafaa6a8741694248b5b}{x}}
+\begin{DoxyCompactList}\small\item\em X-\/coordinate component in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_a618d59237c22e91fb07bedccbfe5dc9c}{y}}
+\begin{DoxyCompactList}\small\item\em Y-\/coordinate component in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate_ac070a4e3bc4f86fe7df95dfa379e2e65}{z}}
+\begin{DoxyCompactList}\small\item\em Z-\/coordinate component in meters. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+3D spatial coordinate container. 
+
+Typically used for positions in the {\ttfamily base\+\_\+link}, {\ttfamily kinect\+\_\+depth}, or {\ttfamily odom} coordinate frames. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_ae163f146e5be1cf53e93aae83f5a6e1d}\label{classvisual__odom_1_1constants_1_1Coordinate_ae163f146e5be1cf53e93aae83f5a6e1d} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!\_\_add\_\_@{\_\_add\_\_}}
+\index{\_\_add\_\_@{\_\_add\_\_}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{\_\_add\_\_()}{\_\_add\_\_()}}
+{\footnotesize\ttfamily  "{}Coordinate"{} visual\+\_\+odom.\+constants.\+Coordinate.\+\_\+\+\_\+add\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}Coordinate"{}}]{other }\end{DoxyParamCaption})}
+
+
+
+Add two Coordinate objects component-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & Coordinate object to add. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New Coordinate containing the component-\/wise sum. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_a2a0d7b76282b9b3167ebecb18b05b738}\label{classvisual__odom_1_1constants_1_1Coordinate_a2a0d7b76282b9b3167ebecb18b05b738} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!\_\_mul\_\_@{\_\_mul\_\_}}
+\index{\_\_mul\_\_@{\_\_mul\_\_}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{\_\_mul\_\_()}{\_\_mul\_\_()}}
+{\footnotesize\ttfamily  "{}Coordinate"{} visual\+\_\+odom.\+constants.\+Coordinate.\+\_\+\+\_\+mul\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{factor }\end{DoxyParamCaption})}
+
+
+
+Multiply a Coordinate object by a scalar value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em factor} & Scalar multiplication factor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New Coordinate with scaled components. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_a1a2e5689d1a468a3275ebaf5a7b0edd4}\label{classvisual__odom_1_1constants_1_1Coordinate_a1a2e5689d1a468a3275ebaf5a7b0edd4} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!\_\_sub\_\_@{\_\_sub\_\_}}
+\index{\_\_sub\_\_@{\_\_sub\_\_}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{\_\_sub\_\_()}{\_\_sub\_\_()}}
+{\footnotesize\ttfamily  "{}Coordinate"{} visual\+\_\+odom.\+constants.\+Coordinate.\+\_\+\+\_\+sub\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}Coordinate"{}}]{other }\end{DoxyParamCaption})}
+
+
+
+Subtract two Coordinate objects component-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & Coordinate object to subtract. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New Coordinate containing the component-\/wise difference. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_a2fff28105ab8a34ba7230bf523eab078}\label{classvisual__odom_1_1constants_1_1Coordinate_a2fff28105ab8a34ba7230bf523eab078} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!\_\_truediv\_\_@{\_\_truediv\_\_}}
+\index{\_\_truediv\_\_@{\_\_truediv\_\_}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{\_\_truediv\_\_()}{\_\_truediv\_\_()}}
+{\footnotesize\ttfamily  "{}Coordinate"{} visual\+\_\+odom.\+constants.\+Coordinate.\+\_\+\+\_\+truediv\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{float}]{factor }\end{DoxyParamCaption})}
+
+
+
+Divide a Coordinate object by a scalar value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em factor} & Scalar divisor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New Coordinate with divided components. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_a95311cbf8806dafaa6a8741694248b5b}\label{classvisual__odom_1_1constants_1_1Coordinate_a95311cbf8806dafaa6a8741694248b5b} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!x@{x}}
+\index{x@{x}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Coordinate.\+x\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+X-\/coordinate component in meters. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_a618d59237c22e91fb07bedccbfe5dc9c}\label{classvisual__odom_1_1constants_1_1Coordinate_a618d59237c22e91fb07bedccbfe5dc9c} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!y@{y}}
+\index{y@{y}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Coordinate.\+y\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Y-\/coordinate component in meters. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1Coordinate_ac070a4e3bc4f86fe7df95dfa379e2e65}\label{classvisual__odom_1_1constants_1_1Coordinate_ac070a4e3bc4f86fe7df95dfa379e2e65} 
+\index{visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}!z@{z}}
+\index{z@{z}!visual\_odom.constants.Coordinate@{visual\_odom.constants.Coordinate}}
+\doxysubsubsection{\texorpdfstring{z}{z}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+Coordinate.\+z\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Z-\/coordinate component in meters. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{constants_8py}{constants.\+py}}\end{DoxyCompactItemize}

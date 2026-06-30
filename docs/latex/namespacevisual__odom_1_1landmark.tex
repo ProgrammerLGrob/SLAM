@@ -1,0 +1,52 @@
+\doxysection{visual\+\_\+odom.\+landmark Namespace Reference}
+\hypertarget{namespacevisual__odom_1_1landmark}{}\label{namespacevisual__odom_1_1landmark}\index{visual\_odom.landmark@{visual\_odom.landmark}}
+
+
+Defines the Landmark data class and the Kabsch optimal 2D rigid alignment algorithm.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}
+\begin{DoxyCompactList}\small\item\em Landmark class for storing visual features and performing spatial estimation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+Tuple\mbox{[}np.\+ndarray, np.\+ndarray, float\mbox{]} \mbox{\hyperlink{namespacevisual__odom_1_1landmark_ac5def7af0951516f12b0c5002f8504d4}{kabsch}} (np.\+ndarray P\+\_\+i, np.\+ndarray Q\+\_\+i, float max\+\_\+rotation\+\_\+angle\+\_\+deg=15.\+0)
+\begin{DoxyCompactList}\small\item\em Computes the optimal 2D rotation and translation to align point set Q onto set P. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Defines the Landmark data class and the Kabsch optimal 2D rigid alignment algorithm. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacevisual__odom_1_1landmark_ac5def7af0951516f12b0c5002f8504d4}\label{namespacevisual__odom_1_1landmark_ac5def7af0951516f12b0c5002f8504d4} 
+\index{visual\_odom.landmark@{visual\_odom.landmark}!kabsch@{kabsch}}
+\index{kabsch@{kabsch}!visual\_odom.landmark@{visual\_odom.landmark}}
+\doxysubsubsection{\texorpdfstring{kabsch()}{kabsch()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}np.\+ndarray, np.\+ndarray, float\mbox{]} visual\+\_\+odom.\+landmark.\+kabsch (\begin{DoxyParamCaption}\item[{np.\+ndarray}]{P\+\_\+i,  }\item[{np.\+ndarray}]{Q\+\_\+i,  }\item[{float }]{max\+\_\+rotation\+\_\+angle\+\_\+deg = {\ttfamily 15.0} }\end{DoxyParamCaption})}
+
+
+
+Computes the optimal 2D rotation and translation to align point set Q onto set P. 
+
+Implements a 2D closed-\/form Kabsch algorithm to find least-\/squares alignment parameters.
+
+
+\begin{DoxyParams}{Parameters}
+{\em P\+\_\+i} & 2D point coordinate array in the reference coordinate frame. \\
+\hline
+{\em Q\+\_\+i} & 2D point coordinate array in the target coordinate frame. \\
+\hline
+{\em max\+\_\+rotation\+\_\+angle\+\_\+deg} & Plausibility constraint capping estimated rotation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing\+:
+\begin{DoxyItemize}
+\item R\+: Optimal 2x2 rotation matrix, or None if degenerate.
+\item t\+: Optimal 2D translation offset vector, or None if degenerate.
+\item theta\+: Rotational heading orientation change in radians, or None if degenerate. 
+\end{DoxyItemize}
+\end{DoxyReturn}

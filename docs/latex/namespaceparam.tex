@@ -1,0 +1,188 @@
+\doxysection{param Namespace Reference}
+\hypertarget{namespaceparam}{}\label{namespaceparam}\index{param@{param}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespaceparam_a73d58f0ce1177e21015110962c246053}{visual\+\_\+odom\+\_\+node}} \+:
+\item 
+\mbox{\hyperlink{namespaceparam_a6d3bf6f4ea67c781ba372f197cd313cc}{ros\+\_\+\+\_\+parameters}} \+:
+\item 
+int \mbox{\hyperlink{namespaceparam_a1e62f8a9123fcde036d27a3ac44ed11c}{max\+\_\+depth}} \+: 7000
+\begin{DoxyCompactList}\small\item\em Maximum reliable sensor depth of the Kinect camera in millimeters (mm). \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_a6b6bfa856828927f8e77b552eae3a3bb}{rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec}} \+: 0.\+1
+\begin{DoxyCompactList}\small\item\em Allowed temporal deviation when synchronizing RGB and depth images (in seconds). \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a519fc81d8564192d918957918db088a4}{pixel\+\_\+tolerance}} \+: 4
+\begin{DoxyCompactList}\small\item\em Pixel tolerance range in image space for spatial deduplication of neighboring keypoints. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a8b284027210aa44dad49339dd342a1f7}{matches\+\_\+for\+\_\+new\+\_\+landmarks}} \+: 500
+\begin{DoxyCompactList}\small\item\em Match threshold below which new landmarks are added to the map. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_a7eb013231dc284234ecc58137f594c3c}{min\+\_\+landmark\+\_\+trust}} \+: 15.\+0
+\begin{DoxyCompactList}\small\item\em Minimum trust value a landmark must maintain before being removed from the map. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_ac8c2225f1c94d0cf735504f9e29a4dee}{n\+\_\+robot\+\_\+samples}} \+: 40
+\begin{DoxyCompactList}\small\item\em Number of active robot particle samples within the Rao-\/\+Blackwellized particle filter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespaceparam_a64bb08bf41566ac6d7c062c3fbff6917}{ransac}} \+:
+\item 
+float \mbox{\hyperlink{namespaceparam_ad79804fe34e3e4521c45fac04e2b9f1f}{evaluation\+\_\+tolerance}} \+: 0.\+05
+\begin{DoxyCompactList}\small\item\em Allowed Euclidean distance deviation in meters (m) for classifying a point as an inlier. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a54b34e8dc6a1e272772d6eed44270adc}{iterations}} \+: 30
+\begin{DoxyCompactList}\small\item\em Maximum number of iterations for hypothesis evaluation in the RANSAC algorithm. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_a7d5425c87e25fd75cd43b0a06dfb7499}{sample\+\_\+size}} \+: 3
+\begin{DoxyCompactList}\small\item\em Minimum sample size (point pairs) per iteration for computing a transformation hypothesis. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespaceparam_aff45699b601bccc530070c715ea206e4}{min\+\_\+matches\+\_\+for\+\_\+ransac}} \+: 10
+\begin{DoxyCompactList}\small\item\em Minimum number of feature matches required before starting RANSAC optimization. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_ad17d7dc4e4ce8d8a0b13d82ac53c0b8f}{max\+\_\+rotation\+\_\+angle\+\_\+deg}} \+: 15.\+0
+\begin{DoxyCompactList}\small\item\em Maximum physically plausible robot rotation per frame in degrees (deg). \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespaceparam_aac0a6f53d7c560590f4ceba7d6a3e625}{min\+\_\+inlier\+\_\+ratio}} \+: 0.\+2
+\begin{DoxyCompactList}\small\item\em Minimum required ratio of inliers to total matches for accepting a RANSAC result. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespaceparam_a178cbc519aed01220f539cbe79b062a4}{rosbag\+\_\+path}} \+: "{}bagfiles/20260616\+\_\+\+Around\+\_\+\+The\+\_\+\+Desks\+\_\+bag/rosbag2\+\_\+2026\+\_\+06\+\_\+16-\/13\+\_\+12\+\_\+13\+\_\+0.\+mcap"{}
+\begin{DoxyCompactList}\small\item\em Absolute path to the MCAP rosbag file to be recorded or played back. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespaceparam_ad79804fe34e3e4521c45fac04e2b9f1f}\label{namespaceparam_ad79804fe34e3e4521c45fac04e2b9f1f} 
+\index{param@{param}!evaluation\_tolerance@{evaluation\_tolerance}}
+\index{evaluation\_tolerance@{evaluation\_tolerance}!param@{param}}
+\doxysubsubsection{\texorpdfstring{evaluation\_tolerance}{evaluation\_tolerance}}
+{\footnotesize\ttfamily float param.\+evaluation\+\_\+tolerance \+: 0.\+05}
+
+
+
+Allowed Euclidean distance deviation in meters (m) for classifying a point as an inlier. 
+
+\Hypertarget{namespaceparam_a54b34e8dc6a1e272772d6eed44270adc}\label{namespaceparam_a54b34e8dc6a1e272772d6eed44270adc} 
+\index{param@{param}!iterations@{iterations}}
+\index{iterations@{iterations}!param@{param}}
+\doxysubsubsection{\texorpdfstring{iterations}{iterations}}
+{\footnotesize\ttfamily int param.\+iterations \+: 30}
+
+
+
+Maximum number of iterations for hypothesis evaluation in the RANSAC algorithm. 
+
+\Hypertarget{namespaceparam_a8b284027210aa44dad49339dd342a1f7}\label{namespaceparam_a8b284027210aa44dad49339dd342a1f7} 
+\index{param@{param}!matches\_for\_new\_landmarks@{matches\_for\_new\_landmarks}}
+\index{matches\_for\_new\_landmarks@{matches\_for\_new\_landmarks}!param@{param}}
+\doxysubsubsection{\texorpdfstring{matches\_for\_new\_landmarks}{matches\_for\_new\_landmarks}}
+{\footnotesize\ttfamily int param.\+matches\+\_\+for\+\_\+new\+\_\+landmarks \+: 500}
+
+
+
+Match threshold below which new landmarks are added to the map. 
+
+\Hypertarget{namespaceparam_a1e62f8a9123fcde036d27a3ac44ed11c}\label{namespaceparam_a1e62f8a9123fcde036d27a3ac44ed11c} 
+\index{param@{param}!max\_depth@{max\_depth}}
+\index{max\_depth@{max\_depth}!param@{param}}
+\doxysubsubsection{\texorpdfstring{max\_depth}{max\_depth}}
+{\footnotesize\ttfamily int param.\+max\+\_\+depth \+: 7000}
+
+
+
+Maximum reliable sensor depth of the Kinect camera in millimeters (mm). 
+
+\Hypertarget{namespaceparam_ad17d7dc4e4ce8d8a0b13d82ac53c0b8f}\label{namespaceparam_ad17d7dc4e4ce8d8a0b13d82ac53c0b8f} 
+\index{param@{param}!max\_rotation\_angle\_deg@{max\_rotation\_angle\_deg}}
+\index{max\_rotation\_angle\_deg@{max\_rotation\_angle\_deg}!param@{param}}
+\doxysubsubsection{\texorpdfstring{max\_rotation\_angle\_deg}{max\_rotation\_angle\_deg}}
+{\footnotesize\ttfamily float param.\+max\+\_\+rotation\+\_\+angle\+\_\+deg \+: 15.\+0}
+
+
+
+Maximum physically plausible robot rotation per frame in degrees (deg). 
+
+\Hypertarget{namespaceparam_aac0a6f53d7c560590f4ceba7d6a3e625}\label{namespaceparam_aac0a6f53d7c560590f4ceba7d6a3e625} 
+\index{param@{param}!min\_inlier\_ratio@{min\_inlier\_ratio}}
+\index{min\_inlier\_ratio@{min\_inlier\_ratio}!param@{param}}
+\doxysubsubsection{\texorpdfstring{min\_inlier\_ratio}{min\_inlier\_ratio}}
+{\footnotesize\ttfamily float param.\+min\+\_\+inlier\+\_\+ratio \+: 0.\+2}
+
+
+
+Minimum required ratio of inliers to total matches for accepting a RANSAC result. 
+
+\Hypertarget{namespaceparam_a7eb013231dc284234ecc58137f594c3c}\label{namespaceparam_a7eb013231dc284234ecc58137f594c3c} 
+\index{param@{param}!min\_landmark\_trust@{min\_landmark\_trust}}
+\index{min\_landmark\_trust@{min\_landmark\_trust}!param@{param}}
+\doxysubsubsection{\texorpdfstring{min\_landmark\_trust}{min\_landmark\_trust}}
+{\footnotesize\ttfamily float param.\+min\+\_\+landmark\+\_\+trust \+: 15.\+0}
+
+
+
+Minimum trust value a landmark must maintain before being removed from the map. 
+
+\Hypertarget{namespaceparam_aff45699b601bccc530070c715ea206e4}\label{namespaceparam_aff45699b601bccc530070c715ea206e4} 
+\index{param@{param}!min\_matches\_for\_ransac@{min\_matches\_for\_ransac}}
+\index{min\_matches\_for\_ransac@{min\_matches\_for\_ransac}!param@{param}}
+\doxysubsubsection{\texorpdfstring{min\_matches\_for\_ransac}{min\_matches\_for\_ransac}}
+{\footnotesize\ttfamily int param.\+min\+\_\+matches\+\_\+for\+\_\+ransac \+: 10}
+
+
+
+Minimum number of feature matches required before starting RANSAC optimization. 
+
+\Hypertarget{namespaceparam_ac8c2225f1c94d0cf735504f9e29a4dee}\label{namespaceparam_ac8c2225f1c94d0cf735504f9e29a4dee} 
+\index{param@{param}!n\_robot\_samples@{n\_robot\_samples}}
+\index{n\_robot\_samples@{n\_robot\_samples}!param@{param}}
+\doxysubsubsection{\texorpdfstring{n\_robot\_samples}{n\_robot\_samples}}
+{\footnotesize\ttfamily int param.\+n\+\_\+robot\+\_\+samples \+: 40}
+
+
+
+Number of active robot particle samples within the Rao-\/\+Blackwellized particle filter. 
+
+\Hypertarget{namespaceparam_a519fc81d8564192d918957918db088a4}\label{namespaceparam_a519fc81d8564192d918957918db088a4} 
+\index{param@{param}!pixel\_tolerance@{pixel\_tolerance}}
+\index{pixel\_tolerance@{pixel\_tolerance}!param@{param}}
+\doxysubsubsection{\texorpdfstring{pixel\_tolerance}{pixel\_tolerance}}
+{\footnotesize\ttfamily int param.\+pixel\+\_\+tolerance \+: 4}
+
+
+
+Pixel tolerance range in image space for spatial deduplication of neighboring keypoints. 
+
+\Hypertarget{namespaceparam_a64bb08bf41566ac6d7c062c3fbff6917}\label{namespaceparam_a64bb08bf41566ac6d7c062c3fbff6917} 
+\index{param@{param}!ransac@{ransac}}
+\index{ransac@{ransac}!param@{param}}
+\doxysubsubsection{\texorpdfstring{ransac}{ransac}}
+{\footnotesize\ttfamily param.\+ransac \+:}
+
+\Hypertarget{namespaceparam_a6b6bfa856828927f8e77b552eae3a3bb}\label{namespaceparam_a6b6bfa856828927f8e77b552eae3a3bb} 
+\index{param@{param}!rgb\_depth\_sync\_tolerance\_sec@{rgb\_depth\_sync\_tolerance\_sec}}
+\index{rgb\_depth\_sync\_tolerance\_sec@{rgb\_depth\_sync\_tolerance\_sec}!param@{param}}
+\doxysubsubsection{\texorpdfstring{rgb\_depth\_sync\_tolerance\_sec}{rgb\_depth\_sync\_tolerance\_sec}}
+{\footnotesize\ttfamily float param.\+rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec \+: 0.\+1}
+
+
+
+Allowed temporal deviation when synchronizing RGB and depth images (in seconds). 
+
+\Hypertarget{namespaceparam_a6d3bf6f4ea67c781ba372f197cd313cc}\label{namespaceparam_a6d3bf6f4ea67c781ba372f197cd313cc} 
+\index{param@{param}!ros\_\_parameters@{ros\_\_parameters}}
+\index{ros\_\_parameters@{ros\_\_parameters}!param@{param}}
+\doxysubsubsection{\texorpdfstring{ros\_\_parameters}{ros\_\_parameters}}
+{\footnotesize\ttfamily param.\+ros\+\_\+\+\_\+parameters \+:}
+
+\Hypertarget{namespaceparam_a178cbc519aed01220f539cbe79b062a4}\label{namespaceparam_a178cbc519aed01220f539cbe79b062a4} 
+\index{param@{param}!rosbag\_path@{rosbag\_path}}
+\index{rosbag\_path@{rosbag\_path}!param@{param}}
+\doxysubsubsection{\texorpdfstring{rosbag\_path}{rosbag\_path}}
+{\footnotesize\ttfamily str param.\+rosbag\+\_\+path \+: "{}bagfiles/20260616\+\_\+\+Around\+\_\+\+The\+\_\+\+Desks\+\_\+bag/rosbag2\+\_\+2026\+\_\+06\+\_\+16-\/13\+\_\+12\+\_\+13\+\_\+0.\+mcap"{}}
+
+
+
+Absolute path to the MCAP rosbag file to be recorded or played back. 
+
+The path for the "{}\+Around The Desks"{} scenario is currently active. \Hypertarget{namespaceparam_a7d5425c87e25fd75cd43b0a06dfb7499}\label{namespaceparam_a7d5425c87e25fd75cd43b0a06dfb7499} 
+\index{param@{param}!sample\_size@{sample\_size}}
+\index{sample\_size@{sample\_size}!param@{param}}
+\doxysubsubsection{\texorpdfstring{sample\_size}{sample\_size}}
+{\footnotesize\ttfamily int param.\+sample\+\_\+size \+: 3}
+
+
+
+Minimum sample size (point pairs) per iteration for computing a transformation hypothesis. 
+
+\Hypertarget{namespaceparam_a73d58f0ce1177e21015110962c246053}\label{namespaceparam_a73d58f0ce1177e21015110962c246053} 
+\index{param@{param}!visual\_odom\_node@{visual\_odom\_node}}
+\index{visual\_odom\_node@{visual\_odom\_node}!param@{param}}
+\doxysubsubsection{\texorpdfstring{visual\_odom\_node}{visual\_odom\_node}}
+{\footnotesize\ttfamily param.\+visual\+\_\+odom\+\_\+node \+:}
+

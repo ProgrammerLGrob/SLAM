@@ -1,0 +1,428 @@
+\doxysection{visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark Class Reference}
+\hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark}{}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark}\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+
+
+Extended Kalman Filter for tracking an individual 3D landmark in the global odom frame.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6dcb8a3fcdb9ed672f16d7b533a2944e}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c}{x}}, NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_adc3a4e1393ba44e7165fbfd2fa0fda12}{P}}, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} pix\+\_\+coor, NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a138c32443b6ff9c934106de123631817}{R}}=None)
+\begin{DoxyCompactList}\small\item\em Initializes the landmark EKF state and covariance matrices. \end{DoxyCompactList}\item 
+Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6423b786e13a153bc9fb99970ade7b96}{landmark\+\_\+kalman\+\_\+iteration}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink, float theta, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} pixel\+\_\+coor)
+\begin{DoxyCompactList}\small\item\em Performs a full prediction and update cycle for the landmark position. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a703be7058f4916eb09c794b61770ca95}{state\+\_\+func}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c}{x}})
+\begin{DoxyCompactList}\small\item\em State transition model representing stationary landmarks. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4f0bf3e12b3b0ffdac395a831b146108}{calculate\+\_\+jacobian\+\_\+F}} (self)
+\begin{DoxyCompactList}\small\item\em Calculates the state transition Jacobian matrix. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae6b1af138d7036d497524d0993095cf8}{calculate\+\_\+\+Q\+\_\+matrix}} (self)
+\begin{DoxyCompactList}\small\item\em Calculates the stationary process noise covariance matrix. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae4196be25e32d7dc508527a7ab36ef96}{meas\+\_\+func}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} x\+\_\+tt1, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+robot, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Measurement projection model mapping odom-\/frame coordinates into base\+\_\+link space. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_af61e6ad86244c183cc95aa30e8cb1fe3}{calculate\+\_\+jacobian\+\_\+H}} (self, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Calculates the measurement model Jacobian matrix. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a9f387998b9f2f56c4fba8519a1db864c}{sigma\+\_\+\+R\+\_\+approximation}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} kp)
+\begin{DoxyCompactList}\small\item\em Approximates the raw pixel-\/space and depth-\/space measurement variances. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab45862819a861de30c9f3f1d32735f2c}{calculate\+\_\+\+R\+\_\+sigma\+\_\+matrix}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} kp)
+\begin{DoxyCompactList}\small\item\em Calculates the measurement noise covariance matrix R transformed into the base\+\_\+link frame. \end{DoxyCompactList}\item 
+Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a2d66a461574f0b7fcd8165a15bb80f77}{prediction}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c}{x}})
+\begin{DoxyCompactList}\small\item\em Runs the EKF prediction step. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a42a6ffb994bdb61a952087c8c647b158}{predict\+Measurement}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} x\+\_\+tt1, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+robot, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Projects the predicted state into the expected measurement vector space. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_aa7c8220bbdbf156f6013f2876e750f68}{compute\+Kalman\+Gain}} (self, NDArray P\+\_\+tt1)
+\begin{DoxyCompactList}\small\item\em Computes the optimal Kalman gain matrix. \end{DoxyCompactList}\item 
+Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a90427348b4ce2abc2b77a9f6f14add23}{update}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} x\+\_\+tt1, NDArray P\+\_\+tt1, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+robot, float theta\+\_\+robot, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} kp)
+\begin{DoxyCompactList}\small\item\em Performs the measurement update step of the EKF using Joseph-\/form covariance updates. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6c47dd37235b372fcddb6ca30e3a815f}{set\+\_\+jacobian\+\_\+F}} (self)
+\begin{DoxyCompactList}\small\item\em Updates the internal state transition Jacobian. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a25628a750e53e445de2672f919531810}{set\+\_\+jacobian\+\_\+H}} (self, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Updates the internal measurement model Jacobian. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4e762a0f260fcfe3a0cf3d8337a450f9}{set\+\_\+R}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} kp)
+\begin{DoxyCompactList}\small\item\em Calculates and stores the measurement noise covariance matrix. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab64bdd06801ee3018fb5a0b20c8eb4e3}{set\+\_\+Q}} (self)
+\begin{DoxyCompactList}\small\item\em Stores the process noise covariance matrix. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac07fd7c7357c7ab9123eed9ea6ea7d2b}{get\+\_\+R}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the active measurement noise covariance matrix in the base\+\_\+link frame. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c}{x}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_adc3a4e1393ba44e7165fbfd2fa0fda12}{P}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a138c32443b6ff9c934106de123631817}{R}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac87322fc0269e7cdc219c80b66bea086}{Q}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a7a16ceb3a83b6efd22211cd603c219a5}{JF}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a820c43c1d9fc892b3157b0e6bdd1a228}{JH}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Extended Kalman Filter for tracking an individual 3D landmark in the global odom frame. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6dcb8a3fcdb9ed672f16d7b533a2944e}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6dcb8a3fcdb9ed672f16d7b533a2944e} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x,  }\item[{NDArray}]{P,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{pix\+\_\+coor,  }\item[{NDArray }]{R = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+Initializes the landmark EKF state and covariance matrices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Initial 3D coordinate state estimate of the landmark. \\
+\hline
+{\em P} & Initial estimation error covariance matrix. \\
+\hline
+{\em pix\+\_\+coor} & Initial pixel measurement coordinate used to initialize noise. \\
+\hline
+{\em R} & Optional pre-\/calculated measurement noise covariance matrix. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4f0bf3e12b3b0ffdac395a831b146108}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4f0bf3e12b3b0ffdac395a831b146108} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!calculate\_jacobian\_F@{calculate\_jacobian\_F}}
+\index{calculate\_jacobian\_F@{calculate\_jacobian\_F}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{calculate\_jacobian\_F()}{calculate\_jacobian\_F()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+calculate\+\_\+jacobian\+\_\+F (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Calculates the state transition Jacobian matrix. 
+
+\begin{DoxyReturn}{Returns}
+A 3x3 identity Jacobian matrix since the landmarks are static. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_af61e6ad86244c183cc95aa30e8cb1fe3}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_af61e6ad86244c183cc95aa30e8cb1fe3} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!calculate\_jacobian\_H@{calculate\_jacobian\_H}}
+\index{calculate\_jacobian\_H@{calculate\_jacobian\_H}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{calculate\_jacobian\_H()}{calculate\_jacobian\_H()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+calculate\+\_\+jacobian\+\_\+H (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{float}]{theta\+\_\+robot }\end{DoxyParamCaption})}
+
+
+
+Calculates the measurement model Jacobian matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em theta\+\_\+robot} & Current robot yaw heading orientation in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+3x3 projection Jacobian matrix representing rotation into local base\+\_\+link. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae6b1af138d7036d497524d0993095cf8}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae6b1af138d7036d497524d0993095cf8} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!calculate\_Q\_matrix@{calculate\_Q\_matrix}}
+\index{calculate\_Q\_matrix@{calculate\_Q\_matrix}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{calculate\_Q\_matrix()}{calculate\_Q\_matrix()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+calculate\+\_\+\+Q\+\_\+matrix (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Calculates the stationary process noise covariance matrix. 
+
+\begin{DoxyReturn}{Returns}
+A 3x3 diagonal process noise covariance matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab45862819a861de30c9f3f1d32735f2c}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab45862819a861de30c9f3f1d32735f2c} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!calculate\_R\_sigma\_matrix@{calculate\_R\_sigma\_matrix}}
+\index{calculate\_R\_sigma\_matrix@{calculate\_R\_sigma\_matrix}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{calculate\_R\_sigma\_matrix()}{calculate\_R\_sigma\_matrix()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+calculate\+\_\+\+R\+\_\+sigma\+\_\+matrix (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{kp }\end{DoxyParamCaption})}
+
+
+
+Calculates the measurement noise covariance matrix R transformed into the base\+\_\+link frame. 
+
+Applies the pinhole projection Jacobian followed by the camera-\/to-\/base\+\_\+link rotation matrix.
+
+
+\begin{DoxyParams}{Parameters}
+{\em kp} & The observed Pixel\+Coordinate containing current feature matching data. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+3x3 measurement covariance matrix in the local robot base\+\_\+link frame. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_aa7c8220bbdbf156f6013f2876e750f68}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_aa7c8220bbdbf156f6013f2876e750f68} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!computeKalmanGain@{computeKalmanGain}}
+\index{computeKalmanGain@{computeKalmanGain}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{computeKalmanGain()}{computeKalmanGain()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+compute\+Kalman\+Gain (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{NDArray}]{P\+\_\+tt1 }\end{DoxyParamCaption})}
+
+
+
+Computes the optimal Kalman gain matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em P\+\_\+tt1} & Predicted state covariance matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Calculated 3x3 Kalman gain matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac07fd7c7357c7ab9123eed9ea6ea7d2b}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac07fd7c7357c7ab9123eed9ea6ea7d2b} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!get\_R@{get\_R}}
+\index{get\_R@{get\_R}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{get\_R()}{get\_R()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+get\+\_\+R (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the active measurement noise covariance matrix in the base\+\_\+link frame. 
+
+\begin{DoxyReturn}{Returns}
+3x3 covariance matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6423b786e13a153bc9fb99970ade7b96}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6423b786e13a153bc9fb99970ade7b96} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!landmark\_kalman\_iteration@{landmark\_kalman\_iteration}}
+\index{landmark\_kalman\_iteration@{landmark\_kalman\_iteration}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{landmark\_kalman\_iteration()}{landmark\_kalman\_iteration()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+landmark\+\_\+kalman\+\_\+iteration (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+baselink,  }\item[{float}]{theta,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{pixel\+\_\+coor }\end{DoxyParamCaption})}
+
+
+
+Performs a full prediction and update cycle for the landmark position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos\+\_\+baselink} & The current position of the robot\textquotesingle{}s base\+\_\+link in the odom frame. \\
+\hline
+{\em theta} & The current yaw angle heading of the robot. \\
+\hline
+{\em pixel\+\_\+coor} & The newly observed pixel coordinate of this landmark. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple containing the updated Coordinate state and the updated covariance matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae4196be25e32d7dc508527a7ab36ef96}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ae4196be25e32d7dc508527a7ab36ef96} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!meas\_func@{meas\_func}}
+\index{meas\_func@{meas\_func}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{meas\_func()}{meas\_func()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+meas\+\_\+func (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x\+\_\+tt1,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+robot,  }\item[{float}]{theta\+\_\+robot }\end{DoxyParamCaption})}
+
+
+
+Measurement projection model mapping odom-\/frame coordinates into base\+\_\+link space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+tt1} & Predicted landmark coordinate in the global odom frame. \\
+\hline
+{\em pos\+\_\+robot} & Current robot position coordinates in the global odom frame. \\
+\hline
+{\em theta\+\_\+robot} & Current robot yaw heading orientation in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Projected 3D coordinate vector in the robot\textquotesingle{}s local base\+\_\+link frame. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a2d66a461574f0b7fcd8165a15bb80f77}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a2d66a461574f0b7fcd8165a15bb80f77} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!prediction@{prediction}}
+\index{prediction@{prediction}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{prediction()}{prediction()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+prediction (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x }\end{DoxyParamCaption})}
+
+
+
+Runs the EKF prediction step. 
+
+Propagates state and covariance forwards in time with process noise.
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Current coordinate state estimate. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple of (predicted state, predicted covariance). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a42a6ffb994bdb61a952087c8c647b158}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a42a6ffb994bdb61a952087c8c647b158} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!predictMeasurement@{predictMeasurement}}
+\index{predictMeasurement@{predictMeasurement}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{predictMeasurement()}{predictMeasurement()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+predict\+Measurement (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x\+\_\+tt1,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+robot,  }\item[{float}]{theta\+\_\+robot }\end{DoxyParamCaption})}
+
+
+
+Projects the predicted state into the expected measurement vector space. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+tt1} & Predicted landmark coordinate in the global odom frame. \\
+\hline
+{\em pos\+\_\+robot} & Current robot base link position coordinates. \\
+\hline
+{\em theta\+\_\+robot} & Current robot yaw heading orientation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Projected local base\+\_\+link coordinate array. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6c47dd37235b372fcddb6ca30e3a815f}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a6c47dd37235b372fcddb6ca30e3a815f} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!set\_jacobian\_F@{set\_jacobian\_F}}
+\index{set\_jacobian\_F@{set\_jacobian\_F}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{set\_jacobian\_F()}{set\_jacobian\_F()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+set\+\_\+jacobian\+\_\+F (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Updates the internal state transition Jacobian. 
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a25628a750e53e445de2672f919531810}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a25628a750e53e445de2672f919531810} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!set\_jacobian\_H@{set\_jacobian\_H}}
+\index{set\_jacobian\_H@{set\_jacobian\_H}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{set\_jacobian\_H()}{set\_jacobian\_H()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+set\+\_\+jacobian\+\_\+H (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{float}]{theta\+\_\+robot }\end{DoxyParamCaption})}
+
+
+
+Updates the internal measurement model Jacobian. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em theta\+\_\+robot} & Current robot yaw heading orientation in radians. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab64bdd06801ee3018fb5a0b20c8eb4e3}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ab64bdd06801ee3018fb5a0b20c8eb4e3} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!set\_Q@{set\_Q}}
+\index{set\_Q@{set\_Q}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{set\_Q()}{set\_Q()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+set\+\_\+Q (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Stores the process noise covariance matrix. 
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4e762a0f260fcfe3a0cf3d8337a450f9}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a4e762a0f260fcfe3a0cf3d8337a450f9} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!set\_R@{set\_R}}
+\index{set\_R@{set\_R}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{set\_R()}{set\_R()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+set\+\_\+R (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{kp }\end{DoxyParamCaption})}
+
+
+
+Calculates and stores the measurement noise covariance matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em kp} & Observed pixel coordinate from the raw sensor stream. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a9f387998b9f2f56c4fba8519a1db864c}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a9f387998b9f2f56c4fba8519a1db864c} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!sigma\_R\_approximation@{sigma\_R\_approximation}}
+\index{sigma\_R\_approximation@{sigma\_R\_approximation}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{sigma\_R\_approximation()}{sigma\_R\_approximation()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+sigma\+\_\+\+R\+\_\+approximation (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{kp }\end{DoxyParamCaption})}
+
+
+
+Approximates the raw pixel-\/space and depth-\/space measurement variances. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em kp} & The observed Pixel\+Coordinate containing pixel indices and raw depth. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+3x3 diagonal measurement covariance matrix in pixel/depth space. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a703be7058f4916eb09c794b61770ca95}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a703be7058f4916eb09c794b61770ca95} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!state\_func@{state\_func}}
+\index{state\_func@{state\_func}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{state\_func()}{state\_func()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+state\+\_\+func (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x }\end{DoxyParamCaption})}
+
+
+
+State transition model representing stationary landmarks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & The current state estimate of the landmark. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The predicted landmark state (identity transformation). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a90427348b4ce2abc2b77a9f6f14add23}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a90427348b4ce2abc2b77a9f6f14add23} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!update@{update}}
+\index{update@{update}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, NDArray\mbox{]} visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+update (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{x\+\_\+tt1,  }\item[{NDArray}]{P\+\_\+tt1,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+robot,  }\item[{float}]{theta\+\_\+robot,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}}]{kp }\end{DoxyParamCaption})}
+
+
+
+Performs the measurement update step of the EKF using Joseph-\/form covariance updates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x\+\_\+tt1} & Predicted landmark coordinate in the global odom frame. \\
+\hline
+{\em P\+\_\+tt1} & Predicted state covariance matrix. \\
+\hline
+{\em pos\+\_\+robot} & Current global robot position coordinates. \\
+\hline
+{\em theta\+\_\+robot} & Current robot yaw heading orientation in radians. \\
+\hline
+{\em kp} & Pixel\+Coordinate corresponding to the observed landmark feature. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple of (updated state, updated covariance). 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a7a16ceb3a83b6efd22211cd603c219a5}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a7a16ceb3a83b6efd22211cd603c219a5} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!JF@{JF}}
+\index{JF@{JF}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{JF}{JF}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+JF}
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a820c43c1d9fc892b3157b0e6bdd1a228}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a820c43c1d9fc892b3157b0e6bdd1a228} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!JH@{JH}}
+\index{JH@{JH}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{JH}{JH}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+JH}
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_adc3a4e1393ba44e7165fbfd2fa0fda12}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_adc3a4e1393ba44e7165fbfd2fa0fda12} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!P@{P}}
+\index{P@{P}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{P}{P}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+P}
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac87322fc0269e7cdc219c80b66bea086}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_ac87322fc0269e7cdc219c80b66bea086} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!Q@{Q}}
+\index{Q@{Q}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{Q}{Q}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+Q}
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a138c32443b6ff9c934106de123631817}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a138c32443b6ff9c934106de123631817} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!R@{R}}
+\index{R@{R}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{R}{R}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+R}
+
+\Hypertarget{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c}\label{classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark_a191c04b10cabc4f546bc295494cc101c} 
+\index{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}!x@{x}}
+\index{x@{x}!visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark@{visual\_odom.ekf\_landmark.ExtendedKalmanFilterLandmark}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+landmark.\+Extended\+Kalman\+Filter\+Landmark.\+x}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{ekf__landmark_8py}{ekf\+\_\+landmark.\+py}}\end{DoxyCompactItemize}

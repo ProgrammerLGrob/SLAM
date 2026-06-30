@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['r_0',['r',['../classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot.html#a9345b88be94eae8e7b914dc63f12863a',1,'visual_odom.ekf_robot.ExtendedKalmanFilterRobot.R'],['../classvisual__odom_1_1ekf__landmark_1_1ExtendedKalmanFilterLandmark.html#a138c32443b6ff9c934106de123631817',1,'visual_odom.ekf_landmark.ExtendedKalmanFilterLandmark.R']]],
+  ['ransac_1',['ransac',['../namespaceparam.html#a64bb08bf41566ac6d7c062c3fbff6917',1,'param']]],
+  ['ransac_5fdelta_5fp_2',['ransac_delta_p',['../classvisual__odom_1_1robot_1_1VisualRobotSample.html#a7d93dca885c9b42d8d9fb2c8ca90ad0f',1,'visual_odom::robot::VisualRobotSample']]],
+  ['ransac_5fdelta_5ftheta_3',['ransac_delta_theta',['../classvisual__odom_1_1robot_1_1VisualRobotSample.html#ad6a2e1a6f9ed23f5d501070c60ef2ae0',1,'visual_odom::robot::VisualRobotSample']]],
+  ['ransac_5fdraw_5fkeypoints_4',['ransac_draw_keypoints',['../classvisual__odom_1_1robot_1_1VisualRobotSample.html#aa90ba6ff12be6e60bd7bd1abce8acd33',1,'visual_odom::robot::VisualRobotSample']]],
+  ['ransac_5fevaluation_5ftolerance_5',['ransac_evaluation_tolerance',['../classvisual__odom_1_1constants_1_1Parameters.html#a78606af103903e165856e5b526cef1ab',1,'visual_odom.constants.Parameters.ransac_evaluation_tolerance'],['../namespacevisual__odom_1_1constants.html#ad0b86f33711adacef243241c989c7c9a',1,'visual_odom.constants.RANSAC_EVALUATION_TOLERANCE']]],
+  ['ransac_5finlier_5fratio_6',['ransac_inlier_ratio',['../classvisual__odom_1_1robot_1_1VisualRobotSample.html#aed1310d4f4e4a52621ceff048ace310e',1,'visual_odom::robot::VisualRobotSample']]],
+  ['ransac_5fiteration_7',['ransac_iteration',['../classvisual__odom_1_1constants_1_1Parameters.html#aed49024456f8f405ca89c7566360cc9f',1,'visual_odom.constants.Parameters.ransac_iteration'],['../namespacevisual__odom_1_1constants.html#a833e48058c638ca53c0512644246e657',1,'visual_odom.constants.RANSAC_ITERATION']]],
+  ['ransac_5fmin_5finlier_5fratio_8',['ransac_min_inlier_ratio',['../classvisual__odom_1_1constants_1_1Parameters.html#a5138093cd9f26c85503a7216589326e5',1,'visual_odom.constants.Parameters.ransac_min_inlier_ratio'],['../namespacevisual__odom_1_1constants.html#ad16d5431429b11b05529d9dcafc9d240',1,'visual_odom.constants.RANSAC_MIN_INLIER_RATIO']]],
+  ['ransac_5fsample_5fsize_9',['ransac_sample_size',['../namespacevisual__odom_1_1constants.html#a5517cedddfd3a12218685edfb355c10b',1,'visual_odom.constants.RANSAC_SAMPLE_SIZE'],['../classvisual__odom_1_1constants_1_1Parameters.html#ad07f61972021c07d020f9ffca1cc0481',1,'visual_odom.constants.Parameters.ransac_sample_size']]],
+  ['relative_5ffile_5fpaths_10',['relative_file_paths',['../namespacemetadata.html#a99b904383aed40229fb2db533969c335',1,'metadata']]],
+  ['reliability_11',['reliability',['../namespacemetadata.html#ac8eb0535903b2304053f4bb3d3f4d47a',1,'metadata']]],
+  ['resample_5fpos_5ftolerance_12',['RESAMPLE_POS_TOLERANCE',['../namespacevisual__odom_1_1constants.html#a17c0261f6756a2631067302cf1e2e853',1,'visual_odom::constants']]],
+  ['resample_5ftheta_5ftolerance_13',['RESAMPLE_THETA_TOLERANCE',['../namespacevisual__odom_1_1constants.html#aed7be99165f3472b7d67142decc715fb',1,'visual_odom::constants']]],
+  ['resample_5ftime_5ftolerance_14',['RESAMPLE_TIME_TOLERANCE',['../namespacevisual__odom_1_1constants.html#aeb4d1c1e9055c759a9e066ac72e9da18',1,'visual_odom::constants']]],
+  ['resolution_5fcone_5fh_15',['RESOLUTION_CONE_H',['../namespacevisual__odom_1_1constants.html#a93a57c3dae53444282766f1183483d7e',1,'visual_odom::constants']]],
+  ['resolution_5fcone_5fv_16',['RESOLUTION_CONE_V',['../namespacevisual__odom_1_1constants.html#a2743f7b3f89beb03ba2bbd33166eb9c2',1,'visual_odom::constants']]],
+  ['rgb_5fdepth_5fsync_5ftolerance_5fsec_17',['rgb_depth_sync_tolerance_sec',['../classvisual__odom_1_1constants_1_1Parameters.html#a439843679b42cedd3aaca32f820bdc93',1,'visual_odom.constants.Parameters.rgb_depth_sync_tolerance_sec'],['../namespacevisual__odom_1_1constants.html#a564b0ad7d9cf92118cbeef474c2913ef',1,'visual_odom.constants.RGB_DEPTH_SYNC_TOLERANCE_SEC'],['../namespaceparam.html#a6b6bfa856828927f8e77b552eae3a3bb',1,'param.rgb_depth_sync_tolerance_sec']]],
+  ['rgb_5fimage_5ftopic_18',['RGB_IMAGE_TOPIC',['../namespacevisual__odom_1_1constants.html#a114cb17c95ba291455df239d8489c84f',1,'visual_odom::constants']]],
+  ['robots_19',['robots',['../classvisual__odom_1_1visual__odom__node_1_1VisualOdom.html#acce62acadab54a02c18bcc21dd020b6b',1,'visual_odom::visual_odom_node::VisualOdom']]],
+  ['ros_5f_5fparameters_20',['ros__parameters',['../namespaceparam.html#a6d3bf6f4ea67c781ba372f197cd313cc',1,'param']]],
+  ['ros_5fdistro_21',['ros_distro',['../namespacemetadata.html#a602fa75521ae176b12f76790ae89c761',1,'metadata']]],
+  ['rosbag2_5fbagfile_5finformation_22',['rosbag2_bagfile_information',['../namespacemetadata.html#addc621d14bb9987b81410a204f5fb409',1,'metadata']]],
+  ['rosbag_5fpath_23',['rosbag_path',['../namespaceparam.html#a178cbc519aed01220f539cbe79b062a4',1,'param']]],
+  ['rot_5fbk_24',['ROT_BK',['../namespacevisual__odom_1_1constants.html#a91877125b028a0cdc6b6e9280db2b751',1,'visual_odom::constants']]]
+];
