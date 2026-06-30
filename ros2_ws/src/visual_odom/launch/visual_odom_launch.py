@@ -12,6 +12,7 @@ from visual_odom.constants import (
     FILTERED_ODOMETRY_TOPIC,
     IMU_ODOMETRY_TOPIC,
     TF_STATIC_TOPIC,
+    PERCENTAGE_OF_PLAY_SPEED
 )
 
 
@@ -37,7 +38,7 @@ def generate_launch_description():
     rosbag_play_normal = ExecuteProcess(
         cmd=[
             'ros2', 'bag', 'play', rosbag_path,
-            '--clock', '-r', '0.1',
+            '--clock', '-r', str(PERCENTAGE_OF_PLAY_SPEED),
             '--topics',
             RGB_IMAGE_TOPIC,
             DEPTH_IMAGE_TOPIC,

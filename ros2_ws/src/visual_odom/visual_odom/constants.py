@@ -423,3 +423,5 @@ RESAMPLE_POS_TOLERANCE = 0.35
 
 ## @brief Global runtime parameter instance populated at node startup.
 parameters: Parameters = None
+
+PERCENTAGE_OF_PLAY_SPEED = 0.1
