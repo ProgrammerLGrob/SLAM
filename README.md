@@ -83,6 +83,7 @@ The `base_link -> kinect_depth` static transform is provided by the rosbag.
 | VISUAL_ODOM_MSG_TOPIC | `nav_msgs/Odometry` | Published |
 | KEYPOINT_POINTCLOUD_FRAME_TOPIC | `sensor_msgs/PointCloud2` | Published -- landmark map |
 | POINTCLOUD_FRAME_TOPIC | `sensor_msgs/PointCloud2` | Published -- full depth frame (not used for the main time) |
+| KEYPOINT_POINTCLOUD_FRAME_TOPIC | `sensor_msgs/PointCloud2` | Published complete map at the end |
 | VISION_CONE_TOPIC | `visualization_msgs/Marker` | Published |
 | KP_IMAGE_TOPIC | `sensor_msgs/Image` | Published |
 | VISUAL_ODOM_PATH_TOPIC | `visualization_msgs/MarkerArray` | Published |
