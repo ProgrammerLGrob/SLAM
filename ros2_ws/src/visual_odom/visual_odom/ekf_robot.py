@@ -44,8 +44,7 @@ class ExtendedKalmanFilterRobot:
         self.H = np.array([[1.0, 0.0, 0.0], 
                            [0.0, 1.0, 0.0], 
                            [0.0, 0.0, 1.0]])
-        self.last_ransac_pose = x
-        self.last_u = State(0.0, 0.0, 0.0)
+        
         self.additional_noise = 0.0
 
     def prediction(self, delta_wheel_odom: State) -> None:

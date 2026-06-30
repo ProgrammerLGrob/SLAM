@@ -64,7 +64,6 @@ class VisualRobotSample():
         self.pos_visual_odom = State(self.pos_baselink.x, self.pos_baselink.y, self.theta)
         self.ekf = ExtendedKalmanFilterRobot(State(self.pos_baselink.x, self.pos_baselink.y, self.theta), self.covariance_P, self.noise_Q)
         self.visual_odom_map.add_landmarks_from_kps(covariance_P, valid_kp, valid_des, frame_rgb, valid_kp_depth, self.theta, self.pos_baselink)
-        self.keyframe_map = copy.deepcopy(self.visual_odom_map) 
         
         marker = Marker()
         # Initialize random color for path markers; red is reserved for best robot
