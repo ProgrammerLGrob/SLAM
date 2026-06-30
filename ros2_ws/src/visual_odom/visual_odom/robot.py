@@ -9,7 +9,7 @@ import cv2
 import numpy as np
 
 from math import pi, sin, cos, tan
-from tf2_ros import Buffer, TransformBroadcaster, TransformListener
+from tf2_ros import Buffer, Header, TransformBroadcaster, TransformListener
 from geometry_msgs.msg import Pose2D, TransformStamped, Point
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import Image, PointCloud2, PointField
@@ -35,7 +35,7 @@ import visual_odom.constants as constants
 
 
 class VisualRobotSample():
-    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, index:int, map = None):        
+    def __init__(self, pos: Coordinate, theta: float, covariance_P: NDArray, matcher: cv2.BFMatcher, odom_publisher:Publisher, map_publisher:Publisher, cone_publisher:Publisher, total_publisher:Publisher, valid_kp: List[cv2.KeyPoint], valid_des: np.ndarray, valid_kp_depth: np.ndarray, frame_rgb: NDArray, index:int, map = None):        
         # Initialize argument values
         self.theta = theta 
         self.pos_baselink = pos
@@ -48,6 +48,7 @@ class VisualRobotSample():
         self.map_publisher = map_publisher
         self.cone_publisher = cone_publisher
         self.covariance_P = covariance_P
+        self.total_publisher = total_publisher
 
         # Initialize start values
         self.first_iteration = True
@@ -58,6 +59,7 @@ class VisualRobotSample():
         self.noise_Q = np.eye(3) * 1e-6
         self.ransac_draw_keypoints = []
         self.path = []
+        self.accumulated_pixels = []
         self.delta_wheel_odom_ransac = State(0.0, 0.0, 0.0)
         self.acc_ransac_noise_delta = State(0.0, 0.0, 0.0)
 
@@ -85,6 +87,7 @@ class VisualRobotSample():
         self.publish_odometry_msg(self.odometry_msg_publisher, self.pos_baselink, self.theta, self.covariance_P, rgb_stamp, VISUAL_ODOM_FRAME_ID, BASE_LINK_FRAME_ID)
         self.publish_pointcloud_map(self.map_publisher, rgb_stamp)
         self.publish_vision_cone(self.cone_publisher, rgb_stamp)
+        self.publish_pixels(self.frame_depth, self.frame_rgb, self.total_publisher, rgb_stamp)
 
 
     def predict_with_wheel_odom(self, state_wheel_odom: State):
@@ -221,6 +224,7 @@ class VisualRobotSample():
                     not_matched_kp_depth.append(valid_kp_depth[idx])
             
             # Fill map with landmarks and add path marker
+            #self.accumulate_pixels(self.frame_depth, self.frame_rgb)
             self.visual_odom_map.add_landmarks_from_kps(self.covariance_P, not_matched_kp, not_matched_des, self.frame_rgb, not_matched_kp_depth, self.theta, self.pos_baselink)
             self.path.append(Pose2D(x=self.pos_baselink.x, y=self.pos_baselink.y))
 
@@ -371,6 +375,87 @@ class VisualRobotSample():
         @param time Timestamp used for point cloud synchronization.
         """
         self.visual_odom_map.publish_pointcloud_map(publisher, time)
+    
+    def publish_pixels(self, frame_depth: NDArray, frame_rgb: NDArray, publisher: rclpy.publisher.Publisher, time: Time) -> None:
+        """!
+        @brief Downsamples and formats dense pixel coordinates into PointCloud2 structures.
+
+        @param frame_depth Input depth reference image.
+        @param frame_rgb Color reference frame image.
+        @param publisher Target ROS 2 PointCloud2 publisher channel.
+        @param time Active system timestamp.
+        @param frame_id Relative spatial coordinate frame identifier.
+        """
+        calculated_point_coordinates = []
+        divisor = 3 # Only publish every "divisor" Pixel
+        
+        for pix_u in range(frame_depth.shape[1] // divisor):
+            for pix_v in range(frame_depth.shape[0] // divisor):
+                depth_value = frame_depth[pix_v * divisor, pix_u * divisor]
+                if MIN_DEPTH < depth_value < constants.parameters.max_depth:
+                    pos = pixel_to_kinect(PixelCoordinate(pix_u * divisor, pix_v * divisor, depth_value))
+                    b, g, r = frame_rgb[pix_v * divisor, pix_u * divisor]
+                    rgb = (int(r) << 16) | (int(g) << 8) | int(b)
+                    calculated_point_coordinates.append((pos.x, pos.y, pos.z, rgb))
+
+        h = Header()
+        h.stamp = time
+        h.frame_id = KINECT_FRAME_ID
+
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1),
+        ]
+
+        msg = point_cloud2.create_cloud(
+            header=h,
+            fields=fields,
+            points=calculated_point_coordinates
+        )
+        publisher.publish(msg)
+        #self.get_logger().info(f"PointCloud with {len(calculated_point_coordinates)} points sent!")
+
+    def publish_accumulated_pixels(self, publisher: Publisher, time: Time):
+        
+        h = Header()
+        h.stamp = time
+        h.frame_id = KINECT_FRAME_ID
+
+        fields = [
+            PointField(name='x', offset=0, datatype=PointField.FLOAT32, count=1),
+            PointField(name='y', offset=4, datatype=PointField.FLOAT32, count=1),
+            PointField(name='z', offset=8, datatype=PointField.FLOAT32, count=1),
+            PointField(name='rgb', offset=12, datatype=PointField.UINT32, count=1),
+        ]
+
+        msg = point_cloud2.create_cloud(
+            header=h,
+            fields=fields,
+            points = self.accumulated_pixels
+        )
+        publisher.publish(msg)
+
+    def accumulate_pixels(self, frame_depth: NDArray, frame_rgb: NDArray) -> None:
+        """!
+        @brief Accumulate pixels for every robot to publish depending on best robot
+
+        @param frame_depth Input depth reference image.
+        @param frame_rgb Color reference frame image.
+        @param publisher Target ROS 2 PointCloud2 publisher channel.
+        @param time Active system timestamp.
+        """
+        divisor = 7 # Only publish every "divisor" Pixel
+        
+        for pix_u in range(frame_depth.shape[1] // divisor):
+            for pix_v in range(frame_depth.shape[0] // divisor):
+                depth_value = frame_depth[pix_v * divisor, pix_u * divisor]
+                if MIN_DEPTH < depth_value < constants.parameters.max_depth:
+                    pos = pixel_to_kinect(PixelCoordinate(pix_u * divisor, pix_v * divisor, depth_value))
+                    b, g, r = frame_rgb[pix_v * divisor, pix_u * divisor]
+                    rgb = (int(r) << 16) | (int(g) << 8) | int(b)
+                    self.accumulated_pixels.append((pos.x, pos.y, pos.z, rgb))
 
     def get_drawn_keypoints(self):
         """
