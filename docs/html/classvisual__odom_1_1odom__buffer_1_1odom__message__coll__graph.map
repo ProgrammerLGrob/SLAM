@@ -1,0 +1,7 @@
+<map id="visual_odom.odom_buffer.odom_message" name="visual_odom.odom_buffer.odom_message">
+<area shape="rect" id="Node000001" title=" " alt="" coords="82,93,313,133"/>
+<area shape="rect" id="Node000002" href="$classvisual__odom_1_1constants_1_1State.html" title="2D robot pose representation." alt="" coords="5,5,216,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="133,39,182,91,178,95,129,42"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="241,5,327,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="266,42,217,95,213,91,262,39"/>
+</map>

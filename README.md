@@ -101,7 +101,7 @@ The `base_link -> kinect_depth` static transform is provided by the rosbag.
 | `geometry_msgs` | `TransformStamped`, `Point`, `Pose2D`, `Quaternion` |
 | `visualization_msgs` | `Marker`, `MarkerArray` – particle path and vision cone visualisation |
 | `tf2_ros` | TF broadcaster, listener and buffer for coordinate frame transforms |
-| `cv_bridge` | ROS `Image` ↔ OpenCV `Mat` conversion |
+| `cv_bridge` | ROS `Image` <-> OpenCV `Mat` conversion |
 | `python3-opencv` | ORB detection, descriptor computation, BFMatcher, image I/O |
 | `python3-numpy` | Numerical arrays, linear algebra (EKF matrices, RANSAC, Kabsch) |
 | `python3-scipy` | Quaternion/rotation conversions (`scipy.spatial.transform.Rotation`), KDTree |

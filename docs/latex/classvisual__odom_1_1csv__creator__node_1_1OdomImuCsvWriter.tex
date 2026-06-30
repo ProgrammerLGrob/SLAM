@@ -1,0 +1,285 @@
+\doxysection{visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer Class Reference}
+\hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter}{}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter}\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+
+
+ROS 2 Node responsible for subscribing to localization data topics and logging state measurements into a unified CSV file for analysis.  
+
+
+
+
+Inheritance diagram for visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=225pt]{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=225pt]{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a7f7d25fdcc149e963d3483c0b4afadac}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\begin{DoxyCompactList}\small\item\em Initializes the data logging node, configures ROS parameters, files, and subscriptions. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa39e0feea4da6228e423aa915ecb40de}{odom\+\_\+callback}} (self, Odometry msg)
+\begin{DoxyCompactList}\small\item\em Processes standard wheel odometry data updates, calculates float timestamps, and flushes synchronized state snapshots down into the CSV table log. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_acbcf1b5d17b2610e4578ae8cb159513e}{imu\+\_\+callback}} (self, Imu msg)
+\begin{DoxyCompactList}\small\item\em Receives structural IMU orientation frames, extracts yaw orientation data, and applies a rigid frame offset transformation to align it with reference norms. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a9e96ff5f37a41c65b2041fc28a9a17f4}{visual\+\_\+odom\+\_\+callback}} (self, Odometry msg)
+\begin{DoxyCompactList}\small\item\em Processes updates published by the visual odometry algorithm pipeline, unpacking 2D translation states and rotation yaw angles. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ae078e3a8274c1e4aab46a31c31586536}{quaternion\+\_\+to\+\_\+yaw}} (self, q)
+\begin{DoxyCompactList}\small\item\em Calculates planar yaw angle heading out of 3D spatial rotation quaternion parameters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_af78b048858f42f0880176ac71b8109dd}{destroy\+\_\+node}} (self)
+\begin{DoxyCompactList}\small\item\em Safely terminates subscription ties and guarantees that data buffers flush completely before closing the file streams. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca546fb458b8783f4175b1f480cd5397}{normalize\+\_\+angle}} (self, float angle)
+\begin{DoxyCompactList}\small\item\em Wraps an input angle parameter into standard bounded circle space \mbox{[}-\/pi, pi\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a584394f3449c5c989b838c0f1f90d473}{csv\+\_\+path}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ade60ba48562325e3aeb7f01237d05182}{wheel\+\_\+x}}
+\begin{DoxyCompactList}\small\item\em \texorpdfstring{$<$}{<} Absolute file path where the generated CSV data log will be stored. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ac85d1eab9b2225994e9da777572a5dda}{csv\+\_\+file}}
+\begin{DoxyCompactList}\small\item\em \texorpdfstring{$<$}{<} Latest recorded global X position from wheel odometry in meters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca4fcb2ed104a50e26d31e6c67a22747}{odom\+\_\+callback}}
+\begin{DoxyCompactList}\small\item\em \texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa86512902a43ad8b43080711db7a9d2a}{imu\+\_\+callback}}
+\begin{DoxyCompactList}\small\item\em \texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4fb004f96d2870d162b64a3e5e442550}{visual\+\_\+odom\+\_\+callback}}
+\begin{DoxyCompactList}\small\item\em \texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aba7bbc80c17abba0676068a3828fac99}{wheel\+\_\+y}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a5cbd94c8a34c5f53486f39451e8d2322}{imu\+\_\+theta}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a12d45128f457d520ea2c8a6b600277c8}{odom\+\_\+visual\+\_\+x}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a2a839b49c5faf0f9f54687fc9b90b978}{odom\+\_\+visual\+\_\+y}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4d10d8cb5487c7ede0790c468298f59e}{odom\+\_\+visual\+\_\+theta}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+ROS 2 Node responsible for subscribing to localization data topics and logging state measurements into a unified CSV file for analysis. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a7f7d25fdcc149e963d3483c0b4afadac}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a7f7d25fdcc149e963d3483c0b4afadac} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Initializes the data logging node, configures ROS parameters, files, and subscriptions. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_af78b048858f42f0880176ac71b8109dd}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_af78b048858f42f0880176ac71b8109dd} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!destroy\_node@{destroy\_node}}
+\index{destroy\_node@{destroy\_node}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{destroy\_node()}{destroy\_node()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+destroy\+\_\+node (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Safely terminates subscription ties and guarantees that data buffers flush completely before closing the file streams. 
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_acbcf1b5d17b2610e4578ae8cb159513e}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_acbcf1b5d17b2610e4578ae8cb159513e} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!imu\_callback@{imu\_callback}}
+\index{imu\_callback@{imu\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{imu\_callback()}{imu\_callback()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+imu\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Imu}]{msg }\end{DoxyParamCaption})}
+
+
+
+Receives structural IMU orientation frames, extracts yaw orientation data, and applies a rigid frame offset transformation to align it with reference norms. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Incoming raw IMU reading container (sensor\+\_\+msgs.\+msg.\+Imu). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca546fb458b8783f4175b1f480cd5397}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca546fb458b8783f4175b1f480cd5397} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!normalize\_angle@{normalize\_angle}}
+\index{normalize\_angle@{normalize\_angle}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{normalize\_angle()}{normalize\_angle()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+normalize\+\_\+angle (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{float}]{angle }\end{DoxyParamCaption})}
+
+
+
+Wraps an input angle parameter into standard bounded circle space \mbox{[}-\/pi, pi\mbox{]}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Arbitrary orientation scale input in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Wrapped equivalent within circular system boundaries (float). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa39e0feea4da6228e423aa915ecb40de}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa39e0feea4da6228e423aa915ecb40de} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!odom\_callback@{odom\_callback}}
+\index{odom\_callback@{odom\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{odom\_callback()}{odom\_callback()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+odom\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Odometry}]{msg }\end{DoxyParamCaption})}
+
+
+
+Processes standard wheel odometry data updates, calculates float timestamps, and flushes synchronized state snapshots down into the CSV table log. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & The incoming wheel odometry message package (nav\+\_\+msgs.\+msg.\+Odometry). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ae078e3a8274c1e4aab46a31c31586536}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ae078e3a8274c1e4aab46a31c31586536} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!quaternion\_to\_yaw@{quaternion\_to\_yaw}}
+\index{quaternion\_to\_yaw@{quaternion\_to\_yaw}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{quaternion\_to\_yaw()}{quaternion\_to\_yaw()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+quaternion\+\_\+to\+\_\+yaw (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{q }\end{DoxyParamCaption})}
+
+
+
+Calculates planar yaw angle heading out of 3D spatial rotation quaternion parameters. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em q} & Input object storing spatial orientation data (geometry\+\_\+msgs.\+msg.\+Quaternion). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Planar heading representation mapped in radians (float). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a9e96ff5f37a41c65b2041fc28a9a17f4}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a9e96ff5f37a41c65b2041fc28a9a17f4} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!visual\_odom\_callback@{visual\_odom\_callback}}
+\index{visual\_odom\_callback@{visual\_odom\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{visual\_odom\_callback()}{visual\_odom\_callback()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+visual\+\_\+odom\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Odometry}]{msg }\end{DoxyParamCaption})}
+
+
+
+Processes updates published by the visual odometry algorithm pipeline, unpacking 2D translation states and rotation yaw angles. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & The incoming camera odometry message packet (nav\+\_\+msgs.\+msg.\+Odometry). \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ac85d1eab9b2225994e9da777572a5dda}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ac85d1eab9b2225994e9da777572a5dda} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!csv\_file@{csv\_file}}
+\index{csv\_file@{csv\_file}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{csv\_file}{csv\_file}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+csv\+\_\+file}
+
+
+
+\texorpdfstring{$<$}{<} Latest recorded global X position from wheel odometry in meters. 
+
+\texorpdfstring{$<$}{<} Latest recorded global Y position from wheel odometry in meters.
+
+\texorpdfstring{$<$}{<} Latest recorded planar yaw heading orientation from the IMU sensor in radians.
+
+\texorpdfstring{$<$}{<} Latest recorded global X position calculated by visual odometry in meters.
+
+\texorpdfstring{$<$}{<} Latest recorded global Y position calculated by visual odometry in meters.
+
+\texorpdfstring{$<$}{<} Latest recorded planar yaw heading calculated by visual odometry in radians. \Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a584394f3449c5c989b838c0f1f90d473}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a584394f3449c5c989b838c0f1f90d473} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!csv\_path@{csv\_path}}
+\index{csv\_path@{csv\_path}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{csv\_path}{csv\_path}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+csv\+\_\+path}
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa86512902a43ad8b43080711db7a9d2a}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aa86512902a43ad8b43080711db7a9d2a} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!imu\_callback@{imu\_callback}}
+\index{imu\_callback@{imu\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{imu\_callback}{imu\_callback}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+imu\+\_\+callback}
+
+
+
+\texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. 
+
+\texorpdfstring{$<$}{<} CSV writer interface mapping programmatic arrays to formatted textual table records.
+
+\texorpdfstring{$<$}{<} File structure line defining data labels inside column headers. \Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a5cbd94c8a34c5f53486f39451e8d2322}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a5cbd94c8a34c5f53486f39451e8d2322} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!imu\_theta@{imu\_theta}}
+\index{imu\_theta@{imu\_theta}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{imu\_theta}{imu\_theta}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+imu\+\_\+theta}
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca4fcb2ed104a50e26d31e6c67a22747}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aca4fcb2ed104a50e26d31e6c67a22747} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!odom\_callback@{odom\_callback}}
+\index{odom\_callback@{odom\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{odom\_callback}{odom\_callback}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+odom\+\_\+callback}
+
+
+
+\texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. 
+
+\texorpdfstring{$<$}{<} CSV writer interface mapping programmatic arrays to formatted textual table records.
+
+\texorpdfstring{$<$}{<} File structure line defining data labels inside column headers. \Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4d10d8cb5487c7ede0790c468298f59e}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4d10d8cb5487c7ede0790c468298f59e} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!odom\_visual\_theta@{odom\_visual\_theta}}
+\index{odom\_visual\_theta@{odom\_visual\_theta}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{odom\_visual\_theta}{odom\_visual\_theta}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+odom\+\_\+visual\+\_\+theta}
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a12d45128f457d520ea2c8a6b600277c8}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a12d45128f457d520ea2c8a6b600277c8} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!odom\_visual\_x@{odom\_visual\_x}}
+\index{odom\_visual\_x@{odom\_visual\_x}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{odom\_visual\_x}{odom\_visual\_x}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+odom\+\_\+visual\+\_\+x}
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a2a839b49c5faf0f9f54687fc9b90b978}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a2a839b49c5faf0f9f54687fc9b90b978} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!odom\_visual\_y@{odom\_visual\_y}}
+\index{odom\_visual\_y@{odom\_visual\_y}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{odom\_visual\_y}{odom\_visual\_y}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+odom\+\_\+visual\+\_\+y}
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4fb004f96d2870d162b64a3e5e442550}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_a4fb004f96d2870d162b64a3e5e442550} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!visual\_odom\_callback@{visual\_odom\_callback}}
+\index{visual\_odom\_callback@{visual\_odom\_callback}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{visual\_odom\_callback}{visual\_odom\_callback}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+visual\+\_\+odom\+\_\+callback}
+
+
+
+\texorpdfstring{$<$}{<} Internal file descriptor handling active stream writes to disk. 
+
+\texorpdfstring{$<$}{<} CSV writer interface mapping programmatic arrays to formatted textual table records.
+
+\texorpdfstring{$<$}{<} File structure line defining data labels inside column headers. \Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ade60ba48562325e3aeb7f01237d05182}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_ade60ba48562325e3aeb7f01237d05182} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!wheel\_x@{wheel\_x}}
+\index{wheel\_x@{wheel\_x}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{wheel\_x}{wheel\_x}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+wheel\+\_\+x}
+
+
+
+\texorpdfstring{$<$}{<} Absolute file path where the generated CSV data log will be stored. 
+
+\Hypertarget{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aba7bbc80c17abba0676068a3828fac99}\label{classvisual__odom_1_1csv__creator__node_1_1OdomImuCsvWriter_aba7bbc80c17abba0676068a3828fac99} 
+\index{visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}!wheel\_y@{wheel\_y}}
+\index{wheel\_y@{wheel\_y}!visual\_odom.csv\_creator\_node.OdomImuCsvWriter@{visual\_odom.csv\_creator\_node.OdomImuCsvWriter}}
+\doxysubsubsection{\texorpdfstring{wheel\_y}{wheel\_y}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+csv\+\_\+creator\+\_\+node.\+Odom\+Imu\+Csv\+Writer.\+wheel\+\_\+y}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{csv__creator__node_8py}{csv\+\_\+creator\+\_\+node.\+py}}\end{DoxyCompactItemize}

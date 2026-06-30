@@ -1,0 +1,828 @@
+\doxysection{visual\+\_\+odom.\+constants Namespace Reference}
+\hypertarget{namespacevisual__odom_1_1constants}{}\label{namespacevisual__odom_1_1constants}\index{visual\_odom.constants@{visual\_odom.constants}}
+
+
+Global configuration, camera model, ROS topic definitions and helper datatypes used by the visual odometry system.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}
+\begin{DoxyCompactList}\small\item\em 3D spatial coordinate container. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters}{Parameters}}
+\begin{DoxyCompactList}\small\item\em Runtime configuration and threshold parameter package for the SLAM node. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}
+\begin{DoxyCompactList}\small\item\em Container for a 2D image pixel and its depth value. \end{DoxyCompactList}\item 
+class \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}}
+\begin{DoxyCompactList}\small\item\em 2D robot pose representation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a588d9d58ca07c646733c7f0e132feb8a}{normalize\+\_\+angle}} (float angle)
+\begin{DoxyCompactList}\small\item\em Normalize an angle to the range \mbox{[}-\/pi, pi\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a23d076b2c6c7f944b946548641f753df}{VISUAL\+\_\+\+ODOM\+\_\+\+MSG\+\_\+\+TOPIC}} = "{}/serf01/odometry/project\+\_\+slam"{}
+\begin{DoxyCompactList}\small\item\em Primary ROS 2 publisher output topic for navigation odometry. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a114cb17c95ba291455df239d8489c84f}{RGB\+\_\+\+IMAGE\+\_\+\+TOPIC}} = "{}/serf01/nav\+\_\+rgbd\+\_\+1/rgb/image\+\_\+raw"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for raw RGB image input. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a7ec7232624eb96ade8aa423f3914cbcd}{DEPTH\+\_\+\+IMAGE\+\_\+\+TOPIC}} = "{}/serf01/nav\+\_\+rgbd\+\_\+1/depth/image\+\_\+raw"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for raw depth image input. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_aba6a57993d7b24b39761ad101cbc3693}{WHEEL\+\_\+\+ODOMETRY\+\_\+\+TOPIC}} = "{}/serf01/odometry/wheel"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for wheel odometry input. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a56b1959a4fd2962c8ed18ffd1232bc45}{FILTERED\+\_\+\+ODOMETRY\+\_\+\+TOPIC}} = "{}/serf01/odometry/filtered"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for filtered odometry. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a43f37961472b8a9cafd46a88d9639830}{IMU\+\_\+\+ODOMETRY\+\_\+\+TOPIC}} = "{}/serf01/odometry/imu"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for IMU-\/based odometry input. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a4fd5df2542aaae2d4ea8aabac4477a68}{TF\+\_\+\+STATIC\+\_\+\+TOPIC}} = "{}/tf\+\_\+static"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for static TF transforms. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_aa392ac50241802af35cb024fbed90aca}{VISION\+\_\+\+CONE\+\_\+\+TOPIC}} = "{}/serf01/camera/vision\+\_\+cone"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for publishing or visualizing the camera vision cone. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a2058ca538096019297d464e88a225686}{KP\+\_\+\+IMAGE\+\_\+\+TOPIC}} = "{}/serf01/camera/keypoint\+\_\+image"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for publishing images with visualized keypoints. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a2aaddd483e335cdd21fa7fd907f5bf43}{VISUAL\+\_\+\+ODOM\+\_\+\+PATH\+\_\+\+TOPIC}} = "{}/serf01/visual\+\_\+odom\+\_\+path"{}
+\begin{DoxyCompactList}\small\item\em ROS 2 topic for publishing paths of the particles. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a531e2637b9116b157451b6359d66e7da}{POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC}} = "{}/serf01/pointcloud/points\+\_\+3d"{}
+\begin{DoxyCompactList}\small\item\em Frame/topic identifier for the structural environment point cloud. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a66a329734cbcedfa2a566cdb84ad0457}{ACCUMULATED\+\_\+\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC}} = "{}/serf01/pointcloud/accumulated\+\_\+points\+\_\+3d"{}
+\begin{DoxyCompactList}\small\item\em Frame/topic identifier for the accumulated environment point cloud. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a5a508cf849a190ffccf2f72d1616b94e}{KEYPOINT\+\_\+\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC}} = "{}/serf01/pointcloud/keypoint\+\_\+3d"{}
+\begin{DoxyCompactList}\small\item\em Frame/topic identifier for tracked ORB descriptor 3D keypoints. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_a4a85580afb591f8949aa91e470a8d39f}{KINECT\+\_\+\+FRAME\+\_\+\+ID}} = "{}kinect\+\_\+depth"{}
+\begin{DoxyCompactList}\small\item\em TF frame identifier for the optical center of the RGB-\/D camera. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_abd7c6fe7f8b2dd7a929a8882fdeaeb0c}{BASE\+\_\+\+LINK\+\_\+\+FRAME\+\_\+\+ID}} = "{}base\+\_\+link"{}
+\begin{DoxyCompactList}\small\item\em TF frame identifier for the physical center of the robot platform. \end{DoxyCompactList}\item 
+str \mbox{\hyperlink{namespacevisual__odom_1_1constants_ad0625e34555474a9b5b9e836f7e6091d}{VISUAL\+\_\+\+ODOM\+\_\+\+FRAME\+\_\+\+ID}} = "{}odom"{}
+\begin{DoxyCompactList}\small\item\em TF frame identifier for the fixed global odometry origin. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}{F}} = 526.\+61
+\begin{DoxyCompactList}\small\item\em Horizontal and vertical focal length parameter of the Kinect optical model. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ad4624c0c8d6cd5bcdfa0a3393ec9a421}{CU}} = 318.\+525
+\begin{DoxyCompactList}\small\item\em Horizontal pixel coordinate of the camera principal point. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_aa2e15abc33365447ee4e6e83176d6a85}{CV}} = 241.\+181
+\begin{DoxyCompactList}\small\item\em Vertical pixel coordinate of the camera principal point. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_afab8d18910a56809bd666549e063084b}{MAX\+\_\+U}} = 640
+\begin{DoxyCompactList}\small\item\em Horizontal image plane resolution in pixels. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a374a35d9ed2f9de97ab6fa417b310655}{MAX\+\_\+V}} = 480
+\begin{DoxyCompactList}\small\item\em Vertical image plane resolution in pixels. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1constants_acfe628cfac86ec3e4a28a35636869ef9}{MAX\+\_\+\+AZIMUTH}} = abs(atan2(\mbox{\hyperlink{namespacevisual__odom_1_1constants_ad4624c0c8d6cd5bcdfa0a3393ec9a421}{CU}}, \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}{F}}))
+\begin{DoxyCompactList}\small\item\em Derived horizontal angle limit matching the sensor field of view. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1constants_a57082afbad45ccb7930f621fe8da0305}{MAX\+\_\+\+ALTITUDE}} = abs(atan2(\mbox{\hyperlink{namespacevisual__odom_1_1constants_aa2e15abc33365447ee4e6e83176d6a85}{CV}}, \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}{F}}))
+\begin{DoxyCompactList}\small\item\em Derived vertical angle limit matching the sensor field of view. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1constants_a4070ecda57cd6e6782d90109f66f831b}{CAMERA\+\_\+\+POS\+\_\+\+IN\+\_\+\+BASELINK}} = \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}(0.\+1, 0.\+0, 0.\+75)
+\begin{DoxyCompactList}\small\item\em Fixed physical camera offset relative to base\+\_\+link. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_aa6435afc3b786625f78eb0a783a835a9}{CAMERA\+\_\+\+ANGLE\+\_\+\+VER\+\_\+\+RAD}} = 43 \texorpdfstring{$\ast$}{*} pi / 180
+\begin{DoxyCompactList}\small\item\em Vertical field of view angle of the RGB-\/D camera in radians. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a7500dc4a41d2bb75f7c5e6558ba7b249}{CAMERA\+\_\+\+ANGLE\+\_\+\+HOR\+\_\+\+RAD}} = 57 \texorpdfstring{$\ast$}{*} pi / 180
+\begin{DoxyCompactList}\small\item\em Horizontal field of view angle of the RGB-\/D camera in radians. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a93a57c3dae53444282766f1183483d7e}{RESOLUTION\+\_\+\+CONE\+\_\+H}} = 40
+\begin{DoxyCompactList}\small\item\em Horizontal discretization resolution of the camera vision cone. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a2743f7b3f89beb03ba2bbd33166eb9c2}{RESOLUTION\+\_\+\+CONE\+\_\+V}} = 30
+\begin{DoxyCompactList}\small\item\em Vertical discretization resolution of the camera vision cone. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1constants_a91877125b028a0cdc6b6e9280db2b751}{ROT\+\_\+\+BK}}
+\begin{DoxyCompactList}\small\item\em Rotation matrix from Kinect optical frame to ROS base\+\_\+link frame. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a6ff2df4c16eb10aee61d45837bb372aa}{MIN\+\_\+\+DEPTH}} = 400
+\begin{DoxyCompactList}\small\item\em Minimum reliable depth value in millimeters. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1f0bf45df4496589cfd620bf77c7eca9}{MAX\+\_\+\+DEPTH}} = 7000
+\begin{DoxyCompactList}\small\item\em Maximum reliable depth value in millimeters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ad0b86f33711adacef243241c989c7c9a}{RANSAC\+\_\+\+EVALUATION\+\_\+\+TOLERANCE}} = 0.\+045
+\begin{DoxyCompactList}\small\item\em Inlier distance threshold for evaluating RANSAC hypotheses in meters. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a833e48058c638ca53c0512644246e657}{RANSAC\+\_\+\+ITERATION}} = 100
+\begin{DoxyCompactList}\small\item\em Maximum number of RANSAC iterations. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a5517cedddfd3a12218685edfb355c10b}{RANSAC\+\_\+\+SAMPLE\+\_\+\+SIZE}} = 3
+\begin{DoxyCompactList}\small\item\em Number of matched point pairs used for one RANSAC hypothesis. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ad16d5431429b11b05529d9dcafc9d240}{RANSAC\+\_\+\+MIN\+\_\+\+INLIER\+\_\+\+RATIO}} = 0.\+3
+\begin{DoxyCompactList}\small\item\em Minimum inlier ratio required to accept a RANSAC solution. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_ac048f55a988e4c31240c5823f31e0baa}{MIN\+\_\+\+MATCHES\+\_\+\+FOR\+\_\+\+RANSAC}} = 15
+\begin{DoxyCompactList}\small\item\em Minimum number of feature matches required to start RANSAC. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a789139d611eeeb0d276faade0d961402}{MAX\+\_\+\+ROTATION\+\_\+\+ANGLE\+\_\+\+DEG}} = 15.\+0
+\begin{DoxyCompactList}\small\item\em Maximum plausible robot rotation per frame step in degrees. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a564b0ad7d9cf92118cbeef474c2913ef}{RGB\+\_\+\+DEPTH\+\_\+\+SYNC\+\_\+\+TOLERANCE\+\_\+\+SEC}} = 0.\+05
+\begin{DoxyCompactList}\small\item\em Maximum allowed temporal difference between RGB and depth frames in seconds. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_ac61cf8540c2e718c64a14a04ed775d11}{PIXEL\+\_\+\+TOLERANCE}} = 8
+\begin{DoxyCompactList}\small\item\em Pixel-\/space search radius used for visual match validation. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a49851dd50290750ec9f7b11a5ef7fc00}{N\+\_\+\+ROBOT\+\_\+\+SAMPLES}} = 1000
+\begin{DoxyCompactList}\small\item\em Default number of particles/samples used for localization. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a97933dad2498513cbdf1c17cee6dc78f}{NOISE\+\_\+\+INCREMENT\+\_\+\+RANSAC\+\_\+\+FAILURE}} = 0.\+002
+\begin{DoxyCompactList}\small\item\em Noise increment added after a failed RANSAC estimation. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ada92e5766062d4eb73b85cc680b3664e}{MAX\+\_\+\+ADDITIONAL\+\_\+\+NOISE\+\_\+\+RANSAC\+\_\+\+FAILURE}} = 0.\+22
+\begin{DoxyCompactList}\small\item\em Maximum allowed additional noise caused by repeated RANSAC failures. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_ae47516df8892e48ae96ce43c4c0299bd}{MATCHES\+\_\+\+FOR\+\_\+\+NEW\+\_\+\+LANDMARKS}} = 50
+\begin{DoxyCompactList}\small\item\em Minimum tracking count required to stabilize a new landmark. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_a0c36645e3ee9cb5cba9853b9db39f611}{INITIAL\+\_\+\+LANDMARK\+\_\+\+COUNT}} = 260
+\begin{DoxyCompactList}\small\item\em Initial landmark count threshold used for map bootstrapping. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a2942f8208bab3773c21a2a2bed8e802f}{MIN\+\_\+\+LANDMARK\+\_\+\+TRUST}} = 20.\+0
+\begin{DoxyCompactList}\small\item\em Minimum trust value before a landmark is considered unreliable. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_af00d25b4a800c1f6e78adb59d54f5447}{INCREASE\+\_\+\+TRUST\+\_\+\+VALUE}} = 10.\+0
+\begin{DoxyCompactList}\small\item\em Trust value added to a landmark after successful observation. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1ad49caed0afbf1e76f6413503fdbe2a}{DECREASE\+\_\+\+TRUST\+\_\+\+FACTOR}} = 0.\+95
+\begin{DoxyCompactList}\small\item\em Multiplicative trust decay factor for unobserved landmarks. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a4550c7fbaffbe7a3737610e8d09e8501}{SIGMA\+\_\+\+X\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q}} = 0.\+05
+\begin{DoxyCompactList}\small\item\em Wheel odometry process noise standard deviation in x-\/direction. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a4b68b7c91cb759da4ae4e241e2c391bb}{SIGMA\+\_\+\+Y\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q}} = 0.\+05
+\begin{DoxyCompactList}\small\item\em Wheel odometry process noise standard deviation in y-\/direction. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ac1c53043d2223a6a157446a017c63357}{SIGMA\+\_\+\+THETA\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q}} = 0.\+03
+\begin{DoxyCompactList}\small\item\em Wheel odometry process noise standard deviation for heading angle. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_acc410ed2a01eed95437047c5375b7b0c}{SIGMA\+\_\+\+PIXEL}} = 0.\+8 / 3
+\begin{DoxyCompactList}\small\item\em Pixel projection noise coefficient for image-\/plane coordinates. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_ab9ee5096b4d953a4a36a1d7cfbc27c13}{ERROR\+\_\+\+MIN\+\_\+\+DEPTH}} = 0.\+001477
+\begin{DoxyCompactList}\small\item\em Base depth measurement noise offset at closest sensor range in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a3278fde149ad258a7430eeec91f82465}{ERROR\+\_\+\+QUADRATIC\+\_\+\+DEPTH}} = 0.\+002294
+\begin{DoxyCompactList}\small\item\em Quadratic depth error factor modeling RGB-\/D precision degradation. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{namespacevisual__odom_1_1constants_af06895d598aed20edb57d2999a005b1f}{MIN\+\_\+\+DET\+\_\+\+VALUE}} = 1e-\/12
+\begin{DoxyCompactList}\small\item\em Small epsilon cutoff used to avoid determinant singularities. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a7425e0e755e9a5c9f0b0769fb5f11122}{GAUSS\+\_\+\+NOISE\+\_\+\+X\+\_\+\+SIGMA}} = 0.\+006
+\begin{DoxyCompactList}\small\item\em Gaussian noise x-\/coordinate in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a4369df225e6819f5e9e308f3837fd7c0}{GAUSS\+\_\+\+NOISE\+\_\+\+Y\+\_\+\+SIGMA}} = 0.\+006
+\begin{DoxyCompactList}\small\item\em Gaussian noise y-\/coordinate in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_af0758ae3d0eccc9b64e6c5348aa2ed31}{GAUSS\+\_\+\+NOISE\+\_\+\+THETA\+\_\+\+SIGMA}} = 0.\+003
+\begin{DoxyCompactList}\small\item\em Gaussian noise heading angle in radians. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_aedcdabf9105097cc516bb47d985d62f5}{NOISE\+\_\+\+TRANSLATION\+\_\+\+THRESHOLD}} = 0.\+10
+\begin{DoxyCompactList}\small\item\em Threshold for accumulated translation noise before adding random perturbation to the robot state in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a95facf33cef777673ad524dee72f8ca4}{NOISE\+\_\+\+ROTATION\+\_\+\+THRESHOLD}} = 0.\+06
+\begin{DoxyCompactList}\small\item\em Threshold for accumulated rotation noise before adding random perturbation to the robot state in radians. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_aed7be99165f3472b7d67142decc715fb}{RESAMPLE\+\_\+\+THETA\+\_\+\+TOLERANCE}} = 4.\+0
+\begin{DoxyCompactList}\small\item\em Tolerance for resampling based on heading angle difference in degrees. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_aeb4d1c1e9055c759a9e066ac72e9da18}{RESAMPLE\+\_\+\+TIME\+\_\+\+TOLERANCE}} = 40.\+0
+\begin{DoxyCompactList}\small\item\em Time tolerance for resampling based on elapsed time since the first frame in seconds. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a17c0261f6756a2631067302cf1e2e853}{RESAMPLE\+\_\+\+POS\+\_\+\+TOLERANCE}} = 0.\+35
+\begin{DoxyCompactList}\small\item\em Position tolerance for resampling based on Euclidean distance in meters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters}{Parameters}} \mbox{\hyperlink{namespacevisual__odom_1_1constants_a5b13dea7c2b479fa36011711a4718070}{parameters}} = None
+\begin{DoxyCompactList}\small\item\em Global runtime parameter instance populated at node startup. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{namespacevisual__odom_1_1constants_a6a7802c1e03f25a3c2c95d17aeaab682}{PERCENTAGE\+\_\+\+OF\+\_\+\+PLAY\+\_\+\+SPEED}} = 0.\+1
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Global configuration, camera model, ROS topic definitions and helper datatypes used by the visual odometry system. 
+
+This module centralizes all runtime constants, camera calibration parameters, ROS topic names, TF frame identifiers and helper dataclasses required by the visual odometry pipeline. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacevisual__odom_1_1constants_a588d9d58ca07c646733c7f0e132feb8a}\label{namespacevisual__odom_1_1constants_a588d9d58ca07c646733c7f0e132feb8a} 
+\index{visual\_odom.constants@{visual\_odom.constants}!normalize\_angle@{normalize\_angle}}
+\index{normalize\_angle@{normalize\_angle}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{normalize\_angle()}{normalize\_angle()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+constants.\+normalize\+\_\+angle (\begin{DoxyParamCaption}\item[{float}]{angle }\end{DoxyParamCaption})}
+
+
+
+Normalize an angle to the range \mbox{[}-\/pi, pi\mbox{]}. 
+
+Normalizes a given angle into the standard bounding range of \mbox{[}-\/pi, pi\mbox{]}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em angle} & Input angle in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Normalized angle in radians. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacevisual__odom_1_1constants_a66a329734cbcedfa2a566cdb84ad0457}\label{namespacevisual__odom_1_1constants_a66a329734cbcedfa2a566cdb84ad0457} 
+\index{visual\_odom.constants@{visual\_odom.constants}!ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC@{ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC}}
+\index{ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC@{ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC}{ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+ACCUMULATED\+\_\+\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC = "{}/serf01/pointcloud/accumulated\+\_\+points\+\_\+3d"{}}
+
+
+
+Frame/topic identifier for the accumulated environment point cloud. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_abd7c6fe7f8b2dd7a929a8882fdeaeb0c}\label{namespacevisual__odom_1_1constants_abd7c6fe7f8b2dd7a929a8882fdeaeb0c} 
+\index{visual\_odom.constants@{visual\_odom.constants}!BASE\_LINK\_FRAME\_ID@{BASE\_LINK\_FRAME\_ID}}
+\index{BASE\_LINK\_FRAME\_ID@{BASE\_LINK\_FRAME\_ID}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{BASE\_LINK\_FRAME\_ID}{BASE\_LINK\_FRAME\_ID}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+BASE\+\_\+\+LINK\+\_\+\+FRAME\+\_\+\+ID = "{}base\+\_\+link"{}}
+
+
+
+TF frame identifier for the physical center of the robot platform. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a7500dc4a41d2bb75f7c5e6558ba7b249}\label{namespacevisual__odom_1_1constants_a7500dc4a41d2bb75f7c5e6558ba7b249} 
+\index{visual\_odom.constants@{visual\_odom.constants}!CAMERA\_ANGLE\_HOR\_RAD@{CAMERA\_ANGLE\_HOR\_RAD}}
+\index{CAMERA\_ANGLE\_HOR\_RAD@{CAMERA\_ANGLE\_HOR\_RAD}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{CAMERA\_ANGLE\_HOR\_RAD}{CAMERA\_ANGLE\_HOR\_RAD}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+CAMERA\+\_\+\+ANGLE\+\_\+\+HOR\+\_\+\+RAD = 57 \texorpdfstring{$\ast$}{*} pi / 180}
+
+
+
+Horizontal field of view angle of the RGB-\/D camera in radians. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aa6435afc3b786625f78eb0a783a835a9}\label{namespacevisual__odom_1_1constants_aa6435afc3b786625f78eb0a783a835a9} 
+\index{visual\_odom.constants@{visual\_odom.constants}!CAMERA\_ANGLE\_VER\_RAD@{CAMERA\_ANGLE\_VER\_RAD}}
+\index{CAMERA\_ANGLE\_VER\_RAD@{CAMERA\_ANGLE\_VER\_RAD}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{CAMERA\_ANGLE\_VER\_RAD}{CAMERA\_ANGLE\_VER\_RAD}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+CAMERA\+\_\+\+ANGLE\+\_\+\+VER\+\_\+\+RAD = 43 \texorpdfstring{$\ast$}{*} pi / 180}
+
+
+
+Vertical field of view angle of the RGB-\/D camera in radians. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4070ecda57cd6e6782d90109f66f831b}\label{namespacevisual__odom_1_1constants_a4070ecda57cd6e6782d90109f66f831b} 
+\index{visual\_odom.constants@{visual\_odom.constants}!CAMERA\_POS\_IN\_BASELINK@{CAMERA\_POS\_IN\_BASELINK}}
+\index{CAMERA\_POS\_IN\_BASELINK@{CAMERA\_POS\_IN\_BASELINK}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{CAMERA\_POS\_IN\_BASELINK}{CAMERA\_POS\_IN\_BASELINK}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+constants.\+CAMERA\+\_\+\+POS\+\_\+\+IN\+\_\+\+BASELINK = \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}(0.\+1, 0.\+0, 0.\+75)}
+
+
+
+Fixed physical camera offset relative to base\+\_\+link. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ad4624c0c8d6cd5bcdfa0a3393ec9a421}\label{namespacevisual__odom_1_1constants_ad4624c0c8d6cd5bcdfa0a3393ec9a421} 
+\index{visual\_odom.constants@{visual\_odom.constants}!CU@{CU}}
+\index{CU@{CU}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{CU}{CU}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+CU = 318.\+525}
+
+
+
+Horizontal pixel coordinate of the camera principal point. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aa2e15abc33365447ee4e6e83176d6a85}\label{namespacevisual__odom_1_1constants_aa2e15abc33365447ee4e6e83176d6a85} 
+\index{visual\_odom.constants@{visual\_odom.constants}!CV@{CV}}
+\index{CV@{CV}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{CV}{CV}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+CV = 241.\+181}
+
+
+
+Vertical pixel coordinate of the camera principal point. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a1ad49caed0afbf1e76f6413503fdbe2a}\label{namespacevisual__odom_1_1constants_a1ad49caed0afbf1e76f6413503fdbe2a} 
+\index{visual\_odom.constants@{visual\_odom.constants}!DECREASE\_TRUST\_FACTOR@{DECREASE\_TRUST\_FACTOR}}
+\index{DECREASE\_TRUST\_FACTOR@{DECREASE\_TRUST\_FACTOR}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{DECREASE\_TRUST\_FACTOR}{DECREASE\_TRUST\_FACTOR}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+DECREASE\+\_\+\+TRUST\+\_\+\+FACTOR = 0.\+95}
+
+
+
+Multiplicative trust decay factor for unobserved landmarks. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a7ec7232624eb96ade8aa423f3914cbcd}\label{namespacevisual__odom_1_1constants_a7ec7232624eb96ade8aa423f3914cbcd} 
+\index{visual\_odom.constants@{visual\_odom.constants}!DEPTH\_IMAGE\_TOPIC@{DEPTH\_IMAGE\_TOPIC}}
+\index{DEPTH\_IMAGE\_TOPIC@{DEPTH\_IMAGE\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{DEPTH\_IMAGE\_TOPIC}{DEPTH\_IMAGE\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+DEPTH\+\_\+\+IMAGE\+\_\+\+TOPIC = "{}/serf01/nav\+\_\+rgbd\+\_\+1/depth/image\+\_\+raw"{}}
+
+
+
+ROS 2 topic for raw depth image input. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ab9ee5096b4d953a4a36a1d7cfbc27c13}\label{namespacevisual__odom_1_1constants_ab9ee5096b4d953a4a36a1d7cfbc27c13} 
+\index{visual\_odom.constants@{visual\_odom.constants}!ERROR\_MIN\_DEPTH@{ERROR\_MIN\_DEPTH}}
+\index{ERROR\_MIN\_DEPTH@{ERROR\_MIN\_DEPTH}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{ERROR\_MIN\_DEPTH}{ERROR\_MIN\_DEPTH}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+ERROR\+\_\+\+MIN\+\_\+\+DEPTH = 0.\+001477}
+
+
+
+Base depth measurement noise offset at closest sensor range in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a3278fde149ad258a7430eeec91f82465}\label{namespacevisual__odom_1_1constants_a3278fde149ad258a7430eeec91f82465} 
+\index{visual\_odom.constants@{visual\_odom.constants}!ERROR\_QUADRATIC\_DEPTH@{ERROR\_QUADRATIC\_DEPTH}}
+\index{ERROR\_QUADRATIC\_DEPTH@{ERROR\_QUADRATIC\_DEPTH}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{ERROR\_QUADRATIC\_DEPTH}{ERROR\_QUADRATIC\_DEPTH}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+ERROR\+\_\+\+QUADRATIC\+\_\+\+DEPTH = 0.\+002294}
+
+
+
+Quadratic depth error factor modeling RGB-\/D precision degradation. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}\label{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d} 
+\index{visual\_odom.constants@{visual\_odom.constants}!F@{F}}
+\index{F@{F}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{F}{F}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+F = 526.\+61}
+
+
+
+Horizontal and vertical focal length parameter of the Kinect optical model. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a56b1959a4fd2962c8ed18ffd1232bc45}\label{namespacevisual__odom_1_1constants_a56b1959a4fd2962c8ed18ffd1232bc45} 
+\index{visual\_odom.constants@{visual\_odom.constants}!FILTERED\_ODOMETRY\_TOPIC@{FILTERED\_ODOMETRY\_TOPIC}}
+\index{FILTERED\_ODOMETRY\_TOPIC@{FILTERED\_ODOMETRY\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{FILTERED\_ODOMETRY\_TOPIC}{FILTERED\_ODOMETRY\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+FILTERED\+\_\+\+ODOMETRY\+\_\+\+TOPIC = "{}/serf01/odometry/filtered"{}}
+
+
+
+ROS 2 topic for filtered odometry. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_af0758ae3d0eccc9b64e6c5348aa2ed31}\label{namespacevisual__odom_1_1constants_af0758ae3d0eccc9b64e6c5348aa2ed31} 
+\index{visual\_odom.constants@{visual\_odom.constants}!GAUSS\_NOISE\_THETA\_SIGMA@{GAUSS\_NOISE\_THETA\_SIGMA}}
+\index{GAUSS\_NOISE\_THETA\_SIGMA@{GAUSS\_NOISE\_THETA\_SIGMA}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{GAUSS\_NOISE\_THETA\_SIGMA}{GAUSS\_NOISE\_THETA\_SIGMA}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+GAUSS\+\_\+\+NOISE\+\_\+\+THETA\+\_\+\+SIGMA = 0.\+003}
+
+
+
+Gaussian noise heading angle in radians. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a7425e0e755e9a5c9f0b0769fb5f11122}\label{namespacevisual__odom_1_1constants_a7425e0e755e9a5c9f0b0769fb5f11122} 
+\index{visual\_odom.constants@{visual\_odom.constants}!GAUSS\_NOISE\_X\_SIGMA@{GAUSS\_NOISE\_X\_SIGMA}}
+\index{GAUSS\_NOISE\_X\_SIGMA@{GAUSS\_NOISE\_X\_SIGMA}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{GAUSS\_NOISE\_X\_SIGMA}{GAUSS\_NOISE\_X\_SIGMA}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+GAUSS\+\_\+\+NOISE\+\_\+\+X\+\_\+\+SIGMA = 0.\+006}
+
+
+
+Gaussian noise x-\/coordinate in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4369df225e6819f5e9e308f3837fd7c0}\label{namespacevisual__odom_1_1constants_a4369df225e6819f5e9e308f3837fd7c0} 
+\index{visual\_odom.constants@{visual\_odom.constants}!GAUSS\_NOISE\_Y\_SIGMA@{GAUSS\_NOISE\_Y\_SIGMA}}
+\index{GAUSS\_NOISE\_Y\_SIGMA@{GAUSS\_NOISE\_Y\_SIGMA}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{GAUSS\_NOISE\_Y\_SIGMA}{GAUSS\_NOISE\_Y\_SIGMA}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+GAUSS\+\_\+\+NOISE\+\_\+\+Y\+\_\+\+SIGMA = 0.\+006}
+
+
+
+Gaussian noise y-\/coordinate in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a43f37961472b8a9cafd46a88d9639830}\label{namespacevisual__odom_1_1constants_a43f37961472b8a9cafd46a88d9639830} 
+\index{visual\_odom.constants@{visual\_odom.constants}!IMU\_ODOMETRY\_TOPIC@{IMU\_ODOMETRY\_TOPIC}}
+\index{IMU\_ODOMETRY\_TOPIC@{IMU\_ODOMETRY\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{IMU\_ODOMETRY\_TOPIC}{IMU\_ODOMETRY\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+IMU\+\_\+\+ODOMETRY\+\_\+\+TOPIC = "{}/serf01/odometry/imu"{}}
+
+
+
+ROS 2 topic for IMU-\/based odometry input. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_af00d25b4a800c1f6e78adb59d54f5447}\label{namespacevisual__odom_1_1constants_af00d25b4a800c1f6e78adb59d54f5447} 
+\index{visual\_odom.constants@{visual\_odom.constants}!INCREASE\_TRUST\_VALUE@{INCREASE\_TRUST\_VALUE}}
+\index{INCREASE\_TRUST\_VALUE@{INCREASE\_TRUST\_VALUE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{INCREASE\_TRUST\_VALUE}{INCREASE\_TRUST\_VALUE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+INCREASE\+\_\+\+TRUST\+\_\+\+VALUE = 10.\+0}
+
+
+
+Trust value added to a landmark after successful observation. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a0c36645e3ee9cb5cba9853b9db39f611}\label{namespacevisual__odom_1_1constants_a0c36645e3ee9cb5cba9853b9db39f611} 
+\index{visual\_odom.constants@{visual\_odom.constants}!INITIAL\_LANDMARK\_COUNT@{INITIAL\_LANDMARK\_COUNT}}
+\index{INITIAL\_LANDMARK\_COUNT@{INITIAL\_LANDMARK\_COUNT}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{INITIAL\_LANDMARK\_COUNT}{INITIAL\_LANDMARK\_COUNT}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+INITIAL\+\_\+\+LANDMARK\+\_\+\+COUNT = 260}
+
+
+
+Initial landmark count threshold used for map bootstrapping. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a5a508cf849a190ffccf2f72d1616b94e}\label{namespacevisual__odom_1_1constants_a5a508cf849a190ffccf2f72d1616b94e} 
+\index{visual\_odom.constants@{visual\_odom.constants}!KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC@{KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC}}
+\index{KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC@{KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC}{KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+KEYPOINT\+\_\+\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC = "{}/serf01/pointcloud/keypoint\+\_\+3d"{}}
+
+
+
+Frame/topic identifier for tracked ORB descriptor 3D keypoints. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4a85580afb591f8949aa91e470a8d39f}\label{namespacevisual__odom_1_1constants_a4a85580afb591f8949aa91e470a8d39f} 
+\index{visual\_odom.constants@{visual\_odom.constants}!KINECT\_FRAME\_ID@{KINECT\_FRAME\_ID}}
+\index{KINECT\_FRAME\_ID@{KINECT\_FRAME\_ID}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{KINECT\_FRAME\_ID}{KINECT\_FRAME\_ID}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+KINECT\+\_\+\+FRAME\+\_\+\+ID = "{}kinect\+\_\+depth"{}}
+
+
+
+TF frame identifier for the optical center of the RGB-\/D camera. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a2058ca538096019297d464e88a225686}\label{namespacevisual__odom_1_1constants_a2058ca538096019297d464e88a225686} 
+\index{visual\_odom.constants@{visual\_odom.constants}!KP\_IMAGE\_TOPIC@{KP\_IMAGE\_TOPIC}}
+\index{KP\_IMAGE\_TOPIC@{KP\_IMAGE\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{KP\_IMAGE\_TOPIC}{KP\_IMAGE\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+KP\+\_\+\+IMAGE\+\_\+\+TOPIC = "{}/serf01/camera/keypoint\+\_\+image"{}}
+
+
+
+ROS 2 topic for publishing images with visualized keypoints. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ae47516df8892e48ae96ce43c4c0299bd}\label{namespacevisual__odom_1_1constants_ae47516df8892e48ae96ce43c4c0299bd} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MATCHES\_FOR\_NEW\_LANDMARKS@{MATCHES\_FOR\_NEW\_LANDMARKS}}
+\index{MATCHES\_FOR\_NEW\_LANDMARKS@{MATCHES\_FOR\_NEW\_LANDMARKS}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MATCHES\_FOR\_NEW\_LANDMARKS}{MATCHES\_FOR\_NEW\_LANDMARKS}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MATCHES\+\_\+\+FOR\+\_\+\+NEW\+\_\+\+LANDMARKS = 50}
+
+
+
+Minimum tracking count required to stabilize a new landmark. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ada92e5766062d4eb73b85cc680b3664e}\label{namespacevisual__odom_1_1constants_ada92e5766062d4eb73b85cc680b3664e} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE@{MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE}}
+\index{MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE@{MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE}{MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+MAX\+\_\+\+ADDITIONAL\+\_\+\+NOISE\+\_\+\+RANSAC\+\_\+\+FAILURE = 0.\+22}
+
+
+
+Maximum allowed additional noise caused by repeated RANSAC failures. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a57082afbad45ccb7930f621fe8da0305}\label{namespacevisual__odom_1_1constants_a57082afbad45ccb7930f621fe8da0305} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_ALTITUDE@{MAX\_ALTITUDE}}
+\index{MAX\_ALTITUDE@{MAX\_ALTITUDE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_ALTITUDE}{MAX\_ALTITUDE}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+constants.\+MAX\+\_\+\+ALTITUDE = abs(atan2(\mbox{\hyperlink{namespacevisual__odom_1_1constants_aa2e15abc33365447ee4e6e83176d6a85}{CV}}, \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}{F}}))}
+
+
+
+Derived vertical angle limit matching the sensor field of view. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_acfe628cfac86ec3e4a28a35636869ef9}\label{namespacevisual__odom_1_1constants_acfe628cfac86ec3e4a28a35636869ef9} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_AZIMUTH@{MAX\_AZIMUTH}}
+\index{MAX\_AZIMUTH@{MAX\_AZIMUTH}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_AZIMUTH}{MAX\_AZIMUTH}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+constants.\+MAX\+\_\+\+AZIMUTH = abs(atan2(\mbox{\hyperlink{namespacevisual__odom_1_1constants_ad4624c0c8d6cd5bcdfa0a3393ec9a421}{CU}}, \mbox{\hyperlink{namespacevisual__odom_1_1constants_a1977e38048bddf2b367e71515237e37d}{F}}))}
+
+
+
+Derived horizontal angle limit matching the sensor field of view. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a1f0bf45df4496589cfd620bf77c7eca9}\label{namespacevisual__odom_1_1constants_a1f0bf45df4496589cfd620bf77c7eca9} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_DEPTH@{MAX\_DEPTH}}
+\index{MAX\_DEPTH@{MAX\_DEPTH}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_DEPTH}{MAX\_DEPTH}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MAX\+\_\+\+DEPTH = 7000}
+
+
+
+Maximum reliable depth value in millimeters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a789139d611eeeb0d276faade0d961402}\label{namespacevisual__odom_1_1constants_a789139d611eeeb0d276faade0d961402} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_ROTATION\_ANGLE\_DEG@{MAX\_ROTATION\_ANGLE\_DEG}}
+\index{MAX\_ROTATION\_ANGLE\_DEG@{MAX\_ROTATION\_ANGLE\_DEG}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_ROTATION\_ANGLE\_DEG}{MAX\_ROTATION\_ANGLE\_DEG}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+MAX\+\_\+\+ROTATION\+\_\+\+ANGLE\+\_\+\+DEG = 15.\+0}
+
+
+
+Maximum plausible robot rotation per frame step in degrees. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_afab8d18910a56809bd666549e063084b}\label{namespacevisual__odom_1_1constants_afab8d18910a56809bd666549e063084b} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_U@{MAX\_U}}
+\index{MAX\_U@{MAX\_U}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_U}{MAX\_U}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MAX\+\_\+U = 640}
+
+
+
+Horizontal image plane resolution in pixels. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a374a35d9ed2f9de97ab6fa417b310655}\label{namespacevisual__odom_1_1constants_a374a35d9ed2f9de97ab6fa417b310655} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MAX\_V@{MAX\_V}}
+\index{MAX\_V@{MAX\_V}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MAX\_V}{MAX\_V}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MAX\+\_\+V = 480}
+
+
+
+Vertical image plane resolution in pixels. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a6ff2df4c16eb10aee61d45837bb372aa}\label{namespacevisual__odom_1_1constants_a6ff2df4c16eb10aee61d45837bb372aa} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MIN\_DEPTH@{MIN\_DEPTH}}
+\index{MIN\_DEPTH@{MIN\_DEPTH}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MIN\_DEPTH}{MIN\_DEPTH}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MIN\+\_\+\+DEPTH = 400}
+
+
+
+Minimum reliable depth value in millimeters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_af06895d598aed20edb57d2999a005b1f}\label{namespacevisual__odom_1_1constants_af06895d598aed20edb57d2999a005b1f} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MIN\_DET\_VALUE@{MIN\_DET\_VALUE}}
+\index{MIN\_DET\_VALUE@{MIN\_DET\_VALUE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MIN\_DET\_VALUE}{MIN\_DET\_VALUE}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MIN\+\_\+\+DET\+\_\+\+VALUE = 1e-\/12}
+
+
+
+Small epsilon cutoff used to avoid determinant singularities. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a2942f8208bab3773c21a2a2bed8e802f}\label{namespacevisual__odom_1_1constants_a2942f8208bab3773c21a2a2bed8e802f} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MIN\_LANDMARK\_TRUST@{MIN\_LANDMARK\_TRUST}}
+\index{MIN\_LANDMARK\_TRUST@{MIN\_LANDMARK\_TRUST}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MIN\_LANDMARK\_TRUST}{MIN\_LANDMARK\_TRUST}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+MIN\+\_\+\+LANDMARK\+\_\+\+TRUST = 20.\+0}
+
+
+
+Minimum trust value before a landmark is considered unreliable. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ac048f55a988e4c31240c5823f31e0baa}\label{namespacevisual__odom_1_1constants_ac048f55a988e4c31240c5823f31e0baa} 
+\index{visual\_odom.constants@{visual\_odom.constants}!MIN\_MATCHES\_FOR\_RANSAC@{MIN\_MATCHES\_FOR\_RANSAC}}
+\index{MIN\_MATCHES\_FOR\_RANSAC@{MIN\_MATCHES\_FOR\_RANSAC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{MIN\_MATCHES\_FOR\_RANSAC}{MIN\_MATCHES\_FOR\_RANSAC}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+MIN\+\_\+\+MATCHES\+\_\+\+FOR\+\_\+\+RANSAC = 15}
+
+
+
+Minimum number of feature matches required to start RANSAC. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a49851dd50290750ec9f7b11a5ef7fc00}\label{namespacevisual__odom_1_1constants_a49851dd50290750ec9f7b11a5ef7fc00} 
+\index{visual\_odom.constants@{visual\_odom.constants}!N\_ROBOT\_SAMPLES@{N\_ROBOT\_SAMPLES}}
+\index{N\_ROBOT\_SAMPLES@{N\_ROBOT\_SAMPLES}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{N\_ROBOT\_SAMPLES}{N\_ROBOT\_SAMPLES}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+N\+\_\+\+ROBOT\+\_\+\+SAMPLES = 1000}
+
+
+
+Default number of particles/samples used for localization. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a97933dad2498513cbdf1c17cee6dc78f}\label{namespacevisual__odom_1_1constants_a97933dad2498513cbdf1c17cee6dc78f} 
+\index{visual\_odom.constants@{visual\_odom.constants}!NOISE\_INCREMENT\_RANSAC\_FAILURE@{NOISE\_INCREMENT\_RANSAC\_FAILURE}}
+\index{NOISE\_INCREMENT\_RANSAC\_FAILURE@{NOISE\_INCREMENT\_RANSAC\_FAILURE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{NOISE\_INCREMENT\_RANSAC\_FAILURE}{NOISE\_INCREMENT\_RANSAC\_FAILURE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+NOISE\+\_\+\+INCREMENT\+\_\+\+RANSAC\+\_\+\+FAILURE = 0.\+002}
+
+
+
+Noise increment added after a failed RANSAC estimation. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a95facf33cef777673ad524dee72f8ca4}\label{namespacevisual__odom_1_1constants_a95facf33cef777673ad524dee72f8ca4} 
+\index{visual\_odom.constants@{visual\_odom.constants}!NOISE\_ROTATION\_THRESHOLD@{NOISE\_ROTATION\_THRESHOLD}}
+\index{NOISE\_ROTATION\_THRESHOLD@{NOISE\_ROTATION\_THRESHOLD}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{NOISE\_ROTATION\_THRESHOLD}{NOISE\_ROTATION\_THRESHOLD}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+NOISE\+\_\+\+ROTATION\+\_\+\+THRESHOLD = 0.\+06}
+
+
+
+Threshold for accumulated rotation noise before adding random perturbation to the robot state in radians. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aedcdabf9105097cc516bb47d985d62f5}\label{namespacevisual__odom_1_1constants_aedcdabf9105097cc516bb47d985d62f5} 
+\index{visual\_odom.constants@{visual\_odom.constants}!NOISE\_TRANSLATION\_THRESHOLD@{NOISE\_TRANSLATION\_THRESHOLD}}
+\index{NOISE\_TRANSLATION\_THRESHOLD@{NOISE\_TRANSLATION\_THRESHOLD}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{NOISE\_TRANSLATION\_THRESHOLD}{NOISE\_TRANSLATION\_THRESHOLD}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+NOISE\+\_\+\+TRANSLATION\+\_\+\+THRESHOLD = 0.\+10}
+
+
+
+Threshold for accumulated translation noise before adding random perturbation to the robot state in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a5b13dea7c2b479fa36011711a4718070}\label{namespacevisual__odom_1_1constants_a5b13dea7c2b479fa36011711a4718070} 
+\index{visual\_odom.constants@{visual\_odom.constants}!parameters@{parameters}}
+\index{parameters@{parameters}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{parameters}{parameters}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters}{Parameters}} visual\+\_\+odom.\+constants.\+parameters = None}
+
+
+
+Global runtime parameter instance populated at node startup. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a6a7802c1e03f25a3c2c95d17aeaab682}\label{namespacevisual__odom_1_1constants_a6a7802c1e03f25a3c2c95d17aeaab682} 
+\index{visual\_odom.constants@{visual\_odom.constants}!PERCENTAGE\_OF\_PLAY\_SPEED@{PERCENTAGE\_OF\_PLAY\_SPEED}}
+\index{PERCENTAGE\_OF\_PLAY\_SPEED@{PERCENTAGE\_OF\_PLAY\_SPEED}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{PERCENTAGE\_OF\_PLAY\_SPEED}{PERCENTAGE\_OF\_PLAY\_SPEED}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+PERCENTAGE\+\_\+\+OF\+\_\+\+PLAY\+\_\+\+SPEED = 0.\+1}
+
+\Hypertarget{namespacevisual__odom_1_1constants_ac61cf8540c2e718c64a14a04ed775d11}\label{namespacevisual__odom_1_1constants_ac61cf8540c2e718c64a14a04ed775d11} 
+\index{visual\_odom.constants@{visual\_odom.constants}!PIXEL\_TOLERANCE@{PIXEL\_TOLERANCE}}
+\index{PIXEL\_TOLERANCE@{PIXEL\_TOLERANCE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{PIXEL\_TOLERANCE}{PIXEL\_TOLERANCE}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+PIXEL\+\_\+\+TOLERANCE = 8}
+
+
+
+Pixel-\/space search radius used for visual match validation. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a531e2637b9116b157451b6359d66e7da}\label{namespacevisual__odom_1_1constants_a531e2637b9116b157451b6359d66e7da} 
+\index{visual\_odom.constants@{visual\_odom.constants}!POINTCLOUD\_FRAME\_TOPIC@{POINTCLOUD\_FRAME\_TOPIC}}
+\index{POINTCLOUD\_FRAME\_TOPIC@{POINTCLOUD\_FRAME\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{POINTCLOUD\_FRAME\_TOPIC}{POINTCLOUD\_FRAME\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC = "{}/serf01/pointcloud/points\+\_\+3d"{}}
+
+
+
+Frame/topic identifier for the structural environment point cloud. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ad0b86f33711adacef243241c989c7c9a}\label{namespacevisual__odom_1_1constants_ad0b86f33711adacef243241c989c7c9a} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RANSAC\_EVALUATION\_TOLERANCE@{RANSAC\_EVALUATION\_TOLERANCE}}
+\index{RANSAC\_EVALUATION\_TOLERANCE@{RANSAC\_EVALUATION\_TOLERANCE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RANSAC\_EVALUATION\_TOLERANCE}{RANSAC\_EVALUATION\_TOLERANCE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RANSAC\+\_\+\+EVALUATION\+\_\+\+TOLERANCE = 0.\+045}
+
+
+
+Inlier distance threshold for evaluating RANSAC hypotheses in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a833e48058c638ca53c0512644246e657}\label{namespacevisual__odom_1_1constants_a833e48058c638ca53c0512644246e657} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RANSAC\_ITERATION@{RANSAC\_ITERATION}}
+\index{RANSAC\_ITERATION@{RANSAC\_ITERATION}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RANSAC\_ITERATION}{RANSAC\_ITERATION}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+RANSAC\+\_\+\+ITERATION = 100}
+
+
+
+Maximum number of RANSAC iterations. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ad16d5431429b11b05529d9dcafc9d240}\label{namespacevisual__odom_1_1constants_ad16d5431429b11b05529d9dcafc9d240} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RANSAC\_MIN\_INLIER\_RATIO@{RANSAC\_MIN\_INLIER\_RATIO}}
+\index{RANSAC\_MIN\_INLIER\_RATIO@{RANSAC\_MIN\_INLIER\_RATIO}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RANSAC\_MIN\_INLIER\_RATIO}{RANSAC\_MIN\_INLIER\_RATIO}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RANSAC\+\_\+\+MIN\+\_\+\+INLIER\+\_\+\+RATIO = 0.\+3}
+
+
+
+Minimum inlier ratio required to accept a RANSAC solution. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a5517cedddfd3a12218685edfb355c10b}\label{namespacevisual__odom_1_1constants_a5517cedddfd3a12218685edfb355c10b} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RANSAC\_SAMPLE\_SIZE@{RANSAC\_SAMPLE\_SIZE}}
+\index{RANSAC\_SAMPLE\_SIZE@{RANSAC\_SAMPLE\_SIZE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RANSAC\_SAMPLE\_SIZE}{RANSAC\_SAMPLE\_SIZE}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+RANSAC\+\_\+\+SAMPLE\+\_\+\+SIZE = 3}
+
+
+
+Number of matched point pairs used for one RANSAC hypothesis. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a17c0261f6756a2631067302cf1e2e853}\label{namespacevisual__odom_1_1constants_a17c0261f6756a2631067302cf1e2e853} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RESAMPLE\_POS\_TOLERANCE@{RESAMPLE\_POS\_TOLERANCE}}
+\index{RESAMPLE\_POS\_TOLERANCE@{RESAMPLE\_POS\_TOLERANCE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RESAMPLE\_POS\_TOLERANCE}{RESAMPLE\_POS\_TOLERANCE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RESAMPLE\+\_\+\+POS\+\_\+\+TOLERANCE = 0.\+35}
+
+
+
+Position tolerance for resampling based on Euclidean distance in meters. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aed7be99165f3472b7d67142decc715fb}\label{namespacevisual__odom_1_1constants_aed7be99165f3472b7d67142decc715fb} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RESAMPLE\_THETA\_TOLERANCE@{RESAMPLE\_THETA\_TOLERANCE}}
+\index{RESAMPLE\_THETA\_TOLERANCE@{RESAMPLE\_THETA\_TOLERANCE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RESAMPLE\_THETA\_TOLERANCE}{RESAMPLE\_THETA\_TOLERANCE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RESAMPLE\+\_\+\+THETA\+\_\+\+TOLERANCE = 4.\+0}
+
+
+
+Tolerance for resampling based on heading angle difference in degrees. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aeb4d1c1e9055c759a9e066ac72e9da18}\label{namespacevisual__odom_1_1constants_aeb4d1c1e9055c759a9e066ac72e9da18} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RESAMPLE\_TIME\_TOLERANCE@{RESAMPLE\_TIME\_TOLERANCE}}
+\index{RESAMPLE\_TIME\_TOLERANCE@{RESAMPLE\_TIME\_TOLERANCE}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RESAMPLE\_TIME\_TOLERANCE}{RESAMPLE\_TIME\_TOLERANCE}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RESAMPLE\+\_\+\+TIME\+\_\+\+TOLERANCE = 40.\+0}
+
+
+
+Time tolerance for resampling based on elapsed time since the first frame in seconds. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a93a57c3dae53444282766f1183483d7e}\label{namespacevisual__odom_1_1constants_a93a57c3dae53444282766f1183483d7e} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RESOLUTION\_CONE\_H@{RESOLUTION\_CONE\_H}}
+\index{RESOLUTION\_CONE\_H@{RESOLUTION\_CONE\_H}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RESOLUTION\_CONE\_H}{RESOLUTION\_CONE\_H}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+RESOLUTION\+\_\+\+CONE\+\_\+H = 40}
+
+
+
+Horizontal discretization resolution of the camera vision cone. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a2743f7b3f89beb03ba2bbd33166eb9c2}\label{namespacevisual__odom_1_1constants_a2743f7b3f89beb03ba2bbd33166eb9c2} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RESOLUTION\_CONE\_V@{RESOLUTION\_CONE\_V}}
+\index{RESOLUTION\_CONE\_V@{RESOLUTION\_CONE\_V}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RESOLUTION\_CONE\_V}{RESOLUTION\_CONE\_V}}
+{\footnotesize\ttfamily int visual\+\_\+odom.\+constants.\+RESOLUTION\+\_\+\+CONE\+\_\+V = 30}
+
+
+
+Vertical discretization resolution of the camera vision cone. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a564b0ad7d9cf92118cbeef474c2913ef}\label{namespacevisual__odom_1_1constants_a564b0ad7d9cf92118cbeef474c2913ef} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC@{RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC}}
+\index{RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC@{RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC}{RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+RGB\+\_\+\+DEPTH\+\_\+\+SYNC\+\_\+\+TOLERANCE\+\_\+\+SEC = 0.\+05}
+
+
+
+Maximum allowed temporal difference between RGB and depth frames in seconds. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a114cb17c95ba291455df239d8489c84f}\label{namespacevisual__odom_1_1constants_a114cb17c95ba291455df239d8489c84f} 
+\index{visual\_odom.constants@{visual\_odom.constants}!RGB\_IMAGE\_TOPIC@{RGB\_IMAGE\_TOPIC}}
+\index{RGB\_IMAGE\_TOPIC@{RGB\_IMAGE\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{RGB\_IMAGE\_TOPIC}{RGB\_IMAGE\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+RGB\+\_\+\+IMAGE\+\_\+\+TOPIC = "{}/serf01/nav\+\_\+rgbd\+\_\+1/rgb/image\+\_\+raw"{}}
+
+
+
+ROS 2 topic for raw RGB image input. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a91877125b028a0cdc6b6e9280db2b751}\label{namespacevisual__odom_1_1constants_a91877125b028a0cdc6b6e9280db2b751} 
+\index{visual\_odom.constants@{visual\_odom.constants}!ROT\_BK@{ROT\_BK}}
+\index{ROT\_BK@{ROT\_BK}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{ROT\_BK}{ROT\_BK}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+constants.\+ROT\+\_\+\+BK}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ np.array([[0.0,\ 0.0,\ 1.0],}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [-\/1.0,\ 0.0,\ 0.0],}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ [0.0,\ -\/1.0,\ 0.0]],\ dtype=np.float64)}
+
+\end{DoxyCode}
+
+
+Rotation matrix from Kinect optical frame to ROS base\+\_\+link frame. 
+
+Maps Kinect optical frame conventions to the standard ROS base\+\_\+link convention. The optical Z-\/axis is mapped to the base\+\_\+link X-\/axis, and the optical X-\/axis is mapped to the negative base\+\_\+link Y-\/axis. \Hypertarget{namespacevisual__odom_1_1constants_acc410ed2a01eed95437047c5375b7b0c}\label{namespacevisual__odom_1_1constants_acc410ed2a01eed95437047c5375b7b0c} 
+\index{visual\_odom.constants@{visual\_odom.constants}!SIGMA\_PIXEL@{SIGMA\_PIXEL}}
+\index{SIGMA\_PIXEL@{SIGMA\_PIXEL}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{SIGMA\_PIXEL}{SIGMA\_PIXEL}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+SIGMA\+\_\+\+PIXEL = 0.\+8 / 3}
+
+
+
+Pixel projection noise coefficient for image-\/plane coordinates. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ac1c53043d2223a6a157446a017c63357}\label{namespacevisual__odom_1_1constants_ac1c53043d2223a6a157446a017c63357} 
+\index{visual\_odom.constants@{visual\_odom.constants}!SIGMA\_THETA\_ODOM\_WHEEL\_Q@{SIGMA\_THETA\_ODOM\_WHEEL\_Q}}
+\index{SIGMA\_THETA\_ODOM\_WHEEL\_Q@{SIGMA\_THETA\_ODOM\_WHEEL\_Q}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{SIGMA\_THETA\_ODOM\_WHEEL\_Q}{SIGMA\_THETA\_ODOM\_WHEEL\_Q}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+SIGMA\+\_\+\+THETA\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q = 0.\+03}
+
+
+
+Wheel odometry process noise standard deviation for heading angle. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4550c7fbaffbe7a3737610e8d09e8501}\label{namespacevisual__odom_1_1constants_a4550c7fbaffbe7a3737610e8d09e8501} 
+\index{visual\_odom.constants@{visual\_odom.constants}!SIGMA\_X\_ODOM\_WHEEL\_Q@{SIGMA\_X\_ODOM\_WHEEL\_Q}}
+\index{SIGMA\_X\_ODOM\_WHEEL\_Q@{SIGMA\_X\_ODOM\_WHEEL\_Q}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{SIGMA\_X\_ODOM\_WHEEL\_Q}{SIGMA\_X\_ODOM\_WHEEL\_Q}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+SIGMA\+\_\+\+X\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q = 0.\+05}
+
+
+
+Wheel odometry process noise standard deviation in x-\/direction. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4b68b7c91cb759da4ae4e241e2c391bb}\label{namespacevisual__odom_1_1constants_a4b68b7c91cb759da4ae4e241e2c391bb} 
+\index{visual\_odom.constants@{visual\_odom.constants}!SIGMA\_Y\_ODOM\_WHEEL\_Q@{SIGMA\_Y\_ODOM\_WHEEL\_Q}}
+\index{SIGMA\_Y\_ODOM\_WHEEL\_Q@{SIGMA\_Y\_ODOM\_WHEEL\_Q}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{SIGMA\_Y\_ODOM\_WHEEL\_Q}{SIGMA\_Y\_ODOM\_WHEEL\_Q}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+SIGMA\+\_\+\+Y\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q = 0.\+05}
+
+
+
+Wheel odometry process noise standard deviation in y-\/direction. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a4fd5df2542aaae2d4ea8aabac4477a68}\label{namespacevisual__odom_1_1constants_a4fd5df2542aaae2d4ea8aabac4477a68} 
+\index{visual\_odom.constants@{visual\_odom.constants}!TF\_STATIC\_TOPIC@{TF\_STATIC\_TOPIC}}
+\index{TF\_STATIC\_TOPIC@{TF\_STATIC\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{TF\_STATIC\_TOPIC}{TF\_STATIC\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+TF\+\_\+\+STATIC\+\_\+\+TOPIC = "{}/tf\+\_\+static"{}}
+
+
+
+ROS 2 topic for static TF transforms. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aa392ac50241802af35cb024fbed90aca}\label{namespacevisual__odom_1_1constants_aa392ac50241802af35cb024fbed90aca} 
+\index{visual\_odom.constants@{visual\_odom.constants}!VISION\_CONE\_TOPIC@{VISION\_CONE\_TOPIC}}
+\index{VISION\_CONE\_TOPIC@{VISION\_CONE\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{VISION\_CONE\_TOPIC}{VISION\_CONE\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+VISION\+\_\+\+CONE\+\_\+\+TOPIC = "{}/serf01/camera/vision\+\_\+cone"{}}
+
+
+
+ROS 2 topic for publishing or visualizing the camera vision cone. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_ad0625e34555474a9b5b9e836f7e6091d}\label{namespacevisual__odom_1_1constants_ad0625e34555474a9b5b9e836f7e6091d} 
+\index{visual\_odom.constants@{visual\_odom.constants}!VISUAL\_ODOM\_FRAME\_ID@{VISUAL\_ODOM\_FRAME\_ID}}
+\index{VISUAL\_ODOM\_FRAME\_ID@{VISUAL\_ODOM\_FRAME\_ID}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{VISUAL\_ODOM\_FRAME\_ID}{VISUAL\_ODOM\_FRAME\_ID}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+VISUAL\+\_\+\+ODOM\+\_\+\+FRAME\+\_\+\+ID = "{}odom"{}}
+
+
+
+TF frame identifier for the fixed global odometry origin. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a23d076b2c6c7f944b946548641f753df}\label{namespacevisual__odom_1_1constants_a23d076b2c6c7f944b946548641f753df} 
+\index{visual\_odom.constants@{visual\_odom.constants}!VISUAL\_ODOM\_MSG\_TOPIC@{VISUAL\_ODOM\_MSG\_TOPIC}}
+\index{VISUAL\_ODOM\_MSG\_TOPIC@{VISUAL\_ODOM\_MSG\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{VISUAL\_ODOM\_MSG\_TOPIC}{VISUAL\_ODOM\_MSG\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+VISUAL\+\_\+\+ODOM\+\_\+\+MSG\+\_\+\+TOPIC = "{}/serf01/odometry/project\+\_\+slam"{}}
+
+
+
+Primary ROS 2 publisher output topic for navigation odometry. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_a2aaddd483e335cdd21fa7fd907f5bf43}\label{namespacevisual__odom_1_1constants_a2aaddd483e335cdd21fa7fd907f5bf43} 
+\index{visual\_odom.constants@{visual\_odom.constants}!VISUAL\_ODOM\_PATH\_TOPIC@{VISUAL\_ODOM\_PATH\_TOPIC}}
+\index{VISUAL\_ODOM\_PATH\_TOPIC@{VISUAL\_ODOM\_PATH\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{VISUAL\_ODOM\_PATH\_TOPIC}{VISUAL\_ODOM\_PATH\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+VISUAL\+\_\+\+ODOM\+\_\+\+PATH\+\_\+\+TOPIC = "{}/serf01/visual\+\_\+odom\+\_\+path"{}}
+
+
+
+ROS 2 topic for publishing paths of the particles. 
+
+\Hypertarget{namespacevisual__odom_1_1constants_aba6a57993d7b24b39761ad101cbc3693}\label{namespacevisual__odom_1_1constants_aba6a57993d7b24b39761ad101cbc3693} 
+\index{visual\_odom.constants@{visual\_odom.constants}!WHEEL\_ODOMETRY\_TOPIC@{WHEEL\_ODOMETRY\_TOPIC}}
+\index{WHEEL\_ODOMETRY\_TOPIC@{WHEEL\_ODOMETRY\_TOPIC}!visual\_odom.constants@{visual\_odom.constants}}
+\doxysubsubsection{\texorpdfstring{WHEEL\_ODOMETRY\_TOPIC}{WHEEL\_ODOMETRY\_TOPIC}}
+{\footnotesize\ttfamily str visual\+\_\+odom.\+constants.\+WHEEL\+\_\+\+ODOMETRY\+\_\+\+TOPIC = "{}/serf01/odometry/wheel"{}}
+
+
+
+ROS 2 topic for wheel odometry input. 
+

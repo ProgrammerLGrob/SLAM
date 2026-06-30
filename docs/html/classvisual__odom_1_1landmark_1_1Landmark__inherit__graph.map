@@ -1,0 +1,5 @@
+<map id="visual_odom.landmark.Landmark" name="visual_odom.landmark.Landmark">
+<area shape="rect" id="Node000001" title="Landmark class for storing visual features and performing spatial estimation." alt="" coords="5,5,245,31"/>
+<area shape="rect" id="Node000002" href="$classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap.html" title="Holds and manages persistent Landmark records mapped inside the particle trajectories." alt="" coords="19,79,232,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="128,44,128,79,123,79,123,44"/>
+</map>

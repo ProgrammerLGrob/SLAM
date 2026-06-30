@@ -1,0 +1,253 @@
+\doxysection{visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot Class Reference}
+\hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot}{}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot}\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+
+
+Extended Kalman Filter tracking the 2D planar robot base pose (x, y, theta).  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a83f486c4fd40e3d514f5a5cec5dce18d}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a66731964dc40d3f58b7799e3e2eae6b8}{x}}, NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a7534b01ce2d75e3c0a78cfb864f34c3c}{P}}, NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_accb174c07c69cc41fef1ea5808e72641}{Q}}=None)
+\begin{DoxyCompactList}\small\item\em Initializes the robot EKF tracker. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a76bea1b18295cd90e943746ba5df5893}{prediction}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} delta\+\_\+wheel\+\_\+odom)
+\begin{DoxyCompactList}\small\item\em Predicts the robot pose forward based on relative wheel odometry increments. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a3961d54e4c0f10010b8835aeddc7b266}{compute\+Kalman\+Gain}} (self, NDArray P\+\_\+tt1)
+\begin{DoxyCompactList}\small\item\em Computes the optimal Kalman gain matrix. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ab917ae8272cd915989cc750476e58b5b}{update}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} z)
+\begin{DoxyCompactList}\small\item\em Fuses a RANSAC visual odometry pose calculation into the tracking state. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9d2ea44496fabd5d6b31745b26f64354}{set\+\_\+R}} (self)
+\begin{DoxyCompactList}\small\item\em Configures the visual odometry measurement noise covariance matrix R. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a575e7495276853d9d25b4b27602c8aaa}{set\+\_\+Q}} (self)
+\begin{DoxyCompactList}\small\item\em Configures the process noise covariance matrix Q based on configured standard deviations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ad84ca28fe6871fce5c7ecf3b79221d68}{get\+\_\+state}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the current robot base tracking pose. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ac0f8750069365cf7a581ec6f6ace4339}{get\+\_\+covariance\+\_\+p}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the current pose estimation error covariance matrix. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae23a9b3978bc1ea187da03d8be9538b4}{add\+\_\+noise\+\_\+to\+\_\+R}} (self)
+\begin{DoxyCompactList}\small\item\em Increments the tracking update error offset following a RANSAC visual execution failure. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae56d654e0eca0f6c952e3b19f9094805}{set\+\_\+state}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} \mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a66731964dc40d3f58b7799e3e2eae6b8}{x}})
+\begin{DoxyCompactList}\small\item\em Directly sets the robot pose state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a66731964dc40d3f58b7799e3e2eae6b8}{x}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a7534b01ce2d75e3c0a78cfb864f34c3c}{P}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_accb174c07c69cc41fef1ea5808e72641}{Q}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae3ff49c5161172a758cd5a402b27297b}{F}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae0410d6cf9ef9c9dc8664b020a7f9134}{H}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a777cc41b0d41a7cb01222094d383ff0e}{additional\+\_\+noise}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9345b88be94eae8e7b914dc63f12863a}{R}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Extended Kalman Filter tracking the 2D planar robot base pose (x, y, theta). 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a83f486c4fd40e3d514f5a5cec5dce18d}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a83f486c4fd40e3d514f5a5cec5dce18d} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}}}]{x,  }\item[{NDArray}]{P,  }\item[{NDArray }]{Q = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+Initializes the robot EKF tracker. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Initial 2D state estimate of the robot platform. \\
+\hline
+{\em P} & Initial estimation error covariance matrix. \\
+\hline
+{\em Q} & Optional pre-\/calculated process noise covariance matrix. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae23a9b3978bc1ea187da03d8be9538b4}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae23a9b3978bc1ea187da03d8be9538b4} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!add\_noise\_to\_R@{add\_noise\_to\_R}}
+\index{add\_noise\_to\_R@{add\_noise\_to\_R}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{add\_noise\_to\_R()}{add\_noise\_to\_R()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+add\+\_\+noise\+\_\+to\+\_\+R (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Increments the tracking update error offset following a RANSAC visual execution failure. 
+
+Ensures that repeated visual tracking errors gracefully inflate uncertainty parameters. \Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a3961d54e4c0f10010b8835aeddc7b266}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a3961d54e4c0f10010b8835aeddc7b266} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!computeKalmanGain@{computeKalmanGain}}
+\index{computeKalmanGain@{computeKalmanGain}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{computeKalmanGain()}{computeKalmanGain()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+compute\+Kalman\+Gain (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{NDArray}]{P\+\_\+tt1 }\end{DoxyParamCaption})}
+
+
+
+Computes the optimal Kalman gain matrix. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em P\+\_\+tt1} & Predicted robot state error covariance matrix. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Calculated 3x3 Kalman gain matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ac0f8750069365cf7a581ec6f6ace4339}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ac0f8750069365cf7a581ec6f6ace4339} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!get\_covariance\_p@{get\_covariance\_p}}
+\index{get\_covariance\_p@{get\_covariance\_p}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{get\_covariance\_p()}{get\_covariance\_p()}}
+{\footnotesize\ttfamily  NDArray visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+get\+\_\+covariance\+\_\+p (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the current pose estimation error covariance matrix. 
+
+\begin{DoxyReturn}{Returns}
+3x3 error covariance matrix. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ad84ca28fe6871fce5c7ecf3b79221d68}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ad84ca28fe6871fce5c7ecf3b79221d68} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!get\_state@{get\_state}}
+\index{get\_state@{get\_state}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{get\_state()}{get\_state()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}} visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+get\+\_\+state (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the current robot base tracking pose. 
+
+\begin{DoxyReturn}{Returns}
+Estimated State object containing positions and heading. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a76bea1b18295cd90e943746ba5df5893}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a76bea1b18295cd90e943746ba5df5893} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!prediction@{prediction}}
+\index{prediction@{prediction}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{prediction()}{prediction()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+prediction (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}}}]{delta\+\_\+wheel\+\_\+odom }\end{DoxyParamCaption})}
+
+
+
+Predicts the robot pose forward based on relative wheel odometry increments. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+\_\+wheel\+\_\+odom} & Relative displacement step calculated from wheel encoders. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a575e7495276853d9d25b4b27602c8aaa}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a575e7495276853d9d25b4b27602c8aaa} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!set\_Q@{set\_Q}}
+\index{set\_Q@{set\_Q}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{set\_Q()}{set\_Q()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+set\+\_\+Q (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Configures the process noise covariance matrix Q based on configured standard deviations. 
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9d2ea44496fabd5d6b31745b26f64354}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9d2ea44496fabd5d6b31745b26f64354} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!set\_R@{set\_R}}
+\index{set\_R@{set\_R}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{set\_R()}{set\_R()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+set\+\_\+R (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Configures the visual odometry measurement noise covariance matrix R. 
+
+The measurement noise scales dynamically based on recent RANSAC failures.
+
+
+\begin{DoxyParams}{Parameters}
+{\em inlier\+\_\+ratio} & Ratio of inliers used during standard visual processing loops. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae56d654e0eca0f6c952e3b19f9094805}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae56d654e0eca0f6c952e3b19f9094805} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!set\_state@{set\_state}}
+\index{set\_state@{set\_state}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{set\_state()}{set\_state()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+set\+\_\+state (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}}}]{x }\end{DoxyParamCaption})}
+
+
+
+Directly sets the robot pose state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & New robot pose state to set. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ab917ae8272cd915989cc750476e58b5b}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ab917ae8272cd915989cc750476e58b5b} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!update@{update}}
+\index{update@{update}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+update (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1State}{State}}}]{z }\end{DoxyParamCaption})}
+
+
+
+Fuses a RANSAC visual odometry pose calculation into the tracking state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em z} & Evaluated pose estimate from the RANSAC visual alignment pipeline. \\
+\hline
+{\em inlier\+\_\+ratio} & Percentage of robust inliers tracked during visual alignment. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a777cc41b0d41a7cb01222094d383ff0e}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a777cc41b0d41a7cb01222094d383ff0e} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!additional\_noise@{additional\_noise}}
+\index{additional\_noise@{additional\_noise}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{additional\_noise}{additional\_noise}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+additional\+\_\+noise}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae3ff49c5161172a758cd5a402b27297b}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae3ff49c5161172a758cd5a402b27297b} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!F@{F}}
+\index{F@{F}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{F}{F}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+F}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae0410d6cf9ef9c9dc8664b020a7f9134}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_ae0410d6cf9ef9c9dc8664b020a7f9134} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!H@{H}}
+\index{H@{H}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{H}{H}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+H}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a7534b01ce2d75e3c0a78cfb864f34c3c}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a7534b01ce2d75e3c0a78cfb864f34c3c} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!P@{P}}
+\index{P@{P}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{P}{P}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+P}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_accb174c07c69cc41fef1ea5808e72641}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_accb174c07c69cc41fef1ea5808e72641} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!Q@{Q}}
+\index{Q@{Q}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{Q}{Q}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+Q}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9345b88be94eae8e7b914dc63f12863a}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a9345b88be94eae8e7b914dc63f12863a} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!R@{R}}
+\index{R@{R}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{R}{R}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+R}
+
+\Hypertarget{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a66731964dc40d3f58b7799e3e2eae6b8}\label{classvisual__odom_1_1ekf__robot_1_1ExtendedKalmanFilterRobot_a66731964dc40d3f58b7799e3e2eae6b8} 
+\index{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}!x@{x}}
+\index{x@{x}!visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot@{visual\_odom.ekf\_robot.ExtendedKalmanFilterRobot}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+ekf\+\_\+robot.\+Extended\+Kalman\+Filter\+Robot.\+x}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{ekf__robot_8py}{ekf\+\_\+robot.\+py}}\end{DoxyCompactItemize}

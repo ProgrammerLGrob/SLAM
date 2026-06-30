@@ -1,0 +1,480 @@
+\chapter{Visual Odometry SLAM Package}
+\hypertarget{index}{}\label{index}\index{Visual Odometry SLAM Package@{Visual Odometry SLAM Package}}
+\hypertarget{index_autotoc_md0}{}\doxysection{\texorpdfstring{visual\+\_\+odom}{visual\_odom}}\label{index_autotoc_md0}
+\hypertarget{index_autotoc_md1}{}\doxysubsection{\texorpdfstring{Authors}{Authors}}\label{index_autotoc_md1}
+{\bfseries{Lukas Grob}} ~\newline
+ {\bfseries{Paul Schellenberg}}
+
+This project was developed by the authors listed above as part of a visual odometry and SLAM research/development project.
+
+\DoxyHorRuler{0}
+
+
+A ROS 2 package implementing a visual odometry pipeline for a mobile robot equipped with a Kinect RGB-\/D camera. ...\hypertarget{index_autotoc_md3}{}\doxysection{\texorpdfstring{visual\+\_\+odom}{visual\_odom}}\label{index_autotoc_md3}
+A ROS 2 package implementing a visual odometry pipeline for a mobile robot equipped with a Kinect RGB-\/D camera. The system detects ORB keypoints in incoming RGB frames, lifts them into 3D using registered depth data, and estimates frame-\/to-\/frame motion via RANSAC Kabsch alignment. Pose estimation is embedded in a Rao-\/\+Blackwellized particle filter\+: each particle maintains its own landmark map and an EKF per tracked landmark. The best particle is selected by log-\/likelihood weight. The resulting pose is broadcast as a TF transform and published as a {\ttfamily nav\+\_\+msgs/\+Odometry} message.
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md5}{}\doxysubsection{\texorpdfstring{1. Overview}{1. Overview}}\label{index_autotoc_md5}
+\hypertarget{index_autotoc_md6}{}\doxysubsubsection{\texorpdfstring{UML Diagram}{UML Diagram}}\label{index_autotoc_md6}
+\hypertarget{index_autotoc_md7}{}\doxysubsubsection{\texorpdfstring{System Pipeline}{System Pipeline}}\label{index_autotoc_md7}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{RGB\ +\ Depth\ frames}
+\DoxyCodeLine{\ \ \ \ \ \ |}
+\DoxyCodeLine{\ \ \ \ \ \ v}
+\DoxyCodeLine{ORB\ keypoint\ detection\ +\ depth\ filter\ \ [MIN\_DEPTH\ ..\ MAX\_DEPTH]}
+\DoxyCodeLine{\ \ \ \ \ \ |}
+\DoxyCodeLine{\ \ \ \ \ \ v}
+\DoxyCodeLine{Frame-\/to-\/frame\ RANSAC\ +\ Kabsch\ \ -\/-\/>\ \ delta\ pose\ (translation\ +\ rotation)}
+\DoxyCodeLine{\ \ \ \ \ \ |}
+\DoxyCodeLine{\ \ \ \ \ \ v}
+\DoxyCodeLine{Per-\/particle\ update\ \ (N\ =\ n\_robot\_samples\ particles)}
+\DoxyCodeLine{\ \ |-\/-\/\ Wheel\ odometry\ EKF\ prediction\ (parralel\ to\ that)}
+\DoxyCodeLine{\ \ |-\/-\/\ Visible\ landmark\ query\ (FOV\ check)}
+\DoxyCodeLine{\ \ |-\/-\/\ BFMatcher:\ current\ frame\ vs\ last\ frame}
+\DoxyCodeLine{\ \ |-\/-\/\ Apply\ delta\ pose\ to\ particle\ position}
+\DoxyCodeLine{\ \ |-\/-\/\ BFMatcher:\ current\ frame\ vs\ visible\ landmarks}
+\DoxyCodeLine{\ \ |-\/-\/\ Landmark\ EKF\ update\ for\ matched\ landmarks}
+\DoxyCodeLine{\ \ |-\/-\/\ Log-\/weight\ calculation}
+\DoxyCodeLine{\ \ |}
+\DoxyCodeLine{\ \ v}
+\DoxyCodeLine{Best\ particle\ selection\ (argmax\ normalized\ weight)}
+\DoxyCodeLine{\ \ \ \ \ \ |}
+\DoxyCodeLine{\ \ \ \ \ \ v}
+\DoxyCodeLine{TF\ broadcast\ (odom\ -\/>\ base\_link)\ +\ nav\_msgs/Odometry}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md8}{}\doxysubsubsection{\texorpdfstring{TF Tree}{TF Tree}}\label{index_autotoc_md8}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{odom}
+\DoxyCodeLine{\ \ +-\/-\/\ base\_link}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ +-\/-\/\ kinect\_depth\ \ \ (from\ /tf\_static\ in\ rosbag)}
+
+\end{DoxyCode}
+
+
+The {\ttfamily odom -\/\texorpdfstring{$>$}{>} base\+\_\+link} transform is updated on every processed RGB frame. The {\ttfamily base\+\_\+link -\/\texorpdfstring{$>$}{>} kinect\+\_\+depth} static transform is provided by the rosbag.\hypertarget{index_autotoc_md9}{}\doxysubsubsection{\texorpdfstring{ROS Topics}{ROS Topics}}\label{index_autotoc_md9}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{3}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Topic   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Type   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Direction    }\\\cline{1-3}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Topic   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Type   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Direction    }\\\cline{1-3}
+\endhead
+RGB\+\_\+\+IMAGE\+\_\+\+TOPIC   &{\ttfamily sensor\+\_\+msgs/\+Image}   &Subscribed    \\\cline{1-3}
+DEPTH\+\_\+\+IMAGE\+\_\+\+TOPIC   &{\ttfamily sensor\+\_\+msgs/\+Image}   &Subscribed    \\\cline{1-3}
+WHEEL\+\_\+\+ODOMETRY\+\_\+\+TOPIC   &{\ttfamily nav\+\_\+msgs/\+Odometry}   &Subscribed    \\\cline{1-3}
+VISUAL\+\_\+\+ODOM\+\_\+\+MSG\+\_\+\+TOPIC   &{\ttfamily nav\+\_\+msgs/\+Odometry}   &Published    \\\cline{1-3}
+KEYPOINT\+\_\+\+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC   &{\ttfamily sensor\+\_\+msgs/\+Point\+Cloud2}   &Published -- landmark map    \\\cline{1-3}
+POINTCLOUD\+\_\+\+FRAME\+\_\+\+TOPIC   &{\ttfamily sensor\+\_\+msgs/\+Point\+Cloud2}   &Published -- full depth frame (not used for the main time)    \\\cline{1-3}
+VISION\+\_\+\+CONE\+\_\+\+TOPIC   &{\ttfamily visualization\+\_\+msgs/\+Marker}   &Published    \\\cline{1-3}
+KP\+\_\+\+IMAGE\+\_\+\+TOPIC   &{\ttfamily sensor\+\_\+msgs/\+Image}   &Published    \\\cline{1-3}
+VISUAL\+\_\+\+ODOM\+\_\+\+PATH\+\_\+\+TOPIC   &{\ttfamily visualization\+\_\+msgs/\+Marker\+Array}   &Published   \\\cline{1-3}
+\end{longtabu}
+\hypertarget{index_autotoc_md10}{}\doxysubsubsection{\texorpdfstring{Dependencies}{Dependencies}}\label{index_autotoc_md10}
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Package   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Purpose    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Package   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Purpose    }\\\cline{1-2}
+\endhead
+{\ttfamily rclpy}   &ROS 2 Python client library – node lifecycle, publishers, subscriptions, parameters    \\\cline{1-2}
+{\ttfamily rcl\+\_\+interfaces}   &{\ttfamily Set\+Parameters\+Result} for dynamic parameter callbacks    \\\cline{1-2}
+{\ttfamily builtin\+\_\+interfaces}   &ROS 2 built-\/in message types (timestamps, duration)    \\\cline{1-2}
+{\ttfamily std\+\_\+msgs}   &{\ttfamily Header} for Point\+Cloud2 and TF stamped messages    \\\cline{1-2}
+{\ttfamily sensor\+\_\+msgs}   &{\ttfamily Image}, {\ttfamily Point\+Cloud2}, {\ttfamily Point\+Field}, {\ttfamily Imu}    \\\cline{1-2}
+{\ttfamily sensor\+\_\+msgs\+\_\+py}   &Point\+Cloud2 creation utilities ({\ttfamily point\+\_\+cloud2.\+create\+\_\+cloud})    \\\cline{1-2}
+{\ttfamily nav\+\_\+msgs}   &{\ttfamily Odometry} – wheel, IMU and visual odometry messages    \\\cline{1-2}
+{\ttfamily geometry\+\_\+msgs}   &{\ttfamily Transform\+Stamped}, {\ttfamily Point}, {\ttfamily Pose2D}, {\ttfamily Quaternion}    \\\cline{1-2}
+{\ttfamily visualization\+\_\+msgs}   &{\ttfamily Marker}, {\ttfamily Marker\+Array} – particle path and vision cone visualisation    \\\cline{1-2}
+{\ttfamily tf2\+\_\+ros}   &TF broadcaster, listener and buffer for coordinate frame transforms    \\\cline{1-2}
+{\ttfamily cv\+\_\+bridge}   &ROS {\ttfamily Image} \texorpdfstring{$<$}{<}-\/\texorpdfstring{$>$}{>} Open\+CV {\ttfamily Mat} conversion    \\\cline{1-2}
+{\ttfamily python3-\/opencv}   &ORB detection, descriptor computation, BFMatcher, image I/O    \\\cline{1-2}
+{\ttfamily python3-\/numpy}   &Numerical arrays, linear algebra (EKF matrices, RANSAC, Kabsch)    \\\cline{1-2}
+{\ttfamily python3-\/scipy}   &Quaternion/rotation conversions ({\ttfamily scipy.\+spatial.\+transform.\+Rotation}), KDTree   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md12}{}\doxysubsection{\texorpdfstring{2. Package Structure}{2. Package Structure}}\label{index_autotoc_md12}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{visual\_odom/}
+\DoxyCodeLine{+-\/-\/\ visual\_odom/}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ constants.py\ \ \ \ \ \ \ \ \ \ \#\ Global\ dataclasses,\ configuration\ constants,\ helper\ functions}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ landmark.py\ \ \ \ \ \ \ \ \ \ \ \#\ Landmark\ dataclass,\ EKF\ wrapper,\ and\ Kabsch\ estimator}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ ekf\_landmark.py\ \ \ \ \ \ \ \#\ Extended\ Kalman\ Filter\ for\ individual\ landmark\ position}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ ekf\_robot.py\ \ \ \ \ \ \ \ \ \ \#\ Extended\ Kalman\ Filter\ for\ robot\ pose\ (wheel\ odom\ based)}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ robot.py\ \ \ \ \ \ \ \ \ \ \ \ \ \ \#\ VisualRobotSample:\ one\ particle\ in\ the\ particle\ filter}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ visual\_odom\_map.py\ \ \ \ \#\ VisualOdomMap:\ persistent\ landmark\ map\ per\ particle}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ tf\_methods.py\ \ \ \ \ \ \ \ \ \#\ Coordinate\ frame\ transformation\ utilities}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ visual\_odom\_node.py\ \ \ \#\ Main\ ROS\ 2\ node:\ orchestrates\ particle\ filter}
+\DoxyCodeLine{+-\/-\/\ launch/}
+\DoxyCodeLine{|\ \ \ \ \ +-\/-\/\ visual\_odom\_launch.py\ \#\ Launch\ file:\ node\ +\ rosbag\ playback\ +\ RViz2}
+\DoxyCodeLine{+-\/-\/\ config/}
+\DoxyCodeLine{\ \ \ \ \ \ +-\/-\/\ param.yaml\ \ \ \ \ \ \ \ \ \ \ \ \#\ Runtime\ parameter\ configuration}
+\DoxyCodeLine{+-\/-\/\ rviz/}
+\DoxyCodeLine{\ \ \ \ \ \ +-\/-\/\ rviz2\_config.rviz\ \ \ \ \ \#\ Rviz2\ configuration\ for\ Autostart}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md13}{}\doxysubsubsection{\texorpdfstring{Module Descriptions}{Module Descriptions}}\label{index_autotoc_md13}
+{\bfseries{Dataclasses}}
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Class   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Purpose    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Class   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Purpose    }\\\cline{1-2}
+\endhead
+{\ttfamily Coordinate}   &3D position container (x, y, z) in meters. Supports arithmetic operators.    \\\cline{1-2}
+{\ttfamily Pixel\+Coordinate}   &2D image pixel (u, v) paired with its raw depth value z.    \\\cline{1-2}
+{\ttfamily State}   &2D robot pose (x, y, theta) in meters and radians. Supports arithmetic operators.    \\\cline{1-2}
+{\ttfamily Parameters}   &Runtime parameter bundle populated at node startup from ROS 2 parameter declarations.   \\\cline{1-2}
+\end{longtabu}
+
+
+{\bfseries{Key Constant Groups}}
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Group   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Examples    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Group   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Examples    }\\\cline{1-2}
+\endhead
+ROS Topics   &{\ttfamily RGB\+\_\+\+IMAGE\+\_\+\+TOPIC}, {\ttfamily DEPTH\+\_\+\+IMAGE\+\_\+\+TOPIC}, {\ttfamily WHEEL\+\_\+\+ODOMETRY\+\_\+\+TOPIC}    \\\cline{1-2}
+TF Frame IDs   &{\ttfamily KINECT\+\_\+\+FRAME\+\_\+\+ID}, {\ttfamily BASE\+\_\+\+LINK\+\_\+\+FRAME\+\_\+\+ID}, {\ttfamily VISUAL\+\_\+\+ODOM\+\_\+\+FRAME\+\_\+\+ID}    \\\cline{1-2}
+Camera Model   &{\ttfamily F}, {\ttfamily CU}, {\ttfamily CV}, {\ttfamily MAX\+\_\+\+AZIMUTH}, {\ttfamily MAX\+\_\+\+ALTITUDE}, {\ttfamily ROT\+\_\+\+BK}    \\\cline{1-2}
+Depth Filter   &{\ttfamily MIN\+\_\+\+DEPTH}, {\ttfamily MAX\+\_\+\+DEPTH}    \\\cline{1-2}
+RANSAC   &{\ttfamily RANSAC\+\_\+\+EVALUATION\+\_\+\+TOLERANCE}, {\ttfamily RANSAC\+\_\+\+ITERATION}, {\ttfamily RANSAC\+\_\+\+MIN\+\_\+\+INLIER\+\_\+\+RATIO}    \\\cline{1-2}
+Particle Filter   &{\ttfamily N\+\_\+\+ROBOT\+\_\+\+SAMPLES}, {\ttfamily NOISE\+\_\+\+INCREMENT\+\_\+\+RANSAC\+\_\+\+FAILURE}    \\\cline{1-2}
+Landmark Management   &{\ttfamily MIN\+\_\+\+LANDMARK\+\_\+\+TRUST}, {\ttfamily INCREASE\+\_\+\+TRUST\+\_\+\+VALUE}, {\ttfamily DECREASE\+\_\+\+TRUST\+\_\+\+FACTOR}    \\\cline{1-2}
+Noise / EKF   &{\ttfamily SIGMA\+\_\+\+X\+\_\+\+ODOM\+\_\+\+WHEEL\+\_\+Q}, {\ttfamily ERROR\+\_\+\+MIN\+\_\+\+DEPTH}, {\ttfamily ERROR\+\_\+\+QUADRATIC\+\_\+\+DEPTH}   \\\cline{1-2}
+\end{longtabu}
+
+
+{\bfseries{Helper Functions}}
+
+
+\begin{DoxyItemize}
+\item {\ttfamily normalize\+\_\+angle(angle)} -- Maps any angle in radians into {\ttfamily \mbox{[}-\/pi, pi\mbox{]}} using {\ttfamily (angle + pi) \% (2\texorpdfstring{$\ast$}{*}pi) -\/ pi}.
+\end{DoxyItemize}
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md15}{}\doxyparagraph{\texorpdfstring{landmark.\+py}{landmark.py}}\label{index_autotoc_md15}
+Defines the {\ttfamily Landmark} class representing a single tracked 3D map feature. Each landmark owns an {\ttfamily Extended\+Kalman\+Filter\+Landmark} instance that refines its odom-\/frame position over time. Also contains the standalone {\ttfamily kabsch()} function used for 2D rigid-\/body alignment in RANSAC.
+
+\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}{\ttfamily Landmark}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}
+
+On construction, pixel coordinates (u, v) and depth z are back-\/projected into 3D Kinect-\/frame coordinates via the pinhole camera model\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{x\ =\ z\ *\ (u\ -\/\ CU)\ /\ F}
+\DoxyCodeLine{y\ =\ z\ *\ (v\ -\/\ CV)\ /\ F}
+
+\end{DoxyCode}
+
+
+The odom-\/frame position is set separately via {\ttfamily set\+\_\+odom\+\_\+coordinates()} after the coordinate frame transform is applied.
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily is\+\_\+visible(pos\+\_\+camera\+\_\+odom, theta\+\_\+robot)}   &Checks azimuth, altitude, and depth constraints against the camera FOV.    \\\cline{1-2}
+{\ttfamily landmark\+\_\+kalman\+\_\+iteration(pos, theta, pixel\+\_\+coor)}   &Delegates one EKF predict+update cycle to the embedded {\ttfamily Extended\+Kalman\+Filter\+Landmark}.    \\\cline{1-2}
+{\ttfamily calculate\+\_\+likelihood(z\+\_\+pos\+\_\+odom, theta)}   &Computes the likelihood of a measurement given the current landmark state and covariance. Used for particle weight calculation.    \\\cline{1-2}
+{\ttfamily increase\+\_\+trust()} / {\ttfamily decrease\+\_\+trust()}   &Trust management\+: additive increment on observation, multiplicative decay when not seen.    \\\cline{1-2}
+{\ttfamily get\+\_\+odom\+\_\+coordinates()} / {\ttfamily set\+\_\+odom\+\_\+coordinates(c)}   &Accessors for the odom-\/frame position.    \\\cline{1-2}
+{\ttfamily get\+\_\+descriptor()} / {\ttfamily get\+\_\+kp()}   &Accessors for the ORB descriptor and keypoint.   \\\cline{1-2}
+\end{longtabu}
+
+
+\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}{\ttfamily kabsch(\+P\+\_\+i, Q\+\_\+i)}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}
+
+Computes the optimal 2D rotation R and translation t that aligns point set Q onto P in a least-\/squares sense. Mean-\/centers both sets; theta is derived analytically via {\ttfamily atan2}. Returns {\ttfamily (R, t, theta)} or {\ttfamily (None, None, None)} for degenerate inputs.
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md17}{}\doxyparagraph{\texorpdfstring{ekf\+\_\+landmark.\+py}{ekf\_landmark.py}}\label{index_autotoc_md17}
+Implements the Extended Kalman Filter for tracking an individual landmark position in the odom frame. The state vector is a 3D Coordinate {\ttfamily (x, y, z)}.
+
+{\bfseries{Measurement model}}
+
+The expected measurement transforms the landmark from odom into the robot\textquotesingle{}s local frame using the current heading rotation\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{h(x)\ =\ R(theta).T\ *\ (x\_landmark\ -\/\ x\_robot)}
+
+\end{DoxyCode}
+
+
+{\bfseries{Noise model}}
+
+The measurement covariance R is depth-\/dependent, propagated from pixel-\/space noise to baselink\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{R\_baselink\ =\ ROT\_BK\ *\ J\_kinect\ *\ R\_pixel\ *\ J\_kinect.T\ *\ ROT\_BK.T}
+
+\end{DoxyCode}
+
+
+where the depth error grows quadratically\+: {\ttfamily s\+\_\+z = ERROR\+\_\+\+MIN\+\_\+\+DEPTH + ERROR\+\_\+\+QUADRATIC\+\_\+\+DEPTH \texorpdfstring{$\ast$}{*} (z -\/ z\+\_\+min)\texorpdfstring{$^\wedge$}{\string^}2}.
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily landmark\+\_\+kalman\+\_\+iteration(pos, theta, pixel\+\_\+coor)}   &Full predict + update cycle. Returns updated {\ttfamily (x, P)}.    \\\cline{1-2}
+{\ttfamily prediction(x)}   &Applies identity state transition; propagates covariance with process noise Q.    \\\cline{1-2}
+{\ttfamily update(x\+\_\+tt1, P\+\_\+tt1, pos\+\_\+robot, theta, kp)}   &Computes Kalman gain, innovation, and Joseph-\/form covariance update.    \\\cline{1-2}
+{\ttfamily compute\+Kalman\+Gain(\+P\+\_\+tt1)}   &Returns {\ttfamily K = P \texorpdfstring{$\ast$}{*} H.\+T \texorpdfstring{$\ast$}{*} (H \texorpdfstring{$\ast$}{*} P \texorpdfstring{$\ast$}{*} H.\+T + R)\texorpdfstring{$^\wedge$}{\string^}-\/1}.   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md19}{}\doxyparagraph{\texorpdfstring{ekf\+\_\+robot.\+py}{ekf\_robot.py}}\label{index_autotoc_md19}
+Implements the Extended Kalman Filter for the robot pose {\ttfamily (x, y, theta)} using wheel odometry as the prediction input and RANSAC visual odometry as the measurement.
+
+The state transition is additive\+: {\ttfamily x\+\_\+\{t\texorpdfstring{$\vert$}{|}t-\/1\} = x\+\_\+\{t-\/1\} + delta\+\_\+wheel\+\_\+odom}. The measurement noise R scales with the RANSAC evaluation tolerance plus any accumulated additional noise from repeated RANSAC failures.
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily prediction(delta\+\_\+wheel\+\_\+odom)}   &Propagates state and covariance with wheel odometry delta.    \\\cline{1-2}
+{\ttfamily update(z, inlier\+\_\+ratio)}   &Fuses RANSAC pose measurement using Joseph-\/form covariance update.    \\\cline{1-2}
+{\ttfamily add\+\_\+noise\+\_\+to\+\_\+\+R()}   &Increments additional measurement noise after a RANSAC failure, capped at {\ttfamily MAX\+\_\+\+ADDITIONAL\+\_\+\+NOISE\+\_\+\+RANSAC\+\_\+\+FAILURE}.   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md21}{}\doxyparagraph{\texorpdfstring{robot.\+py}{robot.py}}\label{index_autotoc_md21}
+Represents a single particle in the Rao-\/\+Blackwellized particle filter. Each particle maintains its own {\ttfamily Visual\+Odom\+Map}, {\ttfamily Extended\+Kalman\+Filter\+Robot}, and accumulated pose. All particles receive the same RANSAC result computed centrally by {\ttfamily Visual\+Odom} and apply it independently.
+
+\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}{\ttfamily robot\+\_\+iteration(...)}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}
+
+The per-\/frame update sequence for one particle\+:
+
+
+\begin{DoxyEnumerate}
+\item On first iteration\+: seed the landmark map until {\ttfamily INITIAL\+\_\+\+LANDMARK\+\_\+\+COUNT} is reached.
+\item Apply the RANSAC delta pose to the particle position with optional Gaussian noise.
+\item Query {\ttfamily get\+\_\+visible\+\_\+landmarks()} for landmarks in the current camera FOV.
+\item Match visible landmark descriptors against current frame descriptors via BFMatcher.
+\item Run {\ttfamily landmark\+\_\+kalman\+\_\+iteration()} on all matched landmarks.
+\item Compute {\ttfamily log\+\_\+weight} via {\ttfamily calculate\+\_\+log\+\_\+weight()}.
+\item Run {\ttfamily cleanup\+\_\+old\+\_\+landmarks()}\+: increase trust for matched landmarks, decay others, remove landmarks below {\ttfamily MIN\+\_\+\+LANDMARK\+\_\+\+TRUST}.
+\item Add unmatched keypoints as new landmarks if match count is below {\ttfamily MATCHES\+\_\+\+FOR\+\_\+\+NEW\+\_\+\+LANDMARKS}.
+\end{DoxyEnumerate}
+
+\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}{\ttfamily predict\+\_\+with\+\_\+wheel\+\_\+odom(state\+\_\+wheel\+\_\+odom)}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}
+
+Computes delta from the last stored wheel odometry state and feeds it to {\ttfamily Extended\+Kalman\+Filter\+Robot.\+prediction()}.
+
+\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}{\ttfamily ransac\+\_\+failed()}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}
+
+Falls back to wheel odometry delta for position update and increments noise in the robot EKF via {\ttfamily add\+\_\+noise\+\_\+to\+\_\+\+R()}.
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md23}{}\doxyparagraph{\texorpdfstring{visual\+\_\+odom\+\_\+map.\+py}{visual\_odom\_map.py}}\label{index_autotoc_md23}
+Implements {\ttfamily Visual\+Odom\+Map}, a {\ttfamily list} subclass holding all {\ttfamily Landmark} objects for one particle. Provides spatial queries, batch EKF updates, log-\/weight calculation, and Point\+Cloud2 publishing.
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily add\+\_\+landmark(landmark)}   &Appends a single landmark.    \\\cline{1-2}
+{\ttfamily add\+\_\+landmarks\+\_\+from\+\_\+kps(\+P\+\_\+init, kps, des, frame\+\_\+rgb, kp\+\_\+depth, theta, pos\+\_\+baselink)}   &Creates landmarks from ORB keypoints, computes odom-\/frame coordinates, and add the keypoints as landmarks to the map.    \\\cline{1-2}
+{\ttfamily get\+\_\+visible\+\_\+landmarks(camera\+\_\+pos, theta)}   &Returns a new {\ttfamily Visual\+Odom\+Map} containing only landmarks passing the {\ttfamily is\+\_\+visible()} FOV check.    \\\cline{1-2}
+{\ttfamily get\+\_\+descriptors()}   &Returns all descriptors stacked as a Num\+Py array for batch BFMatcher input.    \\\cline{1-2}
+{\ttfamily landmark\+\_\+kalman\+\_\+iteration(pos, theta, indices, kp\+\_\+pos)}   &Runs one EKF iteration on each indexed landmark with its matched pixel coordinate.    \\\cline{1-2}
+{\ttfamily calculate\+\_\+log\+\_\+weight(pos, theta, indices, kp\+\_\+pos)}   &Sums log-\/likelihoods from {\ttfamily Landmark.\+calculate\+\_\+likelihood()} for all matched landmarks.    \\\cline{1-2}
+{\ttfamily cleanup\+\_\+old\+\_\+landmarks(visible, landmark\+\_\+index)}   &Updates trust values and removes landmarks below threshold.    \\\cline{1-2}
+{\ttfamily publish\+\_\+pointcloud\+\_\+map(publisher, time)}   &Publishes landmark odom positions and RGB colors as {\ttfamily sensor\+\_\+msgs/\+Point\+Cloud2}.   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md25}{}\doxyparagraph{\texorpdfstring{tf\+\_\+methods.\+py}{tf\_methods.py}}\label{index_autotoc_md25}
+Stateless coordinate frame transformation utilities. All transforms are computed analytically using the calibrated rotation matrix {\ttfamily ROT\+\_\+\+BK} and the fixed camera offset {\ttfamily CAMERA\+\_\+\+POS\+\_\+\+IN\+\_\+\+BASELINK}. No tf2\+\_\+ros buffer lookups are performed.
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{3}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Function   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ From / To   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Notes    }\\\cline{1-3}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Function   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ From / To   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Notes    }\\\cline{1-3}
+\endhead
+{\ttfamily kinect\+\_\+depth\+\_\+to\+\_\+odom(kinect\+\_\+point, theta, pos\+\_\+baselink)}   &kinect to odom   &Applies ROT\+\_\+\+BK then heading rotation and translation.    \\\cline{1-3}
+{\ttfamily kinect\+\_\+depth\+\_\+to\+\_\+baselink(kinect\+\_\+point)}   &kinect to base\+\_\+link   &Applies ROT\+\_\+\+BK plus camera offset.    \\\cline{1-3}
+{\ttfamily odom\+\_\+to\+\_\+baselink(odom\+\_\+point, theta, pos\+\_\+baselink)}   &odom to base\+\_\+link   &Inverse rotation by heading, subtract robot position.    \\\cline{1-3}
+{\ttfamily pixel\+\_\+to\+\_\+kinect(kp)}   &pixel + depth to kinect 3D   &Back-\/projects via pinhole model; output in meters.    \\\cline{1-3}
+{\ttfamily pixel\+\_\+to\+\_\+kinect\+\_\+(u, v, z)}   &pixel + depth to kinect 3D   &Same as above, returns NDArray instead of Coordinate.   \\\cline{1-3}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md27}{}\doxyparagraph{\texorpdfstring{visual\+\_\+odom\+\_\+node.\+py}{visual\_odom\_node.py}}\label{index_autotoc_md27}
+Main ROS 2 node ({\ttfamily Visual\+Odom}). Orchestrates the particle filter, runs RANSAC between consecutive frames, and broadcasts the pose of the best particle as TF.
+
+{\bfseries{Initialization}}
+
+Parameters are loaded from the ROS 2 parameter server, backed by {\ttfamily \doxylink{param_8yaml}{param.\+yaml}}. A {\ttfamily cv2.\+ORB} detector and {\ttfamily cv2.\+BFMatcher} (NORM\+\_\+\+HAMMING, cross\+Check) are created. N particles ({\ttfamily Visual\+Robot\+Sample}) are instantiated on the first valid RGB frame.
+
+{\bfseries{Callbacks}}
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Callback   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Callback   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily listener\+\_\+rgb\+\_\+callback(msg)}   &Main processing callback. Runs ORB detection, depth filtering, RANSAC, particle iteration, best-\/particle selection, and TF broadcast.    \\\cline{1-2}
+{\ttfamily listener\+\_\+depth\+\_\+callback(msg)}   &Converts depth image to Num\+Py array and records timestamp for sync checks.    \\\cline{1-2}
+{\ttfamily listener\+\_\+wheel\+\_\+odom\+\_\+callback(msg)}   &Extracts pose from wheel odometry message and calls {\ttfamily predict\+\_\+with\+\_\+wheel\+\_\+odom()} on all particles.   \\\cline{1-2}
+\end{longtabu}
+
+
+{\bfseries{Key methods}}
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Method   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily ransac(matches, valid\+\_\+kp, valid\+\_\+kp\+\_\+depth, valid\+\_\+kp\+\_\+last, valid\+\_\+kp\+\_\+depth\+\_\+last)}   &Frame-\/to-\/frame RANSAC\+: builds P (last frame 3D) and Q (current frame 3D) in base\+\_\+link, iterates Kabsch hypotheses, refines on inliers. Returns {\ttfamily (translation, delta\+\_\+theta, draw\+\_\+keypoints, inlier\+\_\+count)}.    \\\cline{1-2}
+{\ttfamily img\+\_\+to\+\_\+kp\+\_\+des\+\_\+filtered(msg)}   &Detects ORB keypoints, filters by depth and pixel-\/neighborhood exclusion, computes descriptors.    \\\cline{1-2}
+{\ttfamily iteration(...)}   &Runs {\ttfamily robot\+\_\+iteration()} on all particles, normalizes log-\/weights, selects best particle.    \\\cline{1-2}
+{\ttfamily calculate\+\_\+tf(pos, theta, timestamp, ...)}   &Builds {\ttfamily Transform\+Stamped} from current position and heading quaternion.   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md29}{}\doxyparagraph{\texorpdfstring{visual\+\_\+odom\+\_\+launch.\+py}{visual\_odom\_launch.py}}\label{index_autotoc_md29}
+ROS 2 launch file. Reads {\ttfamily \doxylink{param_8yaml}{param.\+yaml}} for the rosbag path and starts three processes simultaneously\+:
+
+\tabulinesep=1mm
+\begin{longtabu}spread 0pt [c]{*{2}{|X[-1]}|}
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Process   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endfirsthead
+\hline
+\endfoot
+\hline
+\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Process   }&\PBS\centering \cellcolor{\tableheadbgcolor}\textbf{ Description    }\\\cline{1-2}
+\endhead
+{\ttfamily visual\+\_\+odom\+\_\+node}   &Main odometry node with {\ttfamily \doxylink{param_8yaml}{param.\+yaml}} parameters    \\\cline{1-2}
+{\ttfamily ros2 bag play}   &Rosbag playback with {\ttfamily -\/-\/clock} and topic filter for RGB, depth, and {\ttfamily /tf\+\_\+static}    \\\cline{1-2}
+{\ttfamily rviz2}   &Visualization   \\\cline{1-2}
+\end{longtabu}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md31}{}\doxysubsubsection{\texorpdfstring{Configuration (param.\+yaml)}{Configuration (param.yaml)}}\label{index_autotoc_md31}
+All parameters are declared under the {\ttfamily visual\+\_\+odom/ros\+\_\+\+\_\+parameters} namespace.
+
+\texorpdfstring{$\vert$}{|} Parameter \texorpdfstring{$\vert$}{|} Default \texorpdfstring{$\vert$}{|} Description \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|}-\/-\/-\/-\/-\/-\/-\/-\/---\texorpdfstring{$\vert$}{|}-\/-\/-\/-\/-\/-\/---\texorpdfstring{$\vert$}{|}-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/---\texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+evaluation\+\_\+tolerance} \texorpdfstring{$\vert$}{|} Inlier distance threshold \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+iterations} \texorpdfstring{$\vert$}{|} Maximum RANSAC loop count \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+sample\+\_\+size} \texorpdfstring{$\vert$}{|} Minimum point pairs per hypothesis \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+min\+\_\+inlier\+\_\+ratio} \texorpdfstring{$\vert$}{|} Minimum inlier fraction to accept RANSAC result \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+min\+\_\+matches\+\_\+for\+\_\+ransac} \texorpdfstring{$\vert$}{|} Minimum matches required to start RANSAC \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily ransac.\+max\+\_\+rotation\+\_\+angle\+\_\+deg} \texorpdfstring{$\vert$}{|} Maximum plausible rotation per frame in degrees \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily rgb\+\_\+depth\+\_\+sync\+\_\+tolerance\+\_\+sec} \texorpdfstring{$\vert$}{|} Max allowed RGB/depth timestamp delta \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily pixel\+\_\+tolerance} \texorpdfstring{$\vert$}{|} Pixel-\/space exclusion radius for keypoint deduplication \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily matches\+\_\+for\+\_\+new\+\_\+landmarks} \texorpdfstring{$\vert$}{|} Match count threshold below which new landmarks are added \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily min\+\_\+landmark\+\_\+trust} \texorpdfstring{$\vert$}{|} Trust value below which a landmark is pruned \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily max\+\_\+depth} \texorpdfstring{$\vert$}{|} Maximum usable sensor depth \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily n\+\_\+robot\+\_\+samples} \texorpdfstring{$\vert$}{|} Number of particles in the particle filter \texorpdfstring{$\vert$}{|} \texorpdfstring{$\vert$}{|} {\ttfamily rosbag\+\_\+path} \texorpdfstring{$\vert$}{|} Absolute path to the {\ttfamily .mcap} rosbag file \texorpdfstring{$\vert$}{|}
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md33}{}\doxysubsection{\texorpdfstring{3. Build and Run}{3. Build and Run}}\label{index_autotoc_md33}
+\hypertarget{index_autotoc_md34}{}\doxysubsubsection{\texorpdfstring{Build}{Build}}\label{index_autotoc_md34}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ \string~/ros2\_ws}
+\DoxyCodeLine{colcon\ build\ -\/-\/packages-\/select\ visual\_odom}
+\DoxyCodeLine{source\ install/setup.bash}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md35}{}\doxysubsubsection{\texorpdfstring{Launch (recommended)}{Launch (recommended)}}\label{index_autotoc_md35}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2\ launch\ visual\_odom\ visual\_odom\_launch.py}
+
+\end{DoxyCode}
+
+
+Starts the node, rosbag playback, and RViz2 simultaneously.
+\begin{DoxyItemize}
+\item The rosbag path is read automatically from {\ttfamily \doxylink{param_8yaml}{param.\+yaml}}.
+\item bagfiles are saved in SLAM/bagfiles
+\item The rviz2 config in /rviz will automatically be loaded
+\end{DoxyItemize}\hypertarget{index_autotoc_md36}{}\doxysubsubsection{\texorpdfstring{Node only (without launch file)}{Node only (without launch file)}}\label{index_autotoc_md36}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2\ run\ visual\_odom\ visual\_odom\_node\ -\/-\/ros-\/args\ -\/-\/params-\/file\ path/to/param.yaml}
+
+\end{DoxyCode}
+
+
+\DoxyHorRuler{0}
+\hypertarget{index_autotoc_md38}{}\doxysubsection{\texorpdfstring{4. Documentation}{4. Documentation}}\label{index_autotoc_md38}
+The package uses \href{https://www.doxygen.nl}{\texttt{ Doxygen}} with Python docstring support.\hypertarget{index_autotoc_md39}{}\doxysubsubsection{\texorpdfstring{Generate HTML docs}{Generate HTML docs}}\label{index_autotoc_md39}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{doxygen\ Doxyfile}
+\DoxyCodeLine{xdg-\/open\ docs/html/index.html}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md40}{}\doxysubsubsection{\texorpdfstring{Generate PDF from La\+Te\+X output}{Generate PDF from LaTeX output}}\label{index_autotoc_md40}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd\ docs/latex}
+\DoxyCodeLine{make}
+\DoxyCodeLine{xdg-\/open\ refman.pdf}
+
+\end{DoxyCode}
+ 

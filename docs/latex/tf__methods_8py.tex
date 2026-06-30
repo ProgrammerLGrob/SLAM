@@ -1,0 +1,24 @@
+\doxysection{ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/tf\+\_\+methods.py File Reference}
+\hypertarget{tf__methods_8py}{}\label{tf__methods_8py}\index{ros2\_ws/src/visual\_odom/visual\_odom/tf\_methods.py@{ros2\_ws/src/visual\_odom/visual\_odom/tf\_methods.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacevisual__odom}{visual\+\_\+odom}}
+\item 
+namespace \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods}{visual\+\_\+odom.\+tf\+\_\+methods}}
+\begin{DoxyCompactList}\small\item\em Stateless coordinate frame transformation utilities. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_acb0eeae8d6e7f095b164db52dee2a97d}{visual\+\_\+odom.\+tf\+\_\+methods.\+kinect\+\_\+depth\+\_\+to\+\_\+odom}} (\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} kinect\+\_\+point, float theta, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink)
+\begin{DoxyCompactList}\small\item\em Transform a point from the Kinect frame into the global odom frame using the LATEST available robot state. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_a814f52c0818fd05a362e3b9d8687cc79}{visual\+\_\+odom.\+tf\+\_\+methods.\+kinect\+\_\+depth\+\_\+to\+\_\+baselink}} (\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} kinect\+\_\+point)
+\begin{DoxyCompactList}\small\item\em Transform a point from the Kinect optical frame into the robot base\+\_\+link frame using static calibrations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_ad2ac6b3bb676bbdff7bdd69147bc113a}{visual\+\_\+odom.\+tf\+\_\+methods.\+odom\+\_\+to\+\_\+baselink}} (\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} odom\+\_\+point, float theta, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink)
+\begin{DoxyCompactList}\small\item\em Transform a point from the global odom frame back into the local base\+\_\+link frame. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_ab5c83e781d0a75a3b198852e99dd4ff1}{visual\+\_\+odom.\+tf\+\_\+methods.\+pixel\+\_\+to\+\_\+kinect}} (\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}} kp)
+\begin{DoxyCompactList}\small\item\em Calculate 3D coordinates from pixel indices and its registered depth values. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_a19b2a941f11efb1ba0fa017c0d2e7265}{visual\+\_\+odom.\+tf\+\_\+methods.\+pixel\+\_\+to\+\_\+kinect\+\_\+}} (int u, int v, float z)
+\begin{DoxyCompactList}\small\item\em Calculate 3D coordinates from raw pixel indices and depth values directly to a Num\+Py representation. \end{DoxyCompactList}\item 
+Transform\+Stamped \mbox{\hyperlink{namespacevisual__odom_1_1tf__methods_a7f2ce7074f03057a6ae0c2cc5396d156}{visual\+\_\+odom.\+tf\+\_\+methods.\+calculate\+\_\+tf}} (\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} Position, float theta, Time timestamp, str parent\+\_\+frame\+\_\+id, str child\+\_\+frame\+\_\+id)
+\begin{DoxyCompactList}\small\item\em Formats a ROS 2 coordinate transform stamped message. \end{DoxyCompactList}\end{DoxyCompactItemize}

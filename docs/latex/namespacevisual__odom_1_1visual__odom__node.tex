@@ -1,0 +1,55 @@
+\doxysection{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node Namespace Reference}
+\hypertarget{namespacevisual__odom_1_1visual__odom__node}{}\label{namespacevisual__odom_1_1visual__odom__node}\index{visual\_odom.visual\_odom\_node@{visual\_odom.visual\_odom\_node}}
+
+
+Main ROS 2 execution node managing the particle filter localization and visual odometry loop.  
+
+
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom}{Visual\+Odom}}
+\begin{DoxyCompactList}\small\item\em ROS 2 Visual Odometry node managing features extraction, RANSAC estimation, and particle weight selection. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1visual__odom__node_abe2f6cf1fe1307b3db8b95b917b842f5}{create\+\_\+particle\+\_\+path\+\_\+markers}} (self, List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1robot_1_1VisualRobotSample}{Visual\+Robot\+Sample}}\mbox{]} particles, int best\+\_\+particle\+\_\+idx)
+\begin{DoxyCompactList}\small\item\em Generates visualization markers for particle trajectories. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacevisual__odom_1_1visual__odom__node_a3378238c28a0eae5acc2259fdbbc5abe}{main}} ()
+\begin{DoxyCompactList}\small\item\em Core node runtime initialization routine. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Main ROS 2 execution node managing the particle filter localization and visual odometry loop. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacevisual__odom_1_1visual__odom__node_abe2f6cf1fe1307b3db8b95b917b842f5}\label{namespacevisual__odom_1_1visual__odom__node_abe2f6cf1fe1307b3db8b95b917b842f5} 
+\index{visual\_odom.visual\_odom\_node@{visual\_odom.visual\_odom\_node}!create\_particle\_path\_markers@{create\_particle\_path\_markers}}
+\index{create\_particle\_path\_markers@{create\_particle\_path\_markers}!visual\_odom.visual\_odom\_node@{visual\_odom.visual\_odom\_node}}
+\doxysubsubsection{\texorpdfstring{create\_particle\_path\_markers()}{create\_particle\_path\_markers()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+create\+\_\+particle\+\_\+path\+\_\+markers (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1robot_1_1VisualRobotSample}{Visual\+Robot\+Sample}}\mbox{]}}]{particles,  }\item[{int}]{best\+\_\+particle\+\_\+idx }\end{DoxyParamCaption})}
+
+
+
+Generates visualization markers for particle trajectories. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em particles} & Active particle set. \\
+\hline
+{\em best\+\_\+particle\+\_\+idx} & Best particle index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Marker\+Array for RViz visualization. 
+\end{DoxyReturn}
+\Hypertarget{namespacevisual__odom_1_1visual__odom__node_a3378238c28a0eae5acc2259fdbbc5abe}\label{namespacevisual__odom_1_1visual__odom__node_a3378238c28a0eae5acc2259fdbbc5abe} 
+\index{visual\_odom.visual\_odom\_node@{visual\_odom.visual\_odom\_node}!main@{main}}
+\index{main@{main}!visual\_odom.visual\_odom\_node@{visual\_odom.visual\_odom\_node}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+main (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Core node runtime initialization routine. 
+

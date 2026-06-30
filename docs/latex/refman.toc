@@ -1,0 +1,530 @@
+\@ifundefined {etoctocstyle}{\let \etoc@startlocaltoc \@gobble \let \etoc@settocdepth \@gobble \let \etoc@depthtag \@gobble \let \etoc@setlocaltop \@gobble }{}
+\contentsline {chapter}{\numberline {1}Visual Odometry SLAM Package}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Authors}{1}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.2}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom}{1}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}1. Overview}{1}{subsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.1.1}UML Diagram}{1}{subsubsection.1.2.1.1}%
+\contentsline {subsubsection}{\numberline {1.2.1.2}System Pipeline}{1}{subsubsection.1.2.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1.3}TF Tree}{2}{subsubsection.1.2.1.3}%
+\contentsline {subsubsection}{\numberline {1.2.1.4}ROS Topics}{2}{subsubsection.1.2.1.4}%
+\contentsline {subsubsection}{\numberline {1.2.1.5}Dependencies}{2}{subsubsection.1.2.1.5}%
+\contentsline {subsection}{\numberline {1.2.2}2. Package Structure}{2}{subsection.1.2.2}%
+\contentsline {subsubsection}{\numberline {1.2.2.1}Module Descriptions}{3}{subsubsection.1.2.2.1}%
+\contentsline {paragraph}{landmark.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{3}{section*.1}%
+\contentsline {paragraph}{ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{4}{section*.2}%
+\contentsline {paragraph}{ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{4}{section*.3}%
+\contentsline {paragraph}{robot.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{4}{section*.4}%
+\contentsline {paragraph}{visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}map.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{5}{section*.5}%
+\contentsline {paragraph}{tf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}methods.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{5}{section*.6}%
+\contentsline {paragraph}{visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{6}{section*.7}%
+\contentsline {paragraph}{visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}launch.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}py}{6}{section*.8}%
+\contentsline {subsubsection}{\numberline {1.2.2.2}Configuration (param.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}yaml)}{7}{subsubsection.1.2.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}3. Build and Run}{7}{subsection.1.2.3}%
+\contentsline {subsubsection}{\numberline {1.2.3.1}Build}{7}{subsubsection.1.2.3.1}%
+\contentsline {subsubsection}{\numberline {1.2.3.2}Launch (recommended)}{7}{subsubsection.1.2.3.2}%
+\contentsline {subsubsection}{\numberline {1.2.3.3}Node only (without launch file)}{7}{subsubsection.1.2.3.3}%
+\contentsline {subsection}{\numberline {1.2.4}4. Documentation}{7}{subsection.1.2.4}%
+\contentsline {subsubsection}{\numberline {1.2.4.1}Generate HTML docs}{7}{subsubsection.1.2.4.1}%
+\contentsline {subsubsection}{\numberline {1.2.4.2}Generate PDF from La\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Te\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}X output}{7}{subsubsection.1.2.4.2}%
+\contentsline {chapter}{\numberline {2}Namespace Index}{9}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Package List}{9}{section.2.1}%
+\contentsline {chapter}{\numberline {3}Hierarchical Index}{11}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Class Hierarchy}{11}{section.3.1}%
+\contentsline {chapter}{\numberline {4}Class Index}{13}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Class List}{13}{section.4.1}%
+\contentsline {chapter}{\numberline {5}File Index}{15}{chapter.5}%
+\contentsline {section}{\numberline {5.1}File List}{15}{section.5.1}%
+\contentsline {chapter}{\numberline {6}Namespace Documentation}{17}{chapter.6}%
+\contentsline {section}{\numberline {6.1}metadata Namespace Reference}{17}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Variable Documentation}{17}{subsection.6.1.1}%
+\contentsline {subsubsection}{\numberline {6.1.1.1}avoid\_ros\_namespace\_conventions}{17}{subsubsection.6.1.1.1}%
+\contentsline {subsubsection}{\numberline {6.1.1.2}compression\_format}{18}{subsubsection.6.1.1.2}%
+\contentsline {subsubsection}{\numberline {6.1.1.3}compression\_mode}{18}{subsubsection.6.1.1.3}%
+\contentsline {subsubsection}{\numberline {6.1.1.4}custom\_data}{18}{subsubsection.6.1.1.4}%
+\contentsline {subsubsection}{\numberline {6.1.1.5}deadline}{18}{subsubsection.6.1.1.5}%
+\contentsline {subsubsection}{\numberline {6.1.1.6}depth}{18}{subsubsection.6.1.1.6}%
+\contentsline {subsubsection}{\numberline {6.1.1.7}durability}{18}{subsubsection.6.1.1.7}%
+\contentsline {subsubsection}{\numberline {6.1.1.8}duration}{18}{subsubsection.6.1.1.8}%
+\contentsline {subsubsection}{\numberline {6.1.1.9}files}{18}{subsubsection.6.1.1.9}%
+\contentsline {subsubsection}{\numberline {6.1.1.10}lifespan}{18}{subsubsection.6.1.1.10}%
+\contentsline {subsubsection}{\numberline {6.1.1.11}liveliness}{18}{subsubsection.6.1.1.11}%
+\contentsline {subsubsection}{\numberline {6.1.1.12}liveliness\_lease\_duration}{18}{subsubsection.6.1.1.12}%
+\contentsline {subsubsection}{\numberline {6.1.1.13}message\_count}{18}{subsubsection.6.1.1.13}%
+\contentsline {subsubsection}{\numberline {6.1.1.14}name}{18}{subsubsection.6.1.1.14}%
+\contentsline {subsubsection}{\numberline {6.1.1.15}nanoseconds}{18}{subsubsection.6.1.1.15}%
+\contentsline {subsubsection}{\numberline {6.1.1.16}nanoseconds\_since\_epoch}{18}{subsubsection.6.1.1.16}%
+\contentsline {subsubsection}{\numberline {6.1.1.17}nsec}{19}{subsubsection.6.1.1.17}%
+\contentsline {subsubsection}{\numberline {6.1.1.18}offered\_qos\_profiles}{19}{subsubsection.6.1.1.18}%
+\contentsline {subsubsection}{\numberline {6.1.1.19}relative\_file\_paths}{19}{subsubsection.6.1.1.19}%
+\contentsline {subsubsection}{\numberline {6.1.1.20}reliability}{19}{subsubsection.6.1.1.20}%
+\contentsline {subsubsection}{\numberline {6.1.1.21}ros\_distro}{19}{subsubsection.6.1.1.21}%
+\contentsline {subsubsection}{\numberline {6.1.1.22}rosbag2\_bagfile\_information}{19}{subsubsection.6.1.1.22}%
+\contentsline {subsubsection}{\numberline {6.1.1.23}sec}{19}{subsubsection.6.1.1.23}%
+\contentsline {subsubsection}{\numberline {6.1.1.24}serialization\_format}{19}{subsubsection.6.1.1.24}%
+\contentsline {subsubsection}{\numberline {6.1.1.25}starting\_time}{19}{subsubsection.6.1.1.25}%
+\contentsline {subsubsection}{\numberline {6.1.1.26}storage\_identifier}{19}{subsubsection.6.1.1.26}%
+\contentsline {subsubsection}{\numberline {6.1.1.27}topics\_with\_message\_count}{19}{subsubsection.6.1.1.27}%
+\contentsline {subsubsection}{\numberline {6.1.1.28}type}{19}{subsubsection.6.1.1.28}%
+\contentsline {subsubsection}{\numberline {6.1.1.29}type\_description\_hash}{19}{subsubsection.6.1.1.29}%
+\contentsline {subsubsection}{\numberline {6.1.1.30}version}{19}{subsubsection.6.1.1.30}%
+\contentsline {section}{\numberline {6.2}param Namespace Reference}{20}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Variable Documentation}{20}{subsection.6.2.1}%
+\contentsline {subsubsection}{\numberline {6.2.1.1}evaluation\_tolerance}{20}{subsubsection.6.2.1.1}%
+\contentsline {subsubsection}{\numberline {6.2.1.2}iterations}{20}{subsubsection.6.2.1.2}%
+\contentsline {subsubsection}{\numberline {6.2.1.3}matches\_for\_new\_landmarks}{20}{subsubsection.6.2.1.3}%
+\contentsline {subsubsection}{\numberline {6.2.1.4}max\_depth}{20}{subsubsection.6.2.1.4}%
+\contentsline {subsubsection}{\numberline {6.2.1.5}max\_rotation\_angle\_deg}{21}{subsubsection.6.2.1.5}%
+\contentsline {subsubsection}{\numberline {6.2.1.6}min\_inlier\_ratio}{21}{subsubsection.6.2.1.6}%
+\contentsline {subsubsection}{\numberline {6.2.1.7}min\_landmark\_trust}{21}{subsubsection.6.2.1.7}%
+\contentsline {subsubsection}{\numberline {6.2.1.8}min\_matches\_for\_ransac}{21}{subsubsection.6.2.1.8}%
+\contentsline {subsubsection}{\numberline {6.2.1.9}n\_robot\_samples}{21}{subsubsection.6.2.1.9}%
+\contentsline {subsubsection}{\numberline {6.2.1.10}pixel\_tolerance}{21}{subsubsection.6.2.1.10}%
+\contentsline {subsubsection}{\numberline {6.2.1.11}ransac}{21}{subsubsection.6.2.1.11}%
+\contentsline {subsubsection}{\numberline {6.2.1.12}rgb\_depth\_sync\_tolerance\_sec}{21}{subsubsection.6.2.1.12}%
+\contentsline {subsubsection}{\numberline {6.2.1.13}ros\_\_parameters}{21}{subsubsection.6.2.1.13}%
+\contentsline {subsubsection}{\numberline {6.2.1.14}rosbag\_path}{21}{subsubsection.6.2.1.14}%
+\contentsline {subsubsection}{\numberline {6.2.1.15}sample\_size}{21}{subsubsection.6.2.1.15}%
+\contentsline {subsubsection}{\numberline {6.2.1.16}visual\_odom\_node}{21}{subsubsection.6.2.1.16}%
+\contentsline {section}{\numberline {6.3}setup Namespace Reference}{22}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Variable Documentation}{22}{subsection.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.3.1.1}data\_files}{22}{subsubsection.6.3.1.1}%
+\contentsline {subsubsection}{\numberline {6.3.1.2}description}{22}{subsubsection.6.3.1.2}%
+\contentsline {subsubsection}{\numberline {6.3.1.3}entry\_points}{22}{subsubsection.6.3.1.3}%
+\contentsline {subsubsection}{\numberline {6.3.1.4}extras\_require}{22}{subsubsection.6.3.1.4}%
+\contentsline {subsubsection}{\numberline {6.3.1.5}install\_requires}{22}{subsubsection.6.3.1.5}%
+\contentsline {subsubsection}{\numberline {6.3.1.6}license}{22}{subsubsection.6.3.1.6}%
+\contentsline {subsubsection}{\numberline {6.3.1.7}maintainer}{22}{subsubsection.6.3.1.7}%
+\contentsline {subsubsection}{\numberline {6.3.1.8}maintainer\_email}{22}{subsubsection.6.3.1.8}%
+\contentsline {subsubsection}{\numberline {6.3.1.9}name}{22}{subsubsection.6.3.1.9}%
+\contentsline {subsubsection}{\numberline {6.3.1.10}package\_name}{22}{subsubsection.6.3.1.10}%
+\contentsline {subsubsection}{\numberline {6.3.1.11}packages}{23}{subsubsection.6.3.1.11}%
+\contentsline {subsubsection}{\numberline {6.3.1.12}version}{23}{subsubsection.6.3.1.12}%
+\contentsline {subsubsection}{\numberline {6.3.1.13}zip\_safe}{23}{subsubsection.6.3.1.13}%
+\contentsline {section}{\numberline {6.4}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom Namespace Reference}{23}{section.6.4}%
+\contentsline {section}{\numberline {6.5}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}config Namespace Reference}{23}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Detailed Description}{23}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}constants Namespace Reference}{23}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Detailed Description}{26}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Function Documentation}{27}{subsection.6.6.2}%
+\contentsline {subsubsection}{\numberline {6.6.2.1}normalize\_angle()}{27}{subsubsection.6.6.2.1}%
+\contentsline {subsection}{\numberline {6.6.3}Variable Documentation}{27}{subsection.6.6.3}%
+\contentsline {subsubsection}{\numberline {6.6.3.1}ACCUMULATED\_POINTCLOUD\_FRAME\_TOPIC}{27}{subsubsection.6.6.3.1}%
+\contentsline {subsubsection}{\numberline {6.6.3.2}BASE\_LINK\_FRAME\_ID}{27}{subsubsection.6.6.3.2}%
+\contentsline {subsubsection}{\numberline {6.6.3.3}CAMERA\_ANGLE\_HOR\_RAD}{27}{subsubsection.6.6.3.3}%
+\contentsline {subsubsection}{\numberline {6.6.3.4}CAMERA\_ANGLE\_VER\_RAD}{27}{subsubsection.6.6.3.4}%
+\contentsline {subsubsection}{\numberline {6.6.3.5}CAMERA\_POS\_IN\_BASELINK}{27}{subsubsection.6.6.3.5}%
+\contentsline {subsubsection}{\numberline {6.6.3.6}CU}{27}{subsubsection.6.6.3.6}%
+\contentsline {subsubsection}{\numberline {6.6.3.7}CV}{27}{subsubsection.6.6.3.7}%
+\contentsline {subsubsection}{\numberline {6.6.3.8}DECREASE\_TRUST\_FACTOR}{27}{subsubsection.6.6.3.8}%
+\contentsline {subsubsection}{\numberline {6.6.3.9}DEPTH\_IMAGE\_TOPIC}{28}{subsubsection.6.6.3.9}%
+\contentsline {subsubsection}{\numberline {6.6.3.10}ERROR\_MIN\_DEPTH}{28}{subsubsection.6.6.3.10}%
+\contentsline {subsubsection}{\numberline {6.6.3.11}ERROR\_QUADRATIC\_DEPTH}{28}{subsubsection.6.6.3.11}%
+\contentsline {subsubsection}{\numberline {6.6.3.12}F}{28}{subsubsection.6.6.3.12}%
+\contentsline {subsubsection}{\numberline {6.6.3.13}FILTERED\_ODOMETRY\_TOPIC}{28}{subsubsection.6.6.3.13}%
+\contentsline {subsubsection}{\numberline {6.6.3.14}GAUSS\_NOISE\_THETA\_SIGMA}{28}{subsubsection.6.6.3.14}%
+\contentsline {subsubsection}{\numberline {6.6.3.15}GAUSS\_NOISE\_X\_SIGMA}{28}{subsubsection.6.6.3.15}%
+\contentsline {subsubsection}{\numberline {6.6.3.16}GAUSS\_NOISE\_Y\_SIGMA}{28}{subsubsection.6.6.3.16}%
+\contentsline {subsubsection}{\numberline {6.6.3.17}IMU\_ODOMETRY\_TOPIC}{28}{subsubsection.6.6.3.17}%
+\contentsline {subsubsection}{\numberline {6.6.3.18}INCREASE\_TRUST\_VALUE}{28}{subsubsection.6.6.3.18}%
+\contentsline {subsubsection}{\numberline {6.6.3.19}INITIAL\_LANDMARK\_COUNT}{28}{subsubsection.6.6.3.19}%
+\contentsline {subsubsection}{\numberline {6.6.3.20}KEYPOINT\_POINTCLOUD\_FRAME\_TOPIC}{28}{subsubsection.6.6.3.20}%
+\contentsline {subsubsection}{\numberline {6.6.3.21}KINECT\_FRAME\_ID}{29}{subsubsection.6.6.3.21}%
+\contentsline {subsubsection}{\numberline {6.6.3.22}KP\_IMAGE\_TOPIC}{29}{subsubsection.6.6.3.22}%
+\contentsline {subsubsection}{\numberline {6.6.3.23}MATCHES\_FOR\_NEW\_LANDMARKS}{29}{subsubsection.6.6.3.23}%
+\contentsline {subsubsection}{\numberline {6.6.3.24}MAX\_ADDITIONAL\_NOISE\_RANSAC\_FAILURE}{29}{subsubsection.6.6.3.24}%
+\contentsline {subsubsection}{\numberline {6.6.3.25}MAX\_ALTITUDE}{29}{subsubsection.6.6.3.25}%
+\contentsline {subsubsection}{\numberline {6.6.3.26}MAX\_AZIMUTH}{29}{subsubsection.6.6.3.26}%
+\contentsline {subsubsection}{\numberline {6.6.3.27}MAX\_DEPTH}{29}{subsubsection.6.6.3.27}%
+\contentsline {subsubsection}{\numberline {6.6.3.28}MAX\_ROTATION\_ANGLE\_DEG}{29}{subsubsection.6.6.3.28}%
+\contentsline {subsubsection}{\numberline {6.6.3.29}MAX\_U}{29}{subsubsection.6.6.3.29}%
+\contentsline {subsubsection}{\numberline {6.6.3.30}MAX\_V}{29}{subsubsection.6.6.3.30}%
+\contentsline {subsubsection}{\numberline {6.6.3.31}MIN\_DEPTH}{29}{subsubsection.6.6.3.31}%
+\contentsline {subsubsection}{\numberline {6.6.3.32}MIN\_DET\_VALUE}{29}{subsubsection.6.6.3.32}%
+\contentsline {subsubsection}{\numberline {6.6.3.33}MIN\_LANDMARK\_TRUST}{30}{subsubsection.6.6.3.33}%
+\contentsline {subsubsection}{\numberline {6.6.3.34}MIN\_MATCHES\_FOR\_RANSAC}{30}{subsubsection.6.6.3.34}%
+\contentsline {subsubsection}{\numberline {6.6.3.35}N\_ROBOT\_SAMPLES}{30}{subsubsection.6.6.3.35}%
+\contentsline {subsubsection}{\numberline {6.6.3.36}NOISE\_INCREMENT\_RANSAC\_FAILURE}{30}{subsubsection.6.6.3.36}%
+\contentsline {subsubsection}{\numberline {6.6.3.37}NOISE\_ROTATION\_THRESHOLD}{30}{subsubsection.6.6.3.37}%
+\contentsline {subsubsection}{\numberline {6.6.3.38}NOISE\_TRANSLATION\_THRESHOLD}{30}{subsubsection.6.6.3.38}%
+\contentsline {subsubsection}{\numberline {6.6.3.39}parameters}{30}{subsubsection.6.6.3.39}%
+\contentsline {subsubsection}{\numberline {6.6.3.40}PERCENTAGE\_OF\_PLAY\_SPEED}{30}{subsubsection.6.6.3.40}%
+\contentsline {subsubsection}{\numberline {6.6.3.41}PIXEL\_TOLERANCE}{30}{subsubsection.6.6.3.41}%
+\contentsline {subsubsection}{\numberline {6.6.3.42}POINTCLOUD\_FRAME\_TOPIC}{30}{subsubsection.6.6.3.42}%
+\contentsline {subsubsection}{\numberline {6.6.3.43}RANSAC\_EVALUATION\_TOLERANCE}{30}{subsubsection.6.6.3.43}%
+\contentsline {subsubsection}{\numberline {6.6.3.44}RANSAC\_ITERATION}{30}{subsubsection.6.6.3.44}%
+\contentsline {subsubsection}{\numberline {6.6.3.45}RANSAC\_MIN\_INLIER\_RATIO}{31}{subsubsection.6.6.3.45}%
+\contentsline {subsubsection}{\numberline {6.6.3.46}RANSAC\_SAMPLE\_SIZE}{31}{subsubsection.6.6.3.46}%
+\contentsline {subsubsection}{\numberline {6.6.3.47}RESAMPLE\_POS\_TOLERANCE}{31}{subsubsection.6.6.3.47}%
+\contentsline {subsubsection}{\numberline {6.6.3.48}RESAMPLE\_THETA\_TOLERANCE}{31}{subsubsection.6.6.3.48}%
+\contentsline {subsubsection}{\numberline {6.6.3.49}RESAMPLE\_TIME\_TOLERANCE}{31}{subsubsection.6.6.3.49}%
+\contentsline {subsubsection}{\numberline {6.6.3.50}RESOLUTION\_CONE\_H}{31}{subsubsection.6.6.3.50}%
+\contentsline {subsubsection}{\numberline {6.6.3.51}RESOLUTION\_CONE\_V}{31}{subsubsection.6.6.3.51}%
+\contentsline {subsubsection}{\numberline {6.6.3.52}RGB\_DEPTH\_SYNC\_TOLERANCE\_SEC}{31}{subsubsection.6.6.3.52}%
+\contentsline {subsubsection}{\numberline {6.6.3.53}RGB\_IMAGE\_TOPIC}{31}{subsubsection.6.6.3.53}%
+\contentsline {subsubsection}{\numberline {6.6.3.54}ROT\_BK}{31}{subsubsection.6.6.3.54}%
+\contentsline {subsubsection}{\numberline {6.6.3.55}SIGMA\_PIXEL}{31}{subsubsection.6.6.3.55}%
+\contentsline {subsubsection}{\numberline {6.6.3.56}SIGMA\_THETA\_ODOM\_WHEEL\_Q}{32}{subsubsection.6.6.3.56}%
+\contentsline {subsubsection}{\numberline {6.6.3.57}SIGMA\_X\_ODOM\_WHEEL\_Q}{32}{subsubsection.6.6.3.57}%
+\contentsline {subsubsection}{\numberline {6.6.3.58}SIGMA\_Y\_ODOM\_WHEEL\_Q}{32}{subsubsection.6.6.3.58}%
+\contentsline {subsubsection}{\numberline {6.6.3.59}TF\_STATIC\_TOPIC}{32}{subsubsection.6.6.3.59}%
+\contentsline {subsubsection}{\numberline {6.6.3.60}VISION\_CONE\_TOPIC}{32}{subsubsection.6.6.3.60}%
+\contentsline {subsubsection}{\numberline {6.6.3.61}VISUAL\_ODOM\_FRAME\_ID}{32}{subsubsection.6.6.3.61}%
+\contentsline {subsubsection}{\numberline {6.6.3.62}VISUAL\_ODOM\_MSG\_TOPIC}{32}{subsubsection.6.6.3.62}%
+\contentsline {subsubsection}{\numberline {6.6.3.63}VISUAL\_ODOM\_PATH\_TOPIC}{32}{subsubsection.6.6.3.63}%
+\contentsline {subsubsection}{\numberline {6.6.3.64}WHEEL\_ODOMETRY\_TOPIC}{32}{subsubsection.6.6.3.64}%
+\contentsline {section}{\numberline {6.7}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}csv\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}creator\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node Namespace Reference}{32}{section.6.7}%
+\contentsline {subsection}{\numberline {6.7.1}Detailed Description}{33}{subsection.6.7.1}%
+\contentsline {subsection}{\numberline {6.7.2}Function Documentation}{33}{subsection.6.7.2}%
+\contentsline {subsubsection}{\numberline {6.7.2.1}main()}{33}{subsubsection.6.7.2.1}%
+\contentsline {section}{\numberline {6.8}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark Namespace Reference}{33}{section.6.8}%
+\contentsline {subsection}{\numberline {6.8.1}Detailed Description}{33}{subsection.6.8.1}%
+\contentsline {section}{\numberline {6.9}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot Namespace Reference}{33}{section.6.9}%
+\contentsline {subsection}{\numberline {6.9.1}Detailed Description}{33}{subsection.6.9.1}%
+\contentsline {section}{\numberline {6.10}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark Namespace Reference}{33}{section.6.10}%
+\contentsline {subsection}{\numberline {6.10.1}Detailed Description}{33}{subsection.6.10.1}%
+\contentsline {subsection}{\numberline {6.10.2}Function Documentation}{34}{subsection.6.10.2}%
+\contentsline {subsubsection}{\numberline {6.10.2.1}kabsch()}{34}{subsubsection.6.10.2.1}%
+\contentsline {section}{\numberline {6.11}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}buffer Namespace Reference}{34}{section.6.11}%
+\contentsline {section}{\numberline {6.12}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot Namespace Reference}{34}{section.6.12}%
+\contentsline {section}{\numberline {6.13}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}tf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}methods Namespace Reference}{34}{section.6.13}%
+\contentsline {subsection}{\numberline {6.13.1}Detailed Description}{35}{subsection.6.13.1}%
+\contentsline {subsection}{\numberline {6.13.2}Function Documentation}{35}{subsection.6.13.2}%
+\contentsline {subsubsection}{\numberline {6.13.2.1}calculate\_tf()}{35}{subsubsection.6.13.2.1}%
+\contentsline {subsubsection}{\numberline {6.13.2.2}kinect\_depth\_to\_baselink()}{35}{subsubsection.6.13.2.2}%
+\contentsline {subsubsection}{\numberline {6.13.2.3}kinect\_depth\_to\_odom()}{35}{subsubsection.6.13.2.3}%
+\contentsline {subsubsection}{\numberline {6.13.2.4}odom\_to\_baselink()}{36}{subsubsection.6.13.2.4}%
+\contentsline {subsubsection}{\numberline {6.13.2.5}pixel\_to\_kinect()}{36}{subsubsection.6.13.2.5}%
+\contentsline {subsubsection}{\numberline {6.13.2.6}pixel\_to\_kinect\_()}{36}{subsubsection.6.13.2.6}%
+\contentsline {section}{\numberline {6.14}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}map Namespace Reference}{37}{section.6.14}%
+\contentsline {subsection}{\numberline {6.14.1}Detailed Description}{37}{subsection.6.14.1}%
+\contentsline {section}{\numberline {6.15}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node Namespace Reference}{37}{section.6.15}%
+\contentsline {subsection}{\numberline {6.15.1}Detailed Description}{37}{subsection.6.15.1}%
+\contentsline {subsection}{\numberline {6.15.2}Function Documentation}{37}{subsection.6.15.2}%
+\contentsline {subsubsection}{\numberline {6.15.2.1}create\_particle\_path\_markers()}{37}{subsubsection.6.15.2.1}%
+\contentsline {subsubsection}{\numberline {6.15.2.2}main()}{38}{subsubsection.6.15.2.2}%
+\contentsline {section}{\numberline {6.16}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}launch Namespace Reference}{38}{section.6.16}%
+\contentsline {subsection}{\numberline {6.16.1}Function Documentation}{38}{subsection.6.16.1}%
+\contentsline {subsubsection}{\numberline {6.16.1.1}generate\_launch\_description()}{38}{subsubsection.6.16.1.1}%
+\contentsline {chapter}{\numberline {7}Class Documentation}{39}{chapter.7}%
+\contentsline {section}{\numberline {7.1}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}constants.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Coordinate Class Reference}{39}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Detailed Description}{39}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}Member Function Documentation}{39}{subsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.2.1}\_\_add\_\_()}{39}{subsubsection.7.1.2.1}%
+\contentsline {subsubsection}{\numberline {7.1.2.2}\_\_mul\_\_()}{40}{subsubsection.7.1.2.2}%
+\contentsline {subsubsection}{\numberline {7.1.2.3}\_\_sub\_\_()}{40}{subsubsection.7.1.2.3}%
+\contentsline {subsubsection}{\numberline {7.1.2.4}\_\_truediv\_\_()}{40}{subsubsection.7.1.2.4}%
+\contentsline {subsection}{\numberline {7.1.3}Member Data Documentation}{40}{subsection.7.1.3}%
+\contentsline {subsubsection}{\numberline {7.1.3.1}x}{40}{subsubsection.7.1.3.1}%
+\contentsline {subsubsection}{\numberline {7.1.3.2}y}{41}{subsubsection.7.1.3.2}%
+\contentsline {subsubsection}{\numberline {7.1.3.3}z}{41}{subsubsection.7.1.3.3}%
+\contentsline {section}{\numberline {7.2}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Extended\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Kalman\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Filter\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Landmark Class Reference}{41}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Detailed Description}{42}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Constructor \& Destructor Documentation}{42}{subsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.2.1}\_\_init\_\_()}{42}{subsubsection.7.2.2.1}%
+\contentsline {subsection}{\numberline {7.2.3}Member Function Documentation}{42}{subsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.3.1}calculate\_jacobian\_F()}{42}{subsubsection.7.2.3.1}%
+\contentsline {subsubsection}{\numberline {7.2.3.2}calculate\_jacobian\_H()}{42}{subsubsection.7.2.3.2}%
+\contentsline {subsubsection}{\numberline {7.2.3.3}calculate\_Q\_matrix()}{43}{subsubsection.7.2.3.3}%
+\contentsline {subsubsection}{\numberline {7.2.3.4}calculate\_R\_sigma\_matrix()}{43}{subsubsection.7.2.3.4}%
+\contentsline {subsubsection}{\numberline {7.2.3.5}computeKalmanGain()}{43}{subsubsection.7.2.3.5}%
+\contentsline {subsubsection}{\numberline {7.2.3.6}get\_R()}{43}{subsubsection.7.2.3.6}%
+\contentsline {subsubsection}{\numberline {7.2.3.7}landmark\_kalman\_iteration()}{44}{subsubsection.7.2.3.7}%
+\contentsline {subsubsection}{\numberline {7.2.3.8}meas\_func()}{44}{subsubsection.7.2.3.8}%
+\contentsline {subsubsection}{\numberline {7.2.3.9}prediction()}{44}{subsubsection.7.2.3.9}%
+\contentsline {subsubsection}{\numberline {7.2.3.10}predictMeasurement()}{45}{subsubsection.7.2.3.10}%
+\contentsline {subsubsection}{\numberline {7.2.3.11}set\_jacobian\_F()}{45}{subsubsection.7.2.3.11}%
+\contentsline {subsubsection}{\numberline {7.2.3.12}set\_jacobian\_H()}{45}{subsubsection.7.2.3.12}%
+\contentsline {subsubsection}{\numberline {7.2.3.13}set\_Q()}{45}{subsubsection.7.2.3.13}%
+\contentsline {subsubsection}{\numberline {7.2.3.14}set\_R()}{45}{subsubsection.7.2.3.14}%
+\contentsline {subsubsection}{\numberline {7.2.3.15}sigma\_R\_approximation()}{46}{subsubsection.7.2.3.15}%
+\contentsline {subsubsection}{\numberline {7.2.3.16}state\_func()}{46}{subsubsection.7.2.3.16}%
+\contentsline {subsubsection}{\numberline {7.2.3.17}update()}{46}{subsubsection.7.2.3.17}%
+\contentsline {subsection}{\numberline {7.2.4}Member Data Documentation}{47}{subsection.7.2.4}%
+\contentsline {subsubsection}{\numberline {7.2.4.1}JF}{47}{subsubsection.7.2.4.1}%
+\contentsline {subsubsection}{\numberline {7.2.4.2}JH}{47}{subsubsection.7.2.4.2}%
+\contentsline {subsubsection}{\numberline {7.2.4.3}P}{47}{subsubsection.7.2.4.3}%
+\contentsline {subsubsection}{\numberline {7.2.4.4}Q}{47}{subsubsection.7.2.4.4}%
+\contentsline {subsubsection}{\numberline {7.2.4.5}R}{47}{subsubsection.7.2.4.5}%
+\contentsline {subsubsection}{\numberline {7.2.4.6}x}{47}{subsubsection.7.2.4.6}%
+\contentsline {section}{\numberline {7.3}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Extended\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Kalman\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Filter\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Robot Class Reference}{47}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Detailed Description}{48}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Constructor \& Destructor Documentation}{48}{subsection.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.2.1}\_\_init\_\_()}{48}{subsubsection.7.3.2.1}%
+\contentsline {subsection}{\numberline {7.3.3}Member Function Documentation}{48}{subsection.7.3.3}%
+\contentsline {subsubsection}{\numberline {7.3.3.1}add\_noise\_to\_R()}{48}{subsubsection.7.3.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.3.2}computeKalmanGain()}{48}{subsubsection.7.3.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.3.3}get\_covariance\_p()}{49}{subsubsection.7.3.3.3}%
+\contentsline {subsubsection}{\numberline {7.3.3.4}get\_state()}{49}{subsubsection.7.3.3.4}%
+\contentsline {subsubsection}{\numberline {7.3.3.5}prediction()}{49}{subsubsection.7.3.3.5}%
+\contentsline {subsubsection}{\numberline {7.3.3.6}set\_Q()}{49}{subsubsection.7.3.3.6}%
+\contentsline {subsubsection}{\numberline {7.3.3.7}set\_R()}{49}{subsubsection.7.3.3.7}%
+\contentsline {subsubsection}{\numberline {7.3.3.8}set\_state()}{49}{subsubsection.7.3.3.8}%
+\contentsline {subsubsection}{\numberline {7.3.3.9}update()}{50}{subsubsection.7.3.3.9}%
+\contentsline {subsection}{\numberline {7.3.4}Member Data Documentation}{50}{subsection.7.3.4}%
+\contentsline {subsubsection}{\numberline {7.3.4.1}additional\_noise}{50}{subsubsection.7.3.4.1}%
+\contentsline {subsubsection}{\numberline {7.3.4.2}F}{50}{subsubsection.7.3.4.2}%
+\contentsline {subsubsection}{\numberline {7.3.4.3}H}{50}{subsubsection.7.3.4.3}%
+\contentsline {subsubsection}{\numberline {7.3.4.4}P}{50}{subsubsection.7.3.4.4}%
+\contentsline {subsubsection}{\numberline {7.3.4.5}Q}{50}{subsubsection.7.3.4.5}%
+\contentsline {subsubsection}{\numberline {7.3.4.6}R}{50}{subsubsection.7.3.4.6}%
+\contentsline {subsubsection}{\numberline {7.3.4.7}x}{50}{subsubsection.7.3.4.7}%
+\contentsline {section}{\numberline {7.4}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Landmark Class Reference}{50}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Detailed Description}{52}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Constructor \& Destructor Documentation}{52}{subsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.2.1}\_\_init\_\_()}{52}{subsubsection.7.4.2.1}%
+\contentsline {subsection}{\numberline {7.4.3}Member Function Documentation}{52}{subsection.7.4.3}%
+\contentsline {subsubsection}{\numberline {7.4.3.1}calculate\_likelihood()}{52}{subsubsection.7.4.3.1}%
+\contentsline {subsubsection}{\numberline {7.4.3.2}decrease\_trust()}{53}{subsubsection.7.4.3.2}%
+\contentsline {subsubsection}{\numberline {7.4.3.3}get\_color()}{53}{subsubsection.7.4.3.3}%
+\contentsline {subsubsection}{\numberline {7.4.3.4}get\_depth()}{53}{subsubsection.7.4.3.4}%
+\contentsline {subsubsection}{\numberline {7.4.3.5}get\_descriptor()}{53}{subsubsection.7.4.3.5}%
+\contentsline {subsubsection}{\numberline {7.4.3.6}get\_kinect\_coordinates()}{53}{subsubsection.7.4.3.6}%
+\contentsline {subsubsection}{\numberline {7.4.3.7}get\_odom\_coordinates()}{53}{subsubsection.7.4.3.7}%
+\contentsline {subsubsection}{\numberline {7.4.3.8}get\_P()}{54}{subsubsection.7.4.3.8}%
+\contentsline {subsubsection}{\numberline {7.4.3.9}get\_trust()}{54}{subsubsection.7.4.3.9}%
+\contentsline {subsubsection}{\numberline {7.4.3.10}get\_u()}{54}{subsubsection.7.4.3.10}%
+\contentsline {subsubsection}{\numberline {7.4.3.11}get\_v()}{54}{subsubsection.7.4.3.11}%
+\contentsline {subsubsection}{\numberline {7.4.3.12}increase\_trust()}{54}{subsubsection.7.4.3.12}%
+\contentsline {subsubsection}{\numberline {7.4.3.13}is\_visible()}{54}{subsubsection.7.4.3.13}%
+\contentsline {subsubsection}{\numberline {7.4.3.14}landmark\_kalman\_iteration()}{55}{subsubsection.7.4.3.14}%
+\contentsline {subsubsection}{\numberline {7.4.3.15}reset\_trust()}{55}{subsubsection.7.4.3.15}%
+\contentsline {subsubsection}{\numberline {7.4.3.16}set\_odom\_coordinates()}{55}{subsubsection.7.4.3.16}%
+\contentsline {subsection}{\numberline {7.4.4}Member Data Documentation}{55}{subsection.7.4.4}%
+\contentsline {subsubsection}{\numberline {7.4.4.1}color}{55}{subsubsection.7.4.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.4.2}des}{55}{subsubsection.7.4.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.4.3}kinect\_coordinates}{55}{subsubsection.7.4.4.3}%
+\contentsline {subsubsection}{\numberline {7.4.4.4}landmark\_ekf}{55}{subsubsection.7.4.4.4}%
+\contentsline {subsubsection}{\numberline {7.4.4.5}odom\_coordinates}{56}{subsubsection.7.4.4.5}%
+\contentsline {subsubsection}{\numberline {7.4.4.6}P}{56}{subsubsection.7.4.4.6}%
+\contentsline {subsubsection}{\numberline {7.4.4.7}pixel\_coor}{56}{subsubsection.7.4.4.7}%
+\contentsline {subsubsection}{\numberline {7.4.4.8}trust}{56}{subsubsection.7.4.4.8}%
+\contentsline {section}{\numberline {7.5}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}buffer.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}message Class Reference}{56}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Member Data Documentation}{56}{subsection.7.5.1}%
+\contentsline {subsubsection}{\numberline {7.5.1.1}msg}{56}{subsubsection.7.5.1.1}%
+\contentsline {subsubsection}{\numberline {7.5.1.2}pose}{56}{subsubsection.7.5.1.2}%
+\contentsline {subsubsection}{\numberline {7.5.1.3}stamp}{57}{subsubsection.7.5.1.3}%
+\contentsline {section}{\numberline {7.6}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}buffer.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Buffer Class Reference}{57}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}Constructor \& Destructor Documentation}{57}{subsection.7.6.1}%
+\contentsline {subsubsection}{\numberline {7.6.1.1}\_\_init\_\_()}{57}{subsubsection.7.6.1.1}%
+\contentsline {subsection}{\numberline {7.6.2}Member Function Documentation}{57}{subsection.7.6.2}%
+\contentsline {subsubsection}{\numberline {7.6.2.1}add\_odom\_message()}{57}{subsubsection.7.6.2.1}%
+\contentsline {subsubsection}{\numberline {7.6.2.2}get\_interpolated()}{57}{subsubsection.7.6.2.2}%
+\contentsline {subsubsection}{\numberline {7.6.2.3}get\_latest()}{57}{subsubsection.7.6.2.3}%
+\contentsline {subsection}{\numberline {7.6.3}Member Data Documentation}{57}{subsection.7.6.3}%
+\contentsline {subsubsection}{\numberline {7.6.3.1}Odom\_Buffer}{57}{subsubsection.7.6.3.1}%
+\contentsline {section}{\numberline {7.7}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}csv\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}creator\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Imu\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Csv\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Writer Class Reference}{58}{section.7.7}%
+\contentsline {subsection}{\numberline {7.7.1}Detailed Description}{59}{subsection.7.7.1}%
+\contentsline {subsection}{\numberline {7.7.2}Constructor \& Destructor Documentation}{59}{subsection.7.7.2}%
+\contentsline {subsubsection}{\numberline {7.7.2.1}\_\_init\_\_()}{59}{subsubsection.7.7.2.1}%
+\contentsline {subsection}{\numberline {7.7.3}Member Function Documentation}{59}{subsection.7.7.3}%
+\contentsline {subsubsection}{\numberline {7.7.3.1}destroy\_node()}{59}{subsubsection.7.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.7.3.2}imu\_callback()}{59}{subsubsection.7.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.7.3.3}normalize\_angle()}{60}{subsubsection.7.7.3.3}%
+\contentsline {subsubsection}{\numberline {7.7.3.4}odom\_callback()}{60}{subsubsection.7.7.3.4}%
+\contentsline {subsubsection}{\numberline {7.7.3.5}quaternion\_to\_yaw()}{60}{subsubsection.7.7.3.5}%
+\contentsline {subsubsection}{\numberline {7.7.3.6}visual\_odom\_callback()}{60}{subsubsection.7.7.3.6}%
+\contentsline {subsection}{\numberline {7.7.4}Member Data Documentation}{61}{subsection.7.7.4}%
+\contentsline {subsubsection}{\numberline {7.7.4.1}csv\_file}{61}{subsubsection.7.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.7.4.2}csv\_path}{61}{subsubsection.7.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.7.4.3}imu\_callback}{61}{subsubsection.7.7.4.3}%
+\contentsline {subsubsection}{\numberline {7.7.4.4}imu\_theta}{61}{subsubsection.7.7.4.4}%
+\contentsline {subsubsection}{\numberline {7.7.4.5}odom\_callback}{61}{subsubsection.7.7.4.5}%
+\contentsline {subsubsection}{\numberline {7.7.4.6}odom\_visual\_theta}{61}{subsubsection.7.7.4.6}%
+\contentsline {subsubsection}{\numberline {7.7.4.7}odom\_visual\_x}{61}{subsubsection.7.7.4.7}%
+\contentsline {subsubsection}{\numberline {7.7.4.8}odom\_visual\_y}{61}{subsubsection.7.7.4.8}%
+\contentsline {subsubsection}{\numberline {7.7.4.9}visual\_odom\_callback}{61}{subsubsection.7.7.4.9}%
+\contentsline {subsubsection}{\numberline {7.7.4.10}wheel\_x}{61}{subsubsection.7.7.4.10}%
+\contentsline {subsubsection}{\numberline {7.7.4.11}wheel\_y}{62}{subsubsection.7.7.4.11}%
+\contentsline {section}{\numberline {7.8}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}constants.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Parameters Class Reference}{62}{section.7.8}%
+\contentsline {subsection}{\numberline {7.8.1}Detailed Description}{62}{subsection.7.8.1}%
+\contentsline {subsection}{\numberline {7.8.2}Member Data Documentation}{62}{subsection.7.8.2}%
+\contentsline {subsubsection}{\numberline {7.8.2.1}matches\_for\_new\_landmarks}{62}{subsubsection.7.8.2.1}%
+\contentsline {subsubsection}{\numberline {7.8.2.2}max\_depth}{62}{subsubsection.7.8.2.2}%
+\contentsline {subsubsection}{\numberline {7.8.2.3}max\_rotation\_angle\_deg}{63}{subsubsection.7.8.2.3}%
+\contentsline {subsubsection}{\numberline {7.8.2.4}min\_landmark\_trust}{63}{subsubsection.7.8.2.4}%
+\contentsline {subsubsection}{\numberline {7.8.2.5}min\_matches\_for\_ransac}{63}{subsubsection.7.8.2.5}%
+\contentsline {subsubsection}{\numberline {7.8.2.6}n\_robot\_samples}{63}{subsubsection.7.8.2.6}%
+\contentsline {subsubsection}{\numberline {7.8.2.7}pixel\_tolerance}{63}{subsubsection.7.8.2.7}%
+\contentsline {subsubsection}{\numberline {7.8.2.8}ransac\_evaluation\_tolerance}{63}{subsubsection.7.8.2.8}%
+\contentsline {subsubsection}{\numberline {7.8.2.9}ransac\_iteration}{63}{subsubsection.7.8.2.9}%
+\contentsline {subsubsection}{\numberline {7.8.2.10}ransac\_min\_inlier\_ratio}{63}{subsubsection.7.8.2.10}%
+\contentsline {subsubsection}{\numberline {7.8.2.11}ransac\_sample\_size}{63}{subsubsection.7.8.2.11}%
+\contentsline {subsubsection}{\numberline {7.8.2.12}rgb\_depth\_sync\_tolerance\_sec}{63}{subsubsection.7.8.2.12}%
+\contentsline {subsubsection}{\numberline {7.8.2.13}topic\_visual\_odometry\_msg}{63}{subsubsection.7.8.2.13}%
+\contentsline {section}{\numberline {7.9}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}constants.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Pixel\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Coordinate Class Reference}{63}{section.7.9}%
+\contentsline {subsection}{\numberline {7.9.1}Detailed Description}{64}{subsection.7.9.1}%
+\contentsline {subsection}{\numberline {7.9.2}Member Data Documentation}{64}{subsection.7.9.2}%
+\contentsline {subsubsection}{\numberline {7.9.2.1}u}{64}{subsubsection.7.9.2.1}%
+\contentsline {subsubsection}{\numberline {7.9.2.2}v}{64}{subsubsection.7.9.2.2}%
+\contentsline {subsubsection}{\numberline {7.9.2.3}z}{64}{subsubsection.7.9.2.3}%
+\contentsline {section}{\numberline {7.10}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}constants.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}State Class Reference}{64}{section.7.10}%
+\contentsline {subsection}{\numberline {7.10.1}Detailed Description}{65}{subsection.7.10.1}%
+\contentsline {subsection}{\numberline {7.10.2}Member Function Documentation}{65}{subsection.7.10.2}%
+\contentsline {subsubsection}{\numberline {7.10.2.1}\_\_add\_\_()}{65}{subsubsection.7.10.2.1}%
+\contentsline {subsubsection}{\numberline {7.10.2.2}\_\_mul\_\_()}{65}{subsubsection.7.10.2.2}%
+\contentsline {subsubsection}{\numberline {7.10.2.3}\_\_sub\_\_()}{65}{subsubsection.7.10.2.3}%
+\contentsline {subsubsection}{\numberline {7.10.2.4}\_\_truediv\_\_()}{65}{subsubsection.7.10.2.4}%
+\contentsline {subsection}{\numberline {7.10.3}Member Data Documentation}{66}{subsection.7.10.3}%
+\contentsline {subsubsection}{\numberline {7.10.3.1}theta}{66}{subsubsection.7.10.3.1}%
+\contentsline {subsubsection}{\numberline {7.10.3.2}x}{66}{subsubsection.7.10.3.2}%
+\contentsline {subsubsection}{\numberline {7.10.3.3}y}{66}{subsubsection.7.10.3.3}%
+\contentsline {section}{\numberline {7.11}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Odom Class Reference}{66}{section.7.11}%
+\contentsline {subsection}{\numberline {7.11.1}Detailed Description}{68}{subsection.7.11.1}%
+\contentsline {subsection}{\numberline {7.11.2}Constructor \& Destructor Documentation}{68}{subsection.7.11.2}%
+\contentsline {subsubsection}{\numberline {7.11.2.1}\_\_init\_\_()}{68}{subsubsection.7.11.2.1}%
+\contentsline {subsection}{\numberline {7.11.3}Member Function Documentation}{69}{subsection.7.11.3}%
+\contentsline {subsubsection}{\numberline {7.11.3.1}\_stamp\_to\_sec()}{69}{subsubsection.7.11.3.1}%
+\contentsline {subsubsection}{\numberline {7.11.3.2}img\_to\_kp\_des\_filtered()}{69}{subsubsection.7.11.3.2}%
+\contentsline {subsubsection}{\numberline {7.11.3.3}iteration()}{69}{subsubsection.7.11.3.3}%
+\contentsline {subsubsection}{\numberline {7.11.3.4}listener\_depth\_callback()}{70}{subsubsection.7.11.3.4}%
+\contentsline {subsubsection}{\numberline {7.11.3.5}listener\_rgb\_callback()}{70}{subsubsection.7.11.3.5}%
+\contentsline {subsubsection}{\numberline {7.11.3.6}listener\_wheel\_odom\_callback()}{70}{subsubsection.7.11.3.6}%
+\contentsline {subsubsection}{\numberline {7.11.3.7}parameter\_callback()}{70}{subsubsection.7.11.3.7}%
+\contentsline {subsubsection}{\numberline {7.11.3.8}parameter\_initialization()}{70}{subsubsection.7.11.3.8}%
+\contentsline {subsubsection}{\numberline {7.11.3.9}possible\_resample()}{71}{subsubsection.7.11.3.9}%
+\contentsline {subsubsection}{\numberline {7.11.3.10}ransac\_calculation()}{71}{subsubsection.7.11.3.10}%
+\contentsline {subsubsection}{\numberline {7.11.3.11}ransac\_frame\_to\_frame()}{71}{subsubsection.7.11.3.11}%
+\contentsline {subsubsection}{\numberline {7.11.3.12}ransac\_frame\_to\_map()}{72}{subsubsection.7.11.3.12}%
+\contentsline {subsection}{\numberline {7.11.4}Member Data Documentation}{72}{subsection.7.11.4}%
+\contentsline {subsubsection}{\numberline {7.11.4.1}best\_robot}{72}{subsubsection.7.11.4.1}%
+\contentsline {subsubsection}{\numberline {7.11.4.2}best\_robot\_idx}{72}{subsubsection.7.11.4.2}%
+\contentsline {subsubsection}{\numberline {7.11.4.3}best\_weight}{72}{subsubsection.7.11.4.3}%
+\contentsline {subsubsection}{\numberline {7.11.4.4}bf}{72}{subsubsection.7.11.4.4}%
+\contentsline {subsubsection}{\numberline {7.11.4.5}bridge}{72}{subsubsection.7.11.4.5}%
+\contentsline {subsubsection}{\numberline {7.11.4.6}covariance\_P}{73}{subsubsection.7.11.4.6}%
+\contentsline {subsubsection}{\numberline {7.11.4.7}first\_des}{73}{subsubsection.7.11.4.7}%
+\contentsline {subsubsection}{\numberline {7.11.4.8}first\_frame\_stamp}{73}{subsubsection.7.11.4.8}%
+\contentsline {subsubsection}{\numberline {7.11.4.9}first\_iteration}{73}{subsubsection.7.11.4.9}%
+\contentsline {subsubsection}{\numberline {7.11.4.10}first\_kp}{73}{subsubsection.7.11.4.10}%
+\contentsline {subsubsection}{\numberline {7.11.4.11}first\_kp\_depth}{73}{subsubsection.7.11.4.11}%
+\contentsline {subsubsection}{\numberline {7.11.4.12}first\_pos}{73}{subsubsection.7.11.4.12}%
+\contentsline {subsubsection}{\numberline {7.11.4.13}first\_theta}{73}{subsubsection.7.11.4.13}%
+\contentsline {subsubsection}{\numberline {7.11.4.14}frame\_depth}{73}{subsubsection.7.11.4.14}%
+\contentsline {subsubsection}{\numberline {7.11.4.15}frame\_depth\_stamp}{73}{subsubsection.7.11.4.15}%
+\contentsline {subsubsection}{\numberline {7.11.4.16}frame\_rgb}{73}{subsubsection.7.11.4.16}%
+\contentsline {subsubsection}{\numberline {7.11.4.17}frame\_stamp}{73}{subsubsection.7.11.4.17}%
+\contentsline {subsubsection}{\numberline {7.11.4.18}orb}{73}{subsubsection.7.11.4.18}%
+\contentsline {subsubsection}{\numberline {7.11.4.19}parameter\_callback}{73}{subsubsection.7.11.4.19}%
+\contentsline {subsubsection}{\numberline {7.11.4.20}pos\_baselink}{73}{subsubsection.7.11.4.20}%
+\contentsline {subsubsection}{\numberline {7.11.4.21}position\_initialized}{74}{subsubsection.7.11.4.21}%
+\contentsline {subsubsection}{\numberline {7.11.4.22}publisher\_accumulated\_pixels}{74}{subsubsection.7.11.4.22}%
+\contentsline {subsubsection}{\numberline {7.11.4.23}publisher\_cone}{74}{subsubsection.7.11.4.23}%
+\contentsline {subsubsection}{\numberline {7.11.4.24}publisher\_image}{74}{subsubsection.7.11.4.24}%
+\contentsline {subsubsection}{\numberline {7.11.4.25}publisher\_keypoints\_3d}{74}{subsubsection.7.11.4.25}%
+\contentsline {subsubsection}{\numberline {7.11.4.26}publisher\_visual\_odometry\_msg}{74}{subsubsection.7.11.4.26}%
+\contentsline {subsubsection}{\numberline {7.11.4.27}robots}{74}{subsubsection.7.11.4.27}%
+\contentsline {subsubsection}{\numberline {7.11.4.28}subscription\_depth}{74}{subsubsection.7.11.4.28}%
+\contentsline {subsubsection}{\numberline {7.11.4.29}subscription\_rgb}{74}{subsubsection.7.11.4.29}%
+\contentsline {subsubsection}{\numberline {7.11.4.30}subscription\_wheel\_odom}{74}{subsubsection.7.11.4.30}%
+\contentsline {subsubsection}{\numberline {7.11.4.31}tf\_broadcaster}{74}{subsubsection.7.11.4.31}%
+\contentsline {subsubsection}{\numberline {7.11.4.32}tf\_buffer}{74}{subsubsection.7.11.4.32}%
+\contentsline {subsubsection}{\numberline {7.11.4.33}tf\_listener}{74}{subsubsection.7.11.4.33}%
+\contentsline {subsubsection}{\numberline {7.11.4.34}theta}{74}{subsubsection.7.11.4.34}%
+\contentsline {subsubsection}{\numberline {7.11.4.35}total\_publisher}{74}{subsubsection.7.11.4.35}%
+\contentsline {subsubsection}{\numberline {7.11.4.36}valid\_des}{75}{subsubsection.7.11.4.36}%
+\contentsline {subsubsection}{\numberline {7.11.4.37}valid\_des\_last}{75}{subsubsection.7.11.4.37}%
+\contentsline {subsubsection}{\numberline {7.11.4.38}valid\_kp}{75}{subsubsection.7.11.4.38}%
+\contentsline {subsubsection}{\numberline {7.11.4.39}valid\_kp\_depth}{75}{subsubsection.7.11.4.39}%
+\contentsline {subsubsection}{\numberline {7.11.4.40}valid\_kp\_depth\_last}{75}{subsubsection.7.11.4.40}%
+\contentsline {subsubsection}{\numberline {7.11.4.41}valid\_kp\_last}{75}{subsubsection.7.11.4.41}%
+\contentsline {subsubsection}{\numberline {7.11.4.42}visible\_landmarks}{75}{subsubsection.7.11.4.42}%
+\contentsline {subsubsection}{\numberline {7.11.4.43}visual\_odom\_path}{75}{subsubsection.7.11.4.43}%
+\contentsline {section}{\numberline {7.12}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}map.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Map Class Reference}{75}{section.7.12}%
+\contentsline {subsection}{\numberline {7.12.1}Detailed Description}{77}{subsection.7.12.1}%
+\contentsline {subsection}{\numberline {7.12.2}Constructor \& Destructor Documentation}{78}{subsection.7.12.2}%
+\contentsline {subsubsection}{\numberline {7.12.2.1}\_\_init\_\_()}{78}{subsubsection.7.12.2.1}%
+\contentsline {subsection}{\numberline {7.12.3}Member Function Documentation}{78}{subsection.7.12.3}%
+\contentsline {subsubsection}{\numberline {7.12.3.1}add\_landmark()}{78}{subsubsection.7.12.3.1}%
+\contentsline {subsubsection}{\numberline {7.12.3.2}add\_landmarks\_from\_kps()}{78}{subsubsection.7.12.3.2}%
+\contentsline {subsubsection}{\numberline {7.12.3.3}calculate\_log\_weight()}{78}{subsubsection.7.12.3.3}%
+\contentsline {subsubsection}{\numberline {7.12.3.4}cleanup\_old\_landmarks()}{79}{subsubsection.7.12.3.4}%
+\contentsline {subsubsection}{\numberline {7.12.3.5}get\_all\_landmarks()}{79}{subsubsection.7.12.3.5}%
+\contentsline {subsubsection}{\numberline {7.12.3.6}get\_colors()}{79}{subsubsection.7.12.3.6}%
+\contentsline {subsubsection}{\numberline {7.12.3.7}get\_depth()}{79}{subsubsection.7.12.3.7}%
+\contentsline {subsubsection}{\numberline {7.12.3.8}get\_descriptors()}{80}{subsubsection.7.12.3.8}%
+\contentsline {subsubsection}{\numberline {7.12.3.9}get\_kinect\_coordinates()}{80}{subsubsection.7.12.3.9}%
+\contentsline {subsubsection}{\numberline {7.12.3.10}get\_landmark()}{80}{subsubsection.7.12.3.10}%
+\contentsline {subsubsection}{\numberline {7.12.3.11}get\_odom\_coordinates()}{80}{subsubsection.7.12.3.11}%
+\contentsline {subsubsection}{\numberline {7.12.3.12}get\_size()}{80}{subsubsection.7.12.3.12}%
+\contentsline {subsubsection}{\numberline {7.12.3.13}get\_u\_coordinates()}{81}{subsubsection.7.12.3.13}%
+\contentsline {subsubsection}{\numberline {7.12.3.14}get\_v\_coordinates()}{81}{subsubsection.7.12.3.14}%
+\contentsline {subsubsection}{\numberline {7.12.3.15}get\_visible\_landmarks()}{81}{subsubsection.7.12.3.15}%
+\contentsline {subsubsection}{\numberline {7.12.3.16}landmark\_kalman\_iteration()}{81}{subsubsection.7.12.3.16}%
+\contentsline {subsubsection}{\numberline {7.12.3.17}publish\_pointcloud\_map()}{82}{subsubsection.7.12.3.17}%
+\contentsline {subsection}{\numberline {7.12.4}Member Data Documentation}{82}{subsection.7.12.4}%
+\contentsline {subsubsection}{\numberline {7.12.4.1}descriptors}{82}{subsubsection.7.12.4.1}%
+\contentsline {section}{\numberline {7.13}visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Robot\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Sample Class Reference}{82}{section.7.13}%
+\contentsline {subsection}{\numberline {7.13.1}Constructor \& Destructor Documentation}{83}{subsection.7.13.1}%
+\contentsline {subsubsection}{\numberline {7.13.1.1}\_\_init\_\_()}{83}{subsubsection.7.13.1.1}%
+\contentsline {subsection}{\numberline {7.13.2}Member Function Documentation}{84}{subsection.7.13.2}%
+\contentsline {subsubsection}{\numberline {7.13.2.1}accumulate\_pixels()}{84}{subsubsection.7.13.2.1}%
+\contentsline {subsubsection}{\numberline {7.13.2.2}get\_covariance\_P()}{84}{subsubsection.7.13.2.2}%
+\contentsline {subsubsection}{\numberline {7.13.2.3}get\_drawn\_keypoints()}{84}{subsubsection.7.13.2.3}%
+\contentsline {subsubsection}{\numberline {7.13.2.4}get\_log\_weight()}{84}{subsubsection.7.13.2.4}%
+\contentsline {subsubsection}{\numberline {7.13.2.5}get\_position()}{84}{subsubsection.7.13.2.5}%
+\contentsline {subsubsection}{\numberline {7.13.2.6}get\_theta()}{84}{subsubsection.7.13.2.6}%
+\contentsline {subsubsection}{\numberline {7.13.2.7}get\_weight()}{85}{subsubsection.7.13.2.7}%
+\contentsline {subsubsection}{\numberline {7.13.2.8}init\_camera\_cone()}{85}{subsubsection.7.13.2.8}%
+\contentsline {subsubsection}{\numberline {7.13.2.9}predict\_with\_wheel\_odom()}{85}{subsubsection.7.13.2.9}%
+\contentsline {subsubsection}{\numberline {7.13.2.10}publish\_accumulated\_pixels()}{85}{subsubsection.7.13.2.10}%
+\contentsline {subsubsection}{\numberline {7.13.2.11}publish\_odometry\_msg()}{85}{subsubsection.7.13.2.11}%
+\contentsline {subsubsection}{\numberline {7.13.2.12}publish\_pixels()}{86}{subsubsection.7.13.2.12}%
+\contentsline {subsubsection}{\numberline {7.13.2.13}publish\_pointcloud\_map()}{86}{subsubsection.7.13.2.13}%
+\contentsline {subsubsection}{\numberline {7.13.2.14}publish\_vision\_cone()}{86}{subsubsection.7.13.2.14}%
+\contentsline {subsubsection}{\numberline {7.13.2.15}publish\_yourself()}{86}{subsubsection.7.13.2.15}%
+\contentsline {subsubsection}{\numberline {7.13.2.16}ransac\_failed()}{87}{subsubsection.7.13.2.16}%
+\contentsline {subsubsection}{\numberline {7.13.2.17}robot\_iteration()}{87}{subsubsection.7.13.2.17}%
+\contentsline {subsubsection}{\numberline {7.13.2.18}set\_log\_weight()}{87}{subsubsection.7.13.2.18}%
+\contentsline {subsubsection}{\numberline {7.13.2.19}set\_state()}{87}{subsubsection.7.13.2.19}%
+\contentsline {subsubsection}{\numberline {7.13.2.20}set\_weight()}{88}{subsubsection.7.13.2.20}%
+\contentsline {subsection}{\numberline {7.13.3}Member Data Documentation}{88}{subsection.7.13.3}%
+\contentsline {subsubsection}{\numberline {7.13.3.1}acc\_ransac\_noise\_delta}{88}{subsubsection.7.13.3.1}%
+\contentsline {subsubsection}{\numberline {7.13.3.2}accumulated\_pixels}{88}{subsubsection.7.13.3.2}%
+\contentsline {subsubsection}{\numberline {7.13.3.3}bf}{88}{subsubsection.7.13.3.3}%
+\contentsline {subsubsection}{\numberline {7.13.3.4}cone\_publisher}{88}{subsubsection.7.13.3.4}%
+\contentsline {subsubsection}{\numberline {7.13.3.5}covariance\_P}{88}{subsubsection.7.13.3.5}%
+\contentsline {subsubsection}{\numberline {7.13.3.6}delta\_ransac\_state}{88}{subsubsection.7.13.3.6}%
+\contentsline {subsubsection}{\numberline {7.13.3.7}delta\_wheel\_odom\_ransac}{88}{subsubsection.7.13.3.7}%
+\contentsline {subsubsection}{\numberline {7.13.3.8}ekf}{88}{subsubsection.7.13.3.8}%
+\contentsline {subsubsection}{\numberline {7.13.3.9}first\_iteration}{88}{subsubsection.7.13.3.9}%
+\contentsline {subsubsection}{\numberline {7.13.3.10}frame\_depth}{88}{subsubsection.7.13.3.10}%
+\contentsline {subsubsection}{\numberline {7.13.3.11}frame\_rgb}{88}{subsubsection.7.13.3.11}%
+\contentsline {subsubsection}{\numberline {7.13.3.12}index}{88}{subsubsection.7.13.3.12}%
+\contentsline {subsubsection}{\numberline {7.13.3.13}last\_wheel\_odom}{89}{subsubsection.7.13.3.13}%
+\contentsline {subsubsection}{\numberline {7.13.3.14}log\_weight}{89}{subsubsection.7.13.3.14}%
+\contentsline {subsubsection}{\numberline {7.13.3.15}map\_publisher}{89}{subsubsection.7.13.3.15}%
+\contentsline {subsubsection}{\numberline {7.13.3.16}noise\_Q}{89}{subsubsection.7.13.3.16}%
+\contentsline {subsubsection}{\numberline {7.13.3.17}odometry\_msg\_publisher}{89}{subsubsection.7.13.3.17}%
+\contentsline {subsubsection}{\numberline {7.13.3.18}path}{89}{subsubsection.7.13.3.18}%
+\contentsline {subsubsection}{\numberline {7.13.3.19}path\_color}{89}{subsubsection.7.13.3.19}%
+\contentsline {subsubsection}{\numberline {7.13.3.20}pos\_baselink}{89}{subsubsection.7.13.3.20}%
+\contentsline {subsubsection}{\numberline {7.13.3.21}pos\_visual\_odom}{89}{subsubsection.7.13.3.21}%
+\contentsline {subsubsection}{\numberline {7.13.3.22}ransac\_delta\_p}{89}{subsubsection.7.13.3.22}%
+\contentsline {subsubsection}{\numberline {7.13.3.23}ransac\_delta\_theta}{89}{subsubsection.7.13.3.23}%
+\contentsline {subsubsection}{\numberline {7.13.3.24}ransac\_draw\_keypoints}{89}{subsubsection.7.13.3.24}%
+\contentsline {subsubsection}{\numberline {7.13.3.25}ransac\_inlier\_ratio}{89}{subsubsection.7.13.3.25}%
+\contentsline {subsubsection}{\numberline {7.13.3.26}theta}{89}{subsubsection.7.13.3.26}%
+\contentsline {subsubsection}{\numberline {7.13.3.27}total\_publisher}{89}{subsubsection.7.13.3.27}%
+\contentsline {subsubsection}{\numberline {7.13.3.28}visible\_landmarks}{90}{subsubsection.7.13.3.28}%
+\contentsline {subsubsection}{\numberline {7.13.3.29}visual\_odom\_map}{90}{subsubsection.7.13.3.29}%
+\contentsline {chapter}{\numberline {8}File Documentation}{91}{chapter.8}%
+\contentsline {section}{\numberline {8.1}bagfiles/20260428\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Bag\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Without\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}TF/metadata.yaml File Reference}{91}{section.8.1}%
+\contentsline {section}{\numberline {8.2}bagfiles/20260519\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Trans\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}XY\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}bag/metadata.yaml File Reference}{92}{section.8.2}%
+\contentsline {section}{\numberline {8.3}bagfiles/20260616\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Around\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}The\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}Desks\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}bag/metadata.yaml File Reference}{92}{section.8.3}%
+\contentsline {section}{\numberline {8.4}README.\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}md File Reference}{92}{section.8.4}%
+\contentsline {section}{\numberline {8.5}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/config/param.yaml File Reference}{92}{section.8.5}%
+\contentsline {section}{\numberline {8.6}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/launch/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}launch.py File Reference}{93}{section.8.6}%
+\contentsline {section}{\numberline {8.7}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/setup.py File Reference}{93}{section.8.7}%
+\contentsline {section}{\numberline {8.8}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}init\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}.py File Reference}{93}{section.8.8}%
+\contentsline {section}{\numberline {8.9}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/constants.py File Reference}{93}{section.8.9}%
+\contentsline {section}{\numberline {8.10}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/csv\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}creator\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node.py File Reference}{96}{section.8.10}%
+\contentsline {section}{\numberline {8.11}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}landmark.py File Reference}{97}{section.8.11}%
+\contentsline {section}{\numberline {8.12}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/ekf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}robot.py File Reference}{97}{section.8.12}%
+\contentsline {section}{\numberline {8.13}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/landmark.py File Reference}{97}{section.8.13}%
+\contentsline {section}{\numberline {8.14}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}buffer.py File Reference}{97}{section.8.14}%
+\contentsline {section}{\numberline {8.15}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/robot.py File Reference}{98}{section.8.15}%
+\contentsline {section}{\numberline {8.16}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/tf\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}methods.py File Reference}{98}{section.8.16}%
+\contentsline {section}{\numberline {8.17}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}map.py File Reference}{98}{section.8.17}%
+\contentsline {section}{\numberline {8.18}ros2\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}ws/src/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom/visual\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}odom\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}\_\discretionary {\mbox {\scriptsize $\hookleftarrow $}}{}{}node.py File Reference}{99}{section.8.18}%
+\contentsline {chapter}{Index}{101}{section*.98}%

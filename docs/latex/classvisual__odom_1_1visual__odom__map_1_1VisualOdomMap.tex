@@ -1,0 +1,453 @@
+\doxysection{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map Class Reference}
+\hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}{}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+
+
+Holds and manages persistent Landmark records mapped inside the particle trajectories.  
+
+
+
+
+Inheritance diagram for visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=312pt]{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a51aa3ff2d4b43dad697029a70e4079ab}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, Optional\mbox{[}Iterable\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}\mbox{]}\mbox{]} landmarks=None)
+\begin{DoxyCompactList}\small\item\em Initializes a Visual\+Odom\+Map collection instance. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aad01c12953371de4bdd990e2256d94c2}{get\+\_\+landmark}} (self, int index)
+\begin{DoxyCompactList}\small\item\em Retrieves a tracked landmark record by its indexing identifier. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11df5e6721e7b7bd97b84de0e0f4de2a}{add\+\_\+landmark}} (self, \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}} landmark)
+\begin{DoxyCompactList}\small\item\em Appends a newly created landmark record to the collection. \end{DoxyCompactList}\item 
+list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a081ed914c4062454c53aa4436c8b40f8}{get\+\_\+all\+\_\+landmarks}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the raw list structure containing all active landmark instances. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a96ade6497e1895248c715fb73fb70c0f}{get\+\_\+size}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the total landmark population size currently inside the map. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a518cd5c1ca3fee6fd00db4b197c646e1}{add\+\_\+landmarks\+\_\+from\+\_\+kps}} (self, NDArray P\+\_\+init, Iterable\mbox{[}cv2.\+Key\+Point\mbox{]} kps, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd}{des}}, np.\+ndarray frame\+\_\+rgb, np.\+ndarray kp\+\_\+depth, float theta, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink)
+\begin{DoxyCompactList}\small\item\em Instantiates new landmarks from visual feature parameters and adds them to the map. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}{Visual\+Odom\+Map}} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a05ff25a354e7386dddc51c44bd32927f}{get\+\_\+visible\+\_\+landmarks}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} camera\+\_\+pos, float theta)
+\begin{DoxyCompactList}\small\item\em Queries the map for all landmarks falling inside the camera\textquotesingle{}s visual field-\/of-\/view frustum. \end{DoxyCompactList}\item 
+np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_af408ca184a7a6cde325fc647ea8b0754}{get\+\_\+descriptors}} (self)
+\begin{DoxyCompactList}\small\item\em Stack all internal visual binary descriptors as a single Num\+Py array for batch processing. \end{DoxyCompactList}\item 
+list\mbox{[}int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a535654d0b85cc66ede60d6116598d1d5}{get\+\_\+depth}} (self)
+\begin{DoxyCompactList}\small\item\em Gets raw depth values from all active landmarks in the map. \end{DoxyCompactList}\item 
+list\mbox{[}int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a34233fa805845ad389f145d26718227a}{get\+\_\+u\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets horizontal pixel indices from all active landmarks in the map. \end{DoxyCompactList}\item 
+list\mbox{[}int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aae6d3af7d2a22b1697f2ea5687581fc1}{get\+\_\+v\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets vertical pixel indices from all active landmarks in the map. \end{DoxyCompactList}\item 
+list\mbox{[}int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aebbf39990f53588856d595f9016f9c11}{get\+\_\+colors}} (self)
+\begin{DoxyCompactList}\small\item\em Gets packed RGB rendering properties from all active landmarks in the map. \end{DoxyCompactList}\item 
+list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a9166d54cb256b71668c2e1c38893f15b}{get\+\_\+odom\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets estimated odom-\/frame coordinates from all active landmarks in the map. \end{DoxyCompactList}\item 
+list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a87782d26967a4528883f3a9651ee022b}{get\+\_\+kinect\+\_\+coordinates}} (self)
+\begin{DoxyCompactList}\small\item\em Gets local camera-\/frame coordinates from all active landmarks in the map. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11a98c560d1fadca7154854bf030fbe7}{publish\+\_\+pointcloud\+\_\+map}} (self, rclpy.\+publisher.\+Publisher publisher, Time time)
+\begin{DoxyCompactList}\small\item\em Formats and publishes active landmarks as a standard Point\+Cloud2 sensor message for RViz. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a24a4fc334b2ca243c65b95e969e42afc}{cleanup\+\_\+old\+\_\+landmarks}} (self, \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}{Visual\+Odom\+Map}} visible\+\_\+landmarks, List\mbox{[}int\mbox{]} landmark\+\_\+index)
+\begin{DoxyCompactList}\small\item\em Manages landmark trust properties and purges unobserved/unstable features from memory. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a3766ef4ab0ce341b42809a888264617b}{landmark\+\_\+kalman\+\_\+iteration}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink, float theta, List\mbox{[}int\mbox{]} landmark\+\_\+indices, List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}\mbox{]} kp\+\_\+pos)
+\begin{DoxyCompactList}\small\item\em Runs a single EKF iteration step across all actively matched landmarks. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a8fc1d179d3aee4d6c2ab7b26d1750385}{calculate\+\_\+log\+\_\+weight}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+baselink, float theta, List\mbox{[}int\mbox{]} landmark\+\_\+indices, List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}\mbox{]} kp\+\_\+pos)
+\begin{DoxyCompactList}\small\item\em Sums the log-\/likelihood of all matched landmarks to update particle log weights. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{visual\+\_\+odom.\+landmark.\+Landmark}}}
+\begin{DoxyCompactItemize}
+\item 
+np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a9f48e767a8ccef22fc31a4b61b3ff03b}{get\+\_\+descriptor}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the binary feature descriptor array. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a0f09a3adddc987b3dff0b0f035b34a2a}{get\+\_\+u}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the horizontal pixel coordinate. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_aeeafd5aee922efd686fec712e46d41d9}{get\+\_\+v}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the vertical pixel coordinate. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a8bb9d7677b2b7cd6c69eafdfa9c7cdd9}{get\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the current visual trust tracking parameter. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab2986a24fa414370b2c07194d1cf2a83}{get\+\_\+color}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the color property used for visual representation. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a45176c6528078ca77b8f2834d47f2eca}{set\+\_\+odom\+\_\+coordinates}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}{odom\+\_\+coordinates}})
+\begin{DoxyCompactList}\small\item\em Sets the global odom-\/frame coordinates and updates the internal EKF. \end{DoxyCompactList}\item 
+NDArray \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ac6d5784ba8ff2bfa7904d7c1cd683994}{get\+\_\+P}} (self)
+\begin{DoxyCompactList}\small\item\em Gets the estimated covariance matrix. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a4f35ded7db4c202504e440b1e9825bbb}{is\+\_\+visible}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} pos\+\_\+camera\+\_\+odom, float theta\+\_\+robot)
+\begin{DoxyCompactList}\small\item\em Checks if the landmark falls within the horizontal and vertical field of view of the sensor. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_acdb8808149649edfa0863cfde446bd9a}{reset\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Resets the visual tracking trust property to its initial baseline value of 30.\+0. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_af20217b1ce80c32377f9e60447e094e9}{increase\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Increments the trust value after the landmark is successfully re-\/observed. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_adb091cf36137fe8363c2e59935e89305}{decrease\+\_\+trust}} (self)
+\begin{DoxyCompactList}\small\item\em Applies an exponential decay to the trust value when the landmark is missed. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a8c7c553388a715bb3070d960bf0f5666}{calculate\+\_\+likelihood}} (self, \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}} z\+\_\+pos\+\_\+odom, float theta)
+\begin{DoxyCompactList}\small\item\em Calculates the measurement likelihood of the landmark given its current state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a1ffd5c83f469b4604ac2a2aec85d3c0e}{descriptors}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes inherited from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{visual\+\_\+odom.\+landmark.\+Landmark}}}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a18148d54764837a5ef520899377b11cb}{pixel\+\_\+coor}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_abbd0b563fbf4fae0e153a2edff1254dd}{des}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab22038ae09fabe373c6ffe44e0b50502}{trust}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a03c2ed2c1a54f9196097f6dd23879a1b}{color}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_aa528bb9898f15b5030b1f57151ad652a}{kinect\+\_\+coordinates}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a7113dc9a9f52acfa8495c3e8e920c1de}{odom\+\_\+coordinates}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a305f05bc4f1ceadfd70223d1712c2df2}{P}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_acf440d3ebfa8e3410e032aa7614b24e6}{landmark\+\_\+ekf}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Holds and manages persistent Landmark records mapped inside the particle trajectories. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a51aa3ff2d4b43dad697029a70e4079ab}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a51aa3ff2d4b43dad697029a70e4079ab} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Optional\mbox{[}Iterable\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}\mbox{]}\mbox{]} }]{landmarks = {\ttfamily None} }\end{DoxyParamCaption})}
+
+
+
+Initializes a Visual\+Odom\+Map collection instance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em landmarks} & Optional collection of pre-\/existing landmark records. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_ab8a59a02945ae1bc5a4514b67d96aefb}{visual\+\_\+odom.\+landmark.\+Landmark}}.
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11df5e6721e7b7bd97b84de0e0f4de2a}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11df5e6721e7b7bd97b84de0e0f4de2a} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!add\_landmark@{add\_landmark}}
+\index{add\_landmark@{add\_landmark}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{add\_landmark()}{add\_landmark()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+add\+\_\+landmark (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}}]{landmark }\end{DoxyParamCaption})}
+
+
+
+Appends a newly created landmark record to the collection. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em landmark} & Landmark target instance. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a518cd5c1ca3fee6fd00db4b197c646e1}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a518cd5c1ca3fee6fd00db4b197c646e1} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!add\_landmarks\_from\_kps@{add\_landmarks\_from\_kps}}
+\index{add\_landmarks\_from\_kps@{add\_landmarks\_from\_kps}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{add\_landmarks\_from\_kps()}{add\_landmarks\_from\_kps()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+add\+\_\+landmarks\+\_\+from\+\_\+kps (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{NDArray}]{P\+\_\+init,  }\item[{Iterable\mbox{[}cv2.\+Key\+Point\mbox{]}}]{kps,  }\item[{np.\+ndarray}]{des,  }\item[{np.\+ndarray}]{frame\+\_\+rgb,  }\item[{np.\+ndarray}]{kp\+\_\+depth,  }\item[{float}]{theta,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+baselink }\end{DoxyParamCaption})}
+
+
+
+Instantiates new landmarks from visual feature parameters and adds them to the map. 
+
+Filters out spatial duplicates using binary ORB descriptor hash structures.
+
+
+\begin{DoxyParams}{Parameters}
+{\em P\+\_\+init} & Initial covariance matrix assigned to newly registered features. \\
+\hline
+{\em kps} & Detected Open\+CV Key\+Point structures. \\
+\hline
+{\em des} & Binary descriptors corresponding to kps. \\
+\hline
+{\em frame\+\_\+rgb} & Color reference frame image. \\
+\hline
+{\em kp\+\_\+depth} & Raw sensor depth value matches. \\
+\hline
+{\em theta} & Current robot heading yaw orientation. \\
+\hline
+{\em pos\+\_\+baselink} & Current robot translation position. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a8fc1d179d3aee4d6c2ab7b26d1750385}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a8fc1d179d3aee4d6c2ab7b26d1750385} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!calculate\_log\_weight@{calculate\_log\_weight}}
+\index{calculate\_log\_weight@{calculate\_log\_weight}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{calculate\_log\_weight()}{calculate\_log\_weight()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+calculate\+\_\+log\+\_\+weight (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+baselink,  }\item[{float}]{theta,  }\item[{List\mbox{[}int\mbox{]}}]{landmark\+\_\+indices,  }\item[{List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}\mbox{]}}]{kp\+\_\+pos }\end{DoxyParamCaption})}
+
+
+
+Sums the log-\/likelihood of all matched landmarks to update particle log weights. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos\+\_\+baselink} & Current position of the robot\textquotesingle{}s base\+\_\+link. \\
+\hline
+{\em theta} & Current robot heading yaw orientation. \\
+\hline
+{\em landmark\+\_\+indices} & Map indices corresponding to matched landmarks. \\
+\hline
+{\em kp\+\_\+pos} & Observed pixel coordinate measurements. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The accumulated particle log-\/weight float value. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a24a4fc334b2ca243c65b95e969e42afc}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a24a4fc334b2ca243c65b95e969e42afc} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!cleanup\_old\_landmarks@{cleanup\_old\_landmarks}}
+\index{cleanup\_old\_landmarks@{cleanup\_old\_landmarks}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{cleanup\_old\_landmarks()}{cleanup\_old\_landmarks()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+cleanup\+\_\+old\+\_\+landmarks (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}{Visual\+Odom\+Map}}}]{visible\+\_\+landmarks,  }\item[{List\mbox{[}int\mbox{]}}]{landmark\+\_\+index }\end{DoxyParamCaption})}
+
+
+
+Manages landmark trust properties and purges unobserved/unstable features from memory. 
+
+Increments trust metrics for actively observed features and applies decay factors to missed ones.
+
+
+\begin{DoxyParams}{Parameters}
+{\em visible\+\_\+landmarks} & Subset collection containing currently visible landmarks. \\
+\hline
+{\em landmark\+\_\+index} & Vector of matched inlier indices. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a081ed914c4062454c53aa4436c8b40f8}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a081ed914c4062454c53aa4436c8b40f8} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_all\_landmarks@{get\_all\_landmarks}}
+\index{get\_all\_landmarks@{get\_all\_landmarks}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_all\_landmarks()}{get\_all\_landmarks()}}
+{\footnotesize\ttfamily  list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}}\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+all\+\_\+landmarks (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the raw list structure containing all active landmark instances. 
+
+\begin{DoxyReturn}{Returns}
+Collection list. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aebbf39990f53588856d595f9016f9c11}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aebbf39990f53588856d595f9016f9c11} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_colors@{get\_colors}}
+\index{get\_colors@{get\_colors}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_colors()}{get\_colors()}}
+{\footnotesize\ttfamily  list\mbox{[}int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+colors (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets packed RGB rendering properties from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Packed color integers list. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a535654d0b85cc66ede60d6116598d1d5}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a535654d0b85cc66ede60d6116598d1d5} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_depth@{get\_depth}}
+\index{get\_depth@{get\_depth}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_depth()}{get\_depth()}}
+{\footnotesize\ttfamily  list\mbox{[}int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+depth (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets raw depth values from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Depth values list. 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a246aceb37564cfc25f1029d7e1ce1831}{visual\+\_\+odom.\+landmark.\+Landmark}}.
+
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_af408ca184a7a6cde325fc647ea8b0754}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_af408ca184a7a6cde325fc647ea8b0754} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_descriptors@{get\_descriptors}}
+\index{get\_descriptors@{get\_descriptors}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_descriptors()}{get\_descriptors()}}
+{\footnotesize\ttfamily  np.\+ndarray visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+descriptors (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Stack all internal visual binary descriptors as a single Num\+Py array for batch processing. 
+
+\begin{DoxyReturn}{Returns}
+2D descriptor matrix matching active landmarks. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a87782d26967a4528883f3a9651ee022b}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a87782d26967a4528883f3a9651ee022b} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_kinect\_coordinates@{get\_kinect\_coordinates}}
+\index{get\_kinect\_coordinates@{get\_kinect\_coordinates}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_kinect\_coordinates()}{get\_kinect\_coordinates()}}
+{\footnotesize\ttfamily  list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+kinect\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets local camera-\/frame coordinates from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Coordinates list. 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_afa9fbd40191e962305940a5154b2dd96}{visual\+\_\+odom.\+landmark.\+Landmark}}.
+
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aad01c12953371de4bdd990e2256d94c2}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aad01c12953371de4bdd990e2256d94c2} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_landmark@{get\_landmark}}
+\index{get\_landmark@{get\_landmark}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_landmark()}{get\_landmark()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark}{Landmark}} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+landmark (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{int}]{index }\end{DoxyParamCaption})}
+
+
+
+Retrieves a tracked landmark record by its indexing identifier. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em index} & Target list position. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Tracked Landmark instance. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a9166d54cb256b71668c2e1c38893f15b}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a9166d54cb256b71668c2e1c38893f15b} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_odom\_coordinates@{get\_odom\_coordinates}}
+\index{get\_odom\_coordinates@{get\_odom\_coordinates}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_odom\_coordinates()}{get\_odom\_coordinates()}}
+{\footnotesize\ttfamily  list\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+odom\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets estimated odom-\/frame coordinates from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Coordinates list. 
+\end{DoxyReturn}
+
+
+Reimplemented from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_a61544a8e6e9ffb456cf66c2f2b52ba67}{visual\+\_\+odom.\+landmark.\+Landmark}}.
+
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a96ade6497e1895248c715fb73fb70c0f}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a96ade6497e1895248c715fb73fb70c0f} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_size@{get\_size}}
+\index{get\_size@{get\_size}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_size()}{get\_size()}}
+{\footnotesize\ttfamily  int visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+size (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets the total landmark population size currently inside the map. 
+
+\begin{DoxyReturn}{Returns}
+Landmark population size. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a34233fa805845ad389f145d26718227a}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a34233fa805845ad389f145d26718227a} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_u\_coordinates@{get\_u\_coordinates}}
+\index{get\_u\_coordinates@{get\_u\_coordinates}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_u\_coordinates()}{get\_u\_coordinates()}}
+{\footnotesize\ttfamily  list\mbox{[}int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+u\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets horizontal pixel indices from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Horizontal columns list. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aae6d3af7d2a22b1697f2ea5687581fc1}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_aae6d3af7d2a22b1697f2ea5687581fc1} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_v\_coordinates@{get\_v\_coordinates}}
+\index{get\_v\_coordinates@{get\_v\_coordinates}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_v\_coordinates()}{get\_v\_coordinates()}}
+{\footnotesize\ttfamily  list\mbox{[}int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+v\+\_\+coordinates (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Gets vertical pixel indices from all active landmarks in the map. 
+
+\begin{DoxyReturn}{Returns}
+Vertical rows list. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a05ff25a354e7386dddc51c44bd32927f}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a05ff25a354e7386dddc51c44bd32927f} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!get\_visible\_landmarks@{get\_visible\_landmarks}}
+\index{get\_visible\_landmarks@{get\_visible\_landmarks}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{get\_visible\_landmarks()}{get\_visible\_landmarks()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap}{Visual\+Odom\+Map}} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+get\+\_\+visible\+\_\+landmarks (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{camera\+\_\+pos,  }\item[{float}]{theta }\end{DoxyParamCaption})}
+
+
+
+Queries the map for all landmarks falling inside the camera\textquotesingle{}s visual field-\/of-\/view frustum. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em camera\+\_\+pos} & Position of the camera in the global odom frame. \\
+\hline
+{\em theta} & Current robot heading yaw orientation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New map collection containing only visible landmark candidates. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a3766ef4ab0ce341b42809a888264617b}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a3766ef4ab0ce341b42809a888264617b} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!landmark\_kalman\_iteration@{landmark\_kalman\_iteration}}
+\index{landmark\_kalman\_iteration@{landmark\_kalman\_iteration}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{landmark\_kalman\_iteration()}{landmark\_kalman\_iteration()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+landmark\+\_\+kalman\+\_\+iteration (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}}]{pos\+\_\+baselink,  }\item[{float}]{theta,  }\item[{List\mbox{[}int\mbox{]}}]{landmark\+\_\+indices,  }\item[{List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1PixelCoordinate}{Pixel\+Coordinate}}\mbox{]}}]{kp\+\_\+pos }\end{DoxyParamCaption})}
+
+
+
+Runs a single EKF iteration step across all actively matched landmarks. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos\+\_\+baselink} & Current position of the robot\textquotesingle{}s base\+\_\+link. \\
+\hline
+{\em theta} & Current robot heading yaw orientation. \\
+\hline
+{\em landmark\+\_\+indices} & Map indices corresponding to matched landmarks. \\
+\hline
+{\em kp\+\_\+pos} & Observed pixel coordinate measurements. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{classvisual__odom_1_1landmark_1_1Landmark_adbb8724ab9f717002ae8ec747beb50b3}{visual\+\_\+odom.\+landmark.\+Landmark}}.
+
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11a98c560d1fadca7154854bf030fbe7}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a11a98c560d1fadca7154854bf030fbe7} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!publish\_pointcloud\_map@{publish\_pointcloud\_map}}
+\index{publish\_pointcloud\_map@{publish\_pointcloud\_map}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{publish\_pointcloud\_map()}{publish\_pointcloud\_map()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+publish\+\_\+pointcloud\+\_\+map (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{rclpy.\+publisher.\+Publisher}]{publisher,  }\item[{Time}]{time }\end{DoxyParamCaption})}
+
+
+
+Formats and publishes active landmarks as a standard Point\+Cloud2 sensor message for RViz. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em publisher} & Target Point\+Cloud2 publisher channel. \\
+\hline
+{\em time} & Target timeline timestamp. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a1ffd5c83f469b4604ac2a2aec85d3c0e}\label{classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap_a1ffd5c83f469b4604ac2a2aec85d3c0e} 
+\index{visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}!descriptors@{descriptors}}
+\index{descriptors@{descriptors}!visual\_odom.visual\_odom\_map.VisualOdomMap@{visual\_odom.visual\_odom\_map.VisualOdomMap}}
+\doxysubsubsection{\texorpdfstring{descriptors}{descriptors}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+map.\+Visual\+Odom\+Map.\+descriptors}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{visual__odom__map_8py}{visual\+\_\+odom\+\_\+map.\+py}}\end{DoxyCompactItemize}

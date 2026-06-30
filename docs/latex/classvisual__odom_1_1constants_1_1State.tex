@@ -1,0 +1,145 @@
+\doxysection{visual\+\_\+odom.\+constants.\+State Class Reference}
+\hypertarget{classvisual__odom_1_1constants_1_1State}{}\label{classvisual__odom_1_1constants_1_1State}\index{visual\_odom.constants.State@{visual\_odom.constants.State}}
+
+
+2D robot pose representation.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+"{}State"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_a922cfab0495178095796657644eb9bc2}{\+\_\+\+\_\+add\+\_\+\+\_\+}} (self, "{}State"{} other)
+\begin{DoxyCompactList}\small\item\em Add two State objects component-\/wise. \end{DoxyCompactList}\item 
+"{}State"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_a4ec2dc4ed9911c48aa6503be15e7e941}{\+\_\+\+\_\+sub\+\_\+\+\_\+}} (self, "{}State"{} other)
+\begin{DoxyCompactList}\small\item\em Subtract two State objects component-\/wise. \end{DoxyCompactList}\item 
+"{}State"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_ae5d4a963746920e67c4c1d860dc99bef}{\+\_\+\+\_\+mul\+\_\+\+\_\+}} (self, factor)
+\begin{DoxyCompactList}\small\item\em Multiply a State object by a scalar value. \end{DoxyCompactList}\item 
+"{}State"{} \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_a8e023a6266a840539ce3bb5a1591034d}{\+\_\+\+\_\+truediv\+\_\+\+\_\+}} (self, float factor)
+\begin{DoxyCompactList}\small\item\em Divide a State object by a scalar value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_a2637e0fb71e448613d7388748afa1b0d}{x}}
+\begin{DoxyCompactList}\small\item\em Global X-\/position of the robot base in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_a0d66b25aa0ce218ae12e5d786cdd5650}{y}}
+\begin{DoxyCompactList}\small\item\em Global Y-\/position of the robot base in meters. \end{DoxyCompactList}\item 
+float \mbox{\hyperlink{classvisual__odom_1_1constants_1_1State_aa518a8681722ca1dc741560d76962305}{theta}}
+\begin{DoxyCompactList}\small\item\em Heading/yaw orientation of the robot in radians. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+2D robot pose representation. 
+
+Represents planar robot translation and heading. 
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1constants_1_1State_a922cfab0495178095796657644eb9bc2}\label{classvisual__odom_1_1constants_1_1State_a922cfab0495178095796657644eb9bc2} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!\_\_add\_\_@{\_\_add\_\_}}
+\index{\_\_add\_\_@{\_\_add\_\_}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{\_\_add\_\_()}{\_\_add\_\_()}}
+{\footnotesize\ttfamily  "{}State"{} visual\+\_\+odom.\+constants.\+State.\+\_\+\+\_\+add\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}State"{}}]{other }\end{DoxyParamCaption})}
+
+
+
+Add two State objects component-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & State object to add. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New State containing the component-\/wise sum. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1State_ae5d4a963746920e67c4c1d860dc99bef}\label{classvisual__odom_1_1constants_1_1State_ae5d4a963746920e67c4c1d860dc99bef} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!\_\_mul\_\_@{\_\_mul\_\_}}
+\index{\_\_mul\_\_@{\_\_mul\_\_}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{\_\_mul\_\_()}{\_\_mul\_\_()}}
+{\footnotesize\ttfamily  "{}State"{} visual\+\_\+odom.\+constants.\+State.\+\_\+\+\_\+mul\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{}]{factor }\end{DoxyParamCaption})}
+
+
+
+Multiply a State object by a scalar value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em factor} & Scalar multiplication factor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New State with scaled values. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1State_a4ec2dc4ed9911c48aa6503be15e7e941}\label{classvisual__odom_1_1constants_1_1State_a4ec2dc4ed9911c48aa6503be15e7e941} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!\_\_sub\_\_@{\_\_sub\_\_}}
+\index{\_\_sub\_\_@{\_\_sub\_\_}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{\_\_sub\_\_()}{\_\_sub\_\_()}}
+{\footnotesize\ttfamily  "{}State"{} visual\+\_\+odom.\+constants.\+State.\+\_\+\+\_\+sub\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{"{}State"{}}]{other }\end{DoxyParamCaption})}
+
+
+
+Subtract two State objects component-\/wise. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & State object to subtract. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New State containing the component-\/wise difference. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1constants_1_1State_a8e023a6266a840539ce3bb5a1591034d}\label{classvisual__odom_1_1constants_1_1State_a8e023a6266a840539ce3bb5a1591034d} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!\_\_truediv\_\_@{\_\_truediv\_\_}}
+\index{\_\_truediv\_\_@{\_\_truediv\_\_}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{\_\_truediv\_\_()}{\_\_truediv\_\_()}}
+{\footnotesize\ttfamily  "{}State"{} visual\+\_\+odom.\+constants.\+State.\+\_\+\+\_\+truediv\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{float}]{factor }\end{DoxyParamCaption})}
+
+
+
+Divide a State object by a scalar value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em factor} & Scalar divisor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+New State with divided values. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1constants_1_1State_aa518a8681722ca1dc741560d76962305}\label{classvisual__odom_1_1constants_1_1State_aa518a8681722ca1dc741560d76962305} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!theta@{theta}}
+\index{theta@{theta}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{theta}{theta}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+State.\+theta\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Heading/yaw orientation of the robot in radians. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1State_a2637e0fb71e448613d7388748afa1b0d}\label{classvisual__odom_1_1constants_1_1State_a2637e0fb71e448613d7388748afa1b0d} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!x@{x}}
+\index{x@{x}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+State.\+x\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Global X-\/position of the robot base in meters. 
+
+\Hypertarget{classvisual__odom_1_1constants_1_1State_a0d66b25aa0ce218ae12e5d786cdd5650}\label{classvisual__odom_1_1constants_1_1State_a0d66b25aa0ce218ae12e5d786cdd5650} 
+\index{visual\_odom.constants.State@{visual\_odom.constants.State}!y@{y}}
+\index{y@{y}!visual\_odom.constants.State@{visual\_odom.constants.State}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily float visual\+\_\+odom.\+constants.\+State.\+y\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Global Y-\/position of the robot base in meters. 
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{constants_8py}{constants.\+py}}\end{DoxyCompactItemize}

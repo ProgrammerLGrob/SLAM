@@ -1,0 +1,672 @@
+\doxysection{visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom Class Reference}
+\hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom}{}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom}\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+
+
+ROS 2 Visual Odometry node managing features extraction, RANSAC estimation, and particle weight selection.  
+
+
+
+
+Inheritance diagram for visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=221pt]{classvisual__odom_1_1visual__odom__node_1_1VisualOdom__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=221pt]{classvisual__odom_1_1visual__odom__node_1_1VisualOdom__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad747a18797b30839a884fc9b4a570edb}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\begin{DoxyCompactList}\small\item\em Initializes the visual odometry node, subscribers, publishers, and ORB keypoint detectors. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a7ee91036f0e6427c3e51456902fa9b3f}{listener\+\_\+wheel\+\_\+odom\+\_\+callback}} (self, Odometry msg)
+\begin{DoxyCompactList}\small\item\em Receives wheel odometry pose measurements and initializes baseline tracking. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a970ac7d3284f0cd57cec419be0445feb}{listener\+\_\+rgb\+\_\+callback}} (self, Image msg)
+\begin{DoxyCompactList}\small\item\em Handles primary RGB camera frames. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_abad611f807a1f925bda73b94d1c4d4f4}{possible\+\_\+resample}} (self, List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1robot_1_1VisualRobotSample}{Visual\+Robot\+Sample}}\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acce62acadab54a02c18bcc21dd020b6b}{robots}}, int \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace9fa3679549d0e5249015427aa466d2}{best\+\_\+robot\+\_\+idx}}, float \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a71a9b86fad3f953f636f33ef706ed742}{first\+\_\+frame\+\_\+stamp}})
+\begin{DoxyCompactList}\small\item\em Performs resampling by matching visible landmarks to the first frame. \end{DoxyCompactList}\item 
+Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}int\mbox{]}, int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9231f22cfb89117dad8444050ba6a3ca}{ransac\+\_\+frame\+\_\+to\+\_\+map}} (self, List\mbox{[}cv2.\+DMatch\mbox{]} matches, List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]} landmarks\+\_\+odom\+\_\+pos, List\mbox{[}cv2.\+Key\+Point\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}{valid\+\_\+kp}}, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee}{valid\+\_\+kp\+\_\+depth}})
+\begin{DoxyCompactList}\small\item\em Estimates the transformation between map landmarks and the current frame using RANSAC. \end{DoxyCompactList}\item 
+Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}cv2.\+Key\+Point\mbox{]}, int\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3a19b0367dadc3ec973b213dbecf88c1}{ransac\+\_\+frame\+\_\+to\+\_\+frame}} (self, List\mbox{[}cv2.\+DMatch\mbox{]} matches, List\mbox{[}cv2.\+Key\+Point\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}{valid\+\_\+kp}}, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee}{valid\+\_\+kp\+\_\+depth}}, List\mbox{[}cv2.\+Key\+Point\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af091774c43eac3bb6081fa46f36c1f10}{valid\+\_\+kp\+\_\+last}}, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a70186e9ef4b48b2076ddfa91f8198ed2}{valid\+\_\+kp\+\_\+depth\+\_\+last}})
+\begin{DoxyCompactList}\small\item\em Estimates translation and rotation between consecutive frames using RANSAC and 2D Kabsch point set alignment. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a23f76536df359137d9f3f08e1c604ede}{ransac\+\_\+calculation}} (self, List P, List Q, List\mbox{[}cv2.\+DMatch\mbox{]} matches, List\mbox{[}cv2.\+Key\+Point\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}{valid\+\_\+kp}})
+\begin{DoxyCompactList}\small\item\em Executes the core RANSAC loop and computes the best transformation using Kabsch. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_adb2d623badca9344c473e919c57eb416}{listener\+\_\+depth\+\_\+callback}} (self, Image msg)
+\begin{DoxyCompactList}\small\item\em Subscribes to raw depth frames and registers active depth timestamps. \end{DoxyCompactList}\item 
+Tuple\mbox{[}List\mbox{[}cv2.\+Key\+Point\mbox{]}, np.\+ndarray, np.\+ndarray, Time\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a763ebd9a0d6216216cfe16baba23df38}{img\+\_\+to\+\_\+kp\+\_\+des\+\_\+filtered}} (self, Image msg)
+\begin{DoxyCompactList}\small\item\em Detects ORB features and filters out close feature duplicates. \end{DoxyCompactList}\item 
+None \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a42bf441ebb857f3c03f844043396be5a}{iteration}} (self, List\mbox{[}cv2.\+Key\+Point\mbox{]} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}{valid\+\_\+kp}}, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aee549264c50d0c102b2977d01e457236}{valid\+\_\+des}}, np.\+ndarray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee}{valid\+\_\+kp\+\_\+depth}}, NDArray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a43b7ed7af028c77374235d6191313043}{frame\+\_\+rgb}}, NDArray \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4f4dee3d57318b867529e7666df88b08}{frame\+\_\+depth}}, Time rgb\+\_\+stamp, Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}cv2.\+Key\+Point\mbox{]}, int\mbox{]} ransac\+\_\+result)
+\begin{DoxyCompactList}\small\item\em Runs a single localization iteration over all particles. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters}{Parameters}} \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac10c4d5c9488fc33c4266c858576dbec}{parameter\+\_\+initialization}} (self)
+\begin{DoxyCompactList}\small\item\em Declares and loads configuration parameters from the ROS 2 parameters server. \end{DoxyCompactList}\item 
+Set\+Parameters\+Result \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4bf608ab9c3f7435570a0a29f8aa2cb8}{parameter\+\_\+callback}} (self, List\mbox{[}rclpy.\+parameter.\+Parameter\mbox{]} params)
+\begin{DoxyCompactList}\small\item\em Dynamic parameter callback handling updates during node executions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9f82366a27ee581b271d6e855b2d0cb8}{parameter\+\_\+callback}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac4c3e64d678f8f211b92bcae06a73a36}{bridge}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3aca3fce67150db0725912ca2ce90dbf}{orb}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aba0bbea9e1fe23e9a0c177bafe45488f}{bf}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa9167fae5171cf388fa3614b7330ee17}{subscription\+\_\+rgb}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af2f7e25f9e6ee1aed008675185d0da3f}{subscription\+\_\+depth}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9b075baa04fc20cdf42da0dc13eb7126}{subscription\+\_\+wheel\+\_\+odom}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6527e0cd1fbc7e942b1a507a3ed1a58}{publisher\+\_\+keypoints\+\_\+3d}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a250879a15fb8b3674f531182fbf7b108}{total\+\_\+publisher}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6e1190d9827c58cd3248e626a9799a7}{publisher\+\_\+visual\+\_\+odometry\+\_\+msg}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af1f2db4adc6437e2c92d7ce93d456ff3}{publisher\+\_\+cone}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad00a213eeee7eaaa24677b12fba52c80}{publisher\+\_\+image}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace344e3b34dc51aff37ec4473e62e3c0}{publisher\+\_\+accumulated\+\_\+pixels}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a35ae133a834dd4ededc86b561a4ba359}{visual\+\_\+odom\+\_\+path}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a99be7265878fe6c6c9429eaa685935fb}{tf\+\_\+broadcaster}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a25848fae9b49c635dbfd7d035634e548}{tf\+\_\+buffer}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af690fd6f5b0415fdf03018df5fa13f53}{tf\+\_\+listener}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4f4dee3d57318b867529e7666df88b08}{frame\+\_\+depth}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a2ca5d1e41f30f324672c74c458338f67}{frame\+\_\+depth\+\_\+stamp}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a43b7ed7af028c77374235d6191313043}{frame\+\_\+rgb}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad8016789cb262393a8e62a8097dc69a2}{theta}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af091774c43eac3bb6081fa46f36c1f10}{valid\+\_\+kp\+\_\+last}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acb521762e92c4e8a0500b900f7cdf7f0}{valid\+\_\+des\+\_\+last}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a70186e9ef4b48b2076ddfa91f8198ed2}{valid\+\_\+kp\+\_\+depth\+\_\+last}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}{valid\+\_\+kp}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aee549264c50d0c102b2977d01e457236}{valid\+\_\+des}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab626d702640f8ebb31b69ce77ef7b64d}{first\+\_\+kp}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5870fc446bced571b3040c5d59724642}{first\+\_\+des}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab17e7d73e14e6799c996c76f69e73f54}{pos\+\_\+baselink}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace9fa3679549d0e5249015427aa466d2}{best\+\_\+robot\+\_\+idx}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab4ef89b85db5e9bf4386bef41bb6abbb}{best\+\_\+weight}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aed90f014ceb42a4de17ab0b19ecc77ec}{first\+\_\+iteration}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab2a83fd078efb62dec8a5bcda2d2d18e}{position\+\_\+initialized}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad27ee82a2c6848c09119834dc0287ff1}{covariance\+\_\+P}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a44c825b9838611f0c0157880689c4930}{frame\+\_\+stamp}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee}{valid\+\_\+kp\+\_\+depth}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a1d22cacd11ead623c2d6c0846d8b75b4}{first\+\_\+kp\+\_\+depth}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a71a9b86fad3f953f636f33ef706ed742}{first\+\_\+frame\+\_\+stamp}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a0e5b5621784c478f43d53b00da6e650e}{first\+\_\+theta}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9c5c895010c2ab1a922cd1c4805995ec}{first\+\_\+pos}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acce62acadab54a02c18bcc21dd020b6b}{robots}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a320202515c8b0a41bd19c164667b8e03}{visible\+\_\+landmarks}}
+\item 
+\mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5c7372d05d6d8fe041d8d2a9d89abe92}{best\+\_\+robot}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+float \mbox{\hyperlink{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aaaf6d55f961a5c138179a3c1779372d5}{\+\_\+stamp\+\_\+to\+\_\+sec}} (self, builtin\+\_\+interfaces.\+msg.\+Time stamp)
+\begin{DoxyCompactList}\small\item\em Converts standard ROS timeline stamps to floating point seconds. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+ROS 2 Visual Odometry node managing features extraction, RANSAC estimation, and particle weight selection. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad747a18797b30839a884fc9b4a570edb}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad747a18797b30839a884fc9b4a570edb} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Initializes the visual odometry node, subscribers, publishers, and ORB keypoint detectors. 
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aaaf6d55f961a5c138179a3c1779372d5}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aaaf6d55f961a5c138179a3c1779372d5} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!\_stamp\_to\_sec@{\_stamp\_to\_sec}}
+\index{\_stamp\_to\_sec@{\_stamp\_to\_sec}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{\_stamp\_to\_sec()}{\_stamp\_to\_sec()}}
+{\footnotesize\ttfamily  float visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+\_\+stamp\+\_\+to\+\_\+sec (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{builtin\+\_\+interfaces.\+msg.\+Time}]{stamp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Converts standard ROS timeline stamps to floating point seconds. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em stamp} & ROS timeline stamp. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+floating point seconds. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a763ebd9a0d6216216cfe16baba23df38}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a763ebd9a0d6216216cfe16baba23df38} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!img\_to\_kp\_des\_filtered@{img\_to\_kp\_des\_filtered}}
+\index{img\_to\_kp\_des\_filtered@{img\_to\_kp\_des\_filtered}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{img\_to\_kp\_des\_filtered()}{img\_to\_kp\_des\_filtered()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}List\mbox{[}cv2.\+Key\+Point\mbox{]}, np.\+ndarray, np.\+ndarray, Time\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+img\+\_\+to\+\_\+kp\+\_\+des\+\_\+filtered (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Image}]{msg }\end{DoxyParamCaption})}
+
+
+
+Detects ORB features and filters out close feature duplicates. 
+
+Ensure that features have valid depth observations within range thresholds.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Incoming color image message. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple of (valid keypoints list, descriptors, depth values, timestamp). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a42bf441ebb857f3c03f844043396be5a}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a42bf441ebb857f3c03f844043396be5a} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!iteration@{iteration}}
+\index{iteration@{iteration}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{iteration()}{iteration()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+iteration (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}cv2.\+Key\+Point\mbox{]}}]{valid\+\_\+kp,  }\item[{np.\+ndarray}]{valid\+\_\+des,  }\item[{np.\+ndarray}]{valid\+\_\+kp\+\_\+depth,  }\item[{NDArray}]{frame\+\_\+rgb,  }\item[{NDArray}]{frame\+\_\+depth,  }\item[{Time}]{rgb\+\_\+stamp,  }\item[{Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}cv2.\+Key\+Point\mbox{]}, int\mbox{]}}]{ransac\+\_\+result }\end{DoxyParamCaption})}
+
+
+
+Runs a single localization iteration over all particles. 
+
+Calculates normalized weights and selects the best candidate particle estimate.
+
+
+\begin{DoxyParams}{Parameters}
+{\em valid\+\_\+kp} & Set of visual features. \\
+\hline
+{\em valid\+\_\+des} & Binary visual descriptors. \\
+\hline
+{\em valid\+\_\+kp\+\_\+depth} & Feature depth values. \\
+\hline
+{\em frame\+\_\+rgb} & Color reference frame image. \\
+\hline
+{\em frame\+\_\+depth} & Depth reference frame image. \\
+\hline
+{\em rgb\+\_\+stamp} & Timeline synchronization timestamp. \\
+\hline
+{\em ransac\+\_\+result} & Estimated relative rigid transformation data. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_adb2d623badca9344c473e919c57eb416}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_adb2d623badca9344c473e919c57eb416} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!listener\_depth\_callback@{listener\_depth\_callback}}
+\index{listener\_depth\_callback@{listener\_depth\_callback}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{listener\_depth\_callback()}{listener\_depth\_callback()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+listener\+\_\+depth\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Image}]{msg }\end{DoxyParamCaption})}
+
+
+
+Subscribes to raw depth frames and registers active depth timestamps. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Incoming raw depth image. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a970ac7d3284f0cd57cec419be0445feb}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a970ac7d3284f0cd57cec419be0445feb} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!listener\_rgb\_callback@{listener\_rgb\_callback}}
+\index{listener\_rgb\_callback@{listener\_rgb\_callback}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{listener\_rgb\_callback()}{listener\_rgb\_callback()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+listener\+\_\+rgb\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Image}]{msg }\end{DoxyParamCaption})}
+
+
+
+Handles primary RGB camera frames. 
+
+Triggers visual processing loops and publishes transforms.
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Incoming RGB reference image. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a7ee91036f0e6427c3e51456902fa9b3f}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a7ee91036f0e6427c3e51456902fa9b3f} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!listener\_wheel\_odom\_callback@{listener\_wheel\_odom\_callback}}
+\index{listener\_wheel\_odom\_callback@{listener\_wheel\_odom\_callback}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{listener\_wheel\_odom\_callback()}{listener\_wheel\_odom\_callback()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+listener\+\_\+wheel\+\_\+odom\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{Odometry}]{msg }\end{DoxyParamCaption})}
+
+
+
+Receives wheel odometry pose measurements and initializes baseline tracking. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em msg} & Incoming wheel odometry message. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4bf608ab9c3f7435570a0a29f8aa2cb8}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4bf608ab9c3f7435570a0a29f8aa2cb8} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!parameter\_callback@{parameter\_callback}}
+\index{parameter\_callback@{parameter\_callback}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{parameter\_callback()}{parameter\_callback()}}
+{\footnotesize\ttfamily  Set\+Parameters\+Result visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+parameter\+\_\+callback (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}rclpy.\+parameter.\+Parameter\mbox{]}}]{params }\end{DoxyParamCaption})}
+
+
+
+Dynamic parameter callback handling updates during node executions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em params} & Updated parameters list. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+ROS 2 Set\+Parameters\+Result status indicator. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac10c4d5c9488fc33c4266c858576dbec}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac10c4d5c9488fc33c4266c858576dbec} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!parameter\_initialization@{parameter\_initialization}}
+\index{parameter\_initialization@{parameter\_initialization}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{parameter\_initialization()}{parameter\_initialization()}}
+{\footnotesize\ttfamily  \mbox{\hyperlink{classvisual__odom_1_1constants_1_1Parameters}{Parameters}} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+parameter\+\_\+initialization (\begin{DoxyParamCaption}\item[{}]{self }\end{DoxyParamCaption})}
+
+
+
+Declares and loads configuration parameters from the ROS 2 parameters server. 
+
+\begin{DoxyReturn}{Returns}
+Initialized Parameters data package. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_abad611f807a1f925bda73b94d1c4d4f4}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_abad611f807a1f925bda73b94d1c4d4f4} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!possible\_resample@{possible\_resample}}
+\index{possible\_resample@{possible\_resample}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{possible\_resample()}{possible\_resample()}}
+{\footnotesize\ttfamily  None visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+possible\+\_\+resample (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1robot_1_1VisualRobotSample}{Visual\+Robot\+Sample}}\mbox{]}}]{robots,  }\item[{int}]{best\+\_\+robot\+\_\+idx,  }\item[{float}]{first\+\_\+frame\+\_\+stamp }\end{DoxyParamCaption})}
+
+
+
+Performs resampling by matching visible landmarks to the first frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em robots} & List of active robot particles. \\
+\hline
+{\em best\+\_\+robot\+\_\+idx} & Index of the best particle hypothesis. \\
+\hline
+{\em first\+\_\+frame\+\_\+stamp} & Timestamp of the first recorded frame. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+None 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a23f76536df359137d9f3f08e1c604ede}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a23f76536df359137d9f3f08e1c604ede} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!ransac\_calculation@{ransac\_calculation}}
+\index{ransac\_calculation@{ransac\_calculation}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{ransac\_calculation()}{ransac\_calculation()}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+ransac\+\_\+calculation (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List}]{P,  }\item[{List}]{Q,  }\item[{List\mbox{[}cv2.\+DMatch\mbox{]}}]{matches,  }\item[{List\mbox{[}cv2.\+Key\+Point\mbox{]}}]{valid\+\_\+kp }\end{DoxyParamCaption})}
+
+
+
+Executes the core RANSAC loop and computes the best transformation using Kabsch. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em P} & Reference point set. \\
+\hline
+{\em Q} & Observed point set. \\
+\hline
+{\em matches} & Descriptor matches corresponding to P/Q pairs. \\
+\hline
+{\em valid\+\_\+kp} & Valid keypoints used for visualization of inliers. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Best translation, rotation, inlier keypoints, and number of inliers. 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3a19b0367dadc3ec973b213dbecf88c1}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3a19b0367dadc3ec973b213dbecf88c1} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!ransac\_frame\_to\_frame@{ransac\_frame\_to\_frame}}
+\index{ransac\_frame\_to\_frame@{ransac\_frame\_to\_frame}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{ransac\_frame\_to\_frame()}{ransac\_frame\_to\_frame()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}cv2.\+Key\+Point\mbox{]}, int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+ransac\+\_\+frame\+\_\+to\+\_\+frame (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}cv2.\+DMatch\mbox{]}}]{matches,  }\item[{List\mbox{[}cv2.\+Key\+Point\mbox{]}}]{valid\+\_\+kp,  }\item[{np.\+ndarray}]{valid\+\_\+kp\+\_\+depth,  }\item[{List\mbox{[}cv2.\+Key\+Point\mbox{]}}]{valid\+\_\+kp\+\_\+last,  }\item[{np.\+ndarray}]{valid\+\_\+kp\+\_\+depth\+\_\+last }\end{DoxyParamCaption})}
+
+
+
+Estimates translation and rotation between consecutive frames using RANSAC and 2D Kabsch point set alignment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matches} & Vector list of descriptor matches between consecutive visual frames. \\
+\hline
+{\em valid\+\_\+kp} & Feature coordinates extracted from the current frame. \\
+\hline
+{\em valid\+\_\+kp\+\_\+depth} & Pixel depth values matching current features. \\
+\hline
+{\em valid\+\_\+kp\+\_\+last} & Feature coordinates extracted from the last frame. \\
+\hline
+{\em valid\+\_\+kp\+\_\+depth\+\_\+last} & Pixel depth values matching last frame features. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A tuple of (estimated Coordinate translation, rotation yaw, visual inlier keypoints, total inliers). 
+\end{DoxyReturn}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9231f22cfb89117dad8444050ba6a3ca}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9231f22cfb89117dad8444050ba6a3ca} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!ransac\_frame\_to\_map@{ransac\_frame\_to\_map}}
+\index{ransac\_frame\_to\_map@{ransac\_frame\_to\_map}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{ransac\_frame\_to\_map()}{ransac\_frame\_to\_map()}}
+{\footnotesize\ttfamily  Tuple\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}, float, List\mbox{[}int\mbox{]}, int\mbox{]} visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+ransac\+\_\+frame\+\_\+to\+\_\+map (\begin{DoxyParamCaption}\item[{}]{self,  }\item[{List\mbox{[}cv2.\+DMatch\mbox{]}}]{matches,  }\item[{List\mbox{[}\mbox{\hyperlink{classvisual__odom_1_1constants_1_1Coordinate}{Coordinate}}\mbox{]}}]{landmarks\+\_\+odom\+\_\+pos,  }\item[{List\mbox{[}cv2.\+Key\+Point\mbox{]}}]{valid\+\_\+kp,  }\item[{np.\+ndarray}]{valid\+\_\+kp\+\_\+depth }\end{DoxyParamCaption})}
+
+
+
+Estimates the transformation between map landmarks and the current frame using RANSAC. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matches} & Descriptor matches between map landmarks and current frame features. \\
+\hline
+{\em landmarks\+\_\+odom\+\_\+pos} & Landmark positions in odom frame. \\
+\hline
+{\em valid\+\_\+kp} & Valid keypoints from current frame. \\
+\hline
+{\em valid\+\_\+kp\+\_\+depth} & Depth values of current frame keypoints. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Estimated translation, rotation, inlier keypoints, and number of inliers. 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5c7372d05d6d8fe041d8d2a9d89abe92}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5c7372d05d6d8fe041d8d2a9d89abe92} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!best\_robot@{best\_robot}}
+\index{best\_robot@{best\_robot}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{best\_robot}{best\_robot}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+best\+\_\+robot}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace9fa3679549d0e5249015427aa466d2}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace9fa3679549d0e5249015427aa466d2} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!best\_robot\_idx@{best\_robot\_idx}}
+\index{best\_robot\_idx@{best\_robot\_idx}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{best\_robot\_idx}{best\_robot\_idx}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+best\+\_\+robot\+\_\+idx}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab4ef89b85db5e9bf4386bef41bb6abbb}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab4ef89b85db5e9bf4386bef41bb6abbb} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!best\_weight@{best\_weight}}
+\index{best\_weight@{best\_weight}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{best\_weight}{best\_weight}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+best\+\_\+weight}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aba0bbea9e1fe23e9a0c177bafe45488f}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aba0bbea9e1fe23e9a0c177bafe45488f} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!bf@{bf}}
+\index{bf@{bf}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{bf}{bf}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+bf}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac4c3e64d678f8f211b92bcae06a73a36}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ac4c3e64d678f8f211b92bcae06a73a36} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!bridge@{bridge}}
+\index{bridge@{bridge}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{bridge}{bridge}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+bridge}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad27ee82a2c6848c09119834dc0287ff1}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad27ee82a2c6848c09119834dc0287ff1} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!covariance\_P@{covariance\_P}}
+\index{covariance\_P@{covariance\_P}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{covariance\_P}{covariance\_P}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+covariance\+\_\+P}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5870fc446bced571b3040c5d59724642}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5870fc446bced571b3040c5d59724642} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_des@{first\_des}}
+\index{first\_des@{first\_des}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_des}{first\_des}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+des}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a71a9b86fad3f953f636f33ef706ed742}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a71a9b86fad3f953f636f33ef706ed742} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_frame\_stamp@{first\_frame\_stamp}}
+\index{first\_frame\_stamp@{first\_frame\_stamp}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_frame\_stamp}{first\_frame\_stamp}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+frame\+\_\+stamp}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aed90f014ceb42a4de17ab0b19ecc77ec}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aed90f014ceb42a4de17ab0b19ecc77ec} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_iteration@{first\_iteration}}
+\index{first\_iteration@{first\_iteration}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_iteration}{first\_iteration}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+iteration}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab626d702640f8ebb31b69ce77ef7b64d}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab626d702640f8ebb31b69ce77ef7b64d} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_kp@{first\_kp}}
+\index{first\_kp@{first\_kp}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_kp}{first\_kp}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+kp}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a1d22cacd11ead623c2d6c0846d8b75b4}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a1d22cacd11ead623c2d6c0846d8b75b4} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_kp\_depth@{first\_kp\_depth}}
+\index{first\_kp\_depth@{first\_kp\_depth}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_kp\_depth}{first\_kp\_depth}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+kp\+\_\+depth}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9c5c895010c2ab1a922cd1c4805995ec}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9c5c895010c2ab1a922cd1c4805995ec} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_pos@{first\_pos}}
+\index{first\_pos@{first\_pos}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_pos}{first\_pos}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+pos}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a0e5b5621784c478f43d53b00da6e650e}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a0e5b5621784c478f43d53b00da6e650e} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!first\_theta@{first\_theta}}
+\index{first\_theta@{first\_theta}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{first\_theta}{first\_theta}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+first\+\_\+theta}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4f4dee3d57318b867529e7666df88b08}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a4f4dee3d57318b867529e7666df88b08} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!frame\_depth@{frame\_depth}}
+\index{frame\_depth@{frame\_depth}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{frame\_depth}{frame\_depth}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+frame\+\_\+depth}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a2ca5d1e41f30f324672c74c458338f67}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a2ca5d1e41f30f324672c74c458338f67} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!frame\_depth\_stamp@{frame\_depth\_stamp}}
+\index{frame\_depth\_stamp@{frame\_depth\_stamp}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{frame\_depth\_stamp}{frame\_depth\_stamp}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+frame\+\_\+depth\+\_\+stamp}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a43b7ed7af028c77374235d6191313043}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a43b7ed7af028c77374235d6191313043} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!frame\_rgb@{frame\_rgb}}
+\index{frame\_rgb@{frame\_rgb}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{frame\_rgb}{frame\_rgb}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+frame\+\_\+rgb}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a44c825b9838611f0c0157880689c4930}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a44c825b9838611f0c0157880689c4930} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!frame\_stamp@{frame\_stamp}}
+\index{frame\_stamp@{frame\_stamp}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{frame\_stamp}{frame\_stamp}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+frame\+\_\+stamp}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3aca3fce67150db0725912ca2ce90dbf}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a3aca3fce67150db0725912ca2ce90dbf} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!orb@{orb}}
+\index{orb@{orb}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{orb}{orb}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+orb}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9f82366a27ee581b271d6e855b2d0cb8}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9f82366a27ee581b271d6e855b2d0cb8} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!parameter\_callback@{parameter\_callback}}
+\index{parameter\_callback@{parameter\_callback}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{parameter\_callback}{parameter\_callback}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+parameter\+\_\+callback}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab17e7d73e14e6799c996c76f69e73f54}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab17e7d73e14e6799c996c76f69e73f54} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!pos\_baselink@{pos\_baselink}}
+\index{pos\_baselink@{pos\_baselink}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{pos\_baselink}{pos\_baselink}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+pos\+\_\+baselink}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab2a83fd078efb62dec8a5bcda2d2d18e}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ab2a83fd078efb62dec8a5bcda2d2d18e} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!position\_initialized@{position\_initialized}}
+\index{position\_initialized@{position\_initialized}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{position\_initialized}{position\_initialized}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+position\+\_\+initialized}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace344e3b34dc51aff37ec4473e62e3c0}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ace344e3b34dc51aff37ec4473e62e3c0} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!publisher\_accumulated\_pixels@{publisher\_accumulated\_pixels}}
+\index{publisher\_accumulated\_pixels@{publisher\_accumulated\_pixels}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{publisher\_accumulated\_pixels}{publisher\_accumulated\_pixels}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+publisher\+\_\+accumulated\+\_\+pixels}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af1f2db4adc6437e2c92d7ce93d456ff3}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af1f2db4adc6437e2c92d7ce93d456ff3} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!publisher\_cone@{publisher\_cone}}
+\index{publisher\_cone@{publisher\_cone}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{publisher\_cone}{publisher\_cone}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+publisher\+\_\+cone}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad00a213eeee7eaaa24677b12fba52c80}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad00a213eeee7eaaa24677b12fba52c80} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!publisher\_image@{publisher\_image}}
+\index{publisher\_image@{publisher\_image}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{publisher\_image}{publisher\_image}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+publisher\+\_\+image}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6527e0cd1fbc7e942b1a507a3ed1a58}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6527e0cd1fbc7e942b1a507a3ed1a58} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!publisher\_keypoints\_3d@{publisher\_keypoints\_3d}}
+\index{publisher\_keypoints\_3d@{publisher\_keypoints\_3d}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{publisher\_keypoints\_3d}{publisher\_keypoints\_3d}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+publisher\+\_\+keypoints\+\_\+3d}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6e1190d9827c58cd3248e626a9799a7}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa6e1190d9827c58cd3248e626a9799a7} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!publisher\_visual\_odometry\_msg@{publisher\_visual\_odometry\_msg}}
+\index{publisher\_visual\_odometry\_msg@{publisher\_visual\_odometry\_msg}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{publisher\_visual\_odometry\_msg}{publisher\_visual\_odometry\_msg}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+publisher\+\_\+visual\+\_\+odometry\+\_\+msg}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acce62acadab54a02c18bcc21dd020b6b}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acce62acadab54a02c18bcc21dd020b6b} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!robots@{robots}}
+\index{robots@{robots}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{robots}{robots}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+robots}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af2f7e25f9e6ee1aed008675185d0da3f}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af2f7e25f9e6ee1aed008675185d0da3f} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!subscription\_depth@{subscription\_depth}}
+\index{subscription\_depth@{subscription\_depth}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{subscription\_depth}{subscription\_depth}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+subscription\+\_\+depth}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa9167fae5171cf388fa3614b7330ee17}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aa9167fae5171cf388fa3614b7330ee17} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!subscription\_rgb@{subscription\_rgb}}
+\index{subscription\_rgb@{subscription\_rgb}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{subscription\_rgb}{subscription\_rgb}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+subscription\+\_\+rgb}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9b075baa04fc20cdf42da0dc13eb7126}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a9b075baa04fc20cdf42da0dc13eb7126} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!subscription\_wheel\_odom@{subscription\_wheel\_odom}}
+\index{subscription\_wheel\_odom@{subscription\_wheel\_odom}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{subscription\_wheel\_odom}{subscription\_wheel\_odom}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+subscription\+\_\+wheel\+\_\+odom}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a99be7265878fe6c6c9429eaa685935fb}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a99be7265878fe6c6c9429eaa685935fb} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!tf\_broadcaster@{tf\_broadcaster}}
+\index{tf\_broadcaster@{tf\_broadcaster}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{tf\_broadcaster}{tf\_broadcaster}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+tf\+\_\+broadcaster}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a25848fae9b49c635dbfd7d035634e548}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a25848fae9b49c635dbfd7d035634e548} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!tf\_buffer@{tf\_buffer}}
+\index{tf\_buffer@{tf\_buffer}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{tf\_buffer}{tf\_buffer}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+tf\+\_\+buffer}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af690fd6f5b0415fdf03018df5fa13f53}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af690fd6f5b0415fdf03018df5fa13f53} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!tf\_listener@{tf\_listener}}
+\index{tf\_listener@{tf\_listener}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{tf\_listener}{tf\_listener}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+tf\+\_\+listener}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad8016789cb262393a8e62a8097dc69a2}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_ad8016789cb262393a8e62a8097dc69a2} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!theta@{theta}}
+\index{theta@{theta}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{theta}{theta}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+theta}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a250879a15fb8b3674f531182fbf7b108}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a250879a15fb8b3674f531182fbf7b108} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!total\_publisher@{total\_publisher}}
+\index{total\_publisher@{total\_publisher}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{total\_publisher}{total\_publisher}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+total\+\_\+publisher}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aee549264c50d0c102b2977d01e457236}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_aee549264c50d0c102b2977d01e457236} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_des@{valid\_des}}
+\index{valid\_des@{valid\_des}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_des}{valid\_des}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+des}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acb521762e92c4e8a0500b900f7cdf7f0}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_acb521762e92c4e8a0500b900f7cdf7f0} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_des\_last@{valid\_des\_last}}
+\index{valid\_des\_last@{valid\_des\_last}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_des\_last}{valid\_des\_last}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+des\+\_\+last}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a5e696c68081c8a60101939431b63c926} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_kp@{valid\_kp}}
+\index{valid\_kp@{valid\_kp}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_kp}{valid\_kp}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+kp}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a8c02b662d24b4886c54319fa24f322ee} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_kp\_depth@{valid\_kp\_depth}}
+\index{valid\_kp\_depth@{valid\_kp\_depth}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_kp\_depth}{valid\_kp\_depth}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+kp\+\_\+depth}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a70186e9ef4b48b2076ddfa91f8198ed2}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a70186e9ef4b48b2076ddfa91f8198ed2} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_kp\_depth\_last@{valid\_kp\_depth\_last}}
+\index{valid\_kp\_depth\_last@{valid\_kp\_depth\_last}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_kp\_depth\_last}{valid\_kp\_depth\_last}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+kp\+\_\+depth\+\_\+last}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af091774c43eac3bb6081fa46f36c1f10}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_af091774c43eac3bb6081fa46f36c1f10} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!valid\_kp\_last@{valid\_kp\_last}}
+\index{valid\_kp\_last@{valid\_kp\_last}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{valid\_kp\_last}{valid\_kp\_last}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+valid\+\_\+kp\+\_\+last}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a320202515c8b0a41bd19c164667b8e03}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a320202515c8b0a41bd19c164667b8e03} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!visible\_landmarks@{visible\_landmarks}}
+\index{visible\_landmarks@{visible\_landmarks}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{visible\_landmarks}{visible\_landmarks}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+visible\+\_\+landmarks}
+
+\Hypertarget{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a35ae133a834dd4ededc86b561a4ba359}\label{classvisual__odom_1_1visual__odom__node_1_1VisualOdom_a35ae133a834dd4ededc86b561a4ba359} 
+\index{visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}!visual\_odom\_path@{visual\_odom\_path}}
+\index{visual\_odom\_path@{visual\_odom\_path}!visual\_odom.visual\_odom\_node.VisualOdom@{visual\_odom.visual\_odom\_node.VisualOdom}}
+\doxysubsubsection{\texorpdfstring{visual\_odom\_path}{visual\_odom\_path}}
+{\footnotesize\ttfamily visual\+\_\+odom.\+visual\+\_\+odom\+\_\+node.\+Visual\+Odom.\+visual\+\_\+odom\+\_\+path}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+ros2\+\_\+ws/src/visual\+\_\+odom/visual\+\_\+odom/\mbox{\hyperlink{visual__odom__node_8py}{visual\+\_\+odom\+\_\+node.\+py}}\end{DoxyCompactItemize}

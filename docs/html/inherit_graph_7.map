@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classvisual__odom_1_1landmark_1_1Landmark.html" title="Landmark class for storing visual features and performing spatial estimation." alt="" coords="5,5,245,31"/>
+<area shape="rect" id="Node000001" href="$classvisual__odom_1_1visual__odom__map_1_1VisualOdomMap.html" title="Holds and manages persistent Landmark records mapped inside the particle trajectories." alt="" coords="293,23,507,63"/>
+<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="259,28,293,31,293,36,259,33"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="104,55,147,80"/>
+<area shape="poly" id="edge4_Node000002_Node000001" title=" " alt="" coords="160,62,293,50,293,55,160,67"/>
+</map>
